@@ -1,0 +1,23 @@
+---
+import Moons from '../components/Moons';
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Jupiter</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react",
+          "react-dom": "https://esm.sh/react-dom"
+        }
+      }
+    </script>
+  </head>
+  <body class="p-3 bg-[#111] text-white">
+    <h1 class="font-semibold text-2xl mb-3">Jupiter</h1>
+    <Moons client:only="react" />
+  </body>
+</html>

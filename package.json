@@ -1,0 +1,11 @@
+{
+  "name": "jupiter",
+  "version": "0.0.0",
+  "scripts": {
+    "build": "pnpm --parallel --filter \"./**\" build"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.3",
+    "prettier-plugin-astro": "^0.12.0"
+  }
+}
