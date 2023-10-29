@@ -45,7 +45,7 @@ export const state = proxy<AppState>({
     return state.paths.slice(0, state.n * -1);
   },
   createPath() {
-    if (!state.points) return null;
+    if (!state.points.length) return null;
     const path: Path = { id: nanoid(), color: state.color, d: getPath(state.points) };
     state.points = [];
     state.paths = [...state.visiblePaths, path];
