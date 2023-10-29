@@ -1,48 +1,43 @@
 import { proxy } from 'valtio';
 
-import type { Dot, Coordinate } from '../types';
+import type { Coordinate, Line } from '../types';
 
 declare module 'valtio' {
   function useSnapshot<T extends object>(p: T): T;
 }
 
 export type AppState = {
-  a: Dot | null;
-  start(dot: Dot): void;
-  b: (Coordinate & { dot?: Dot }) | null;
+  a: string | null;
+  start(id: string): void;
+  b: (Coordinate & { id?: string }) | null;
 
-  lines: { a: Dot; b: Dot }[];
+  lines: Line[];
   addLine(): void;
 
-  isConnected(dot: Dot): boolean;
+  isConnected(id: string): boolean;
 };
 
 export const state = proxy<AppState>({
   a: null,
-  start(dot) {
+  start(id) {
     if (state.a) return;
-    if (state.isConnected(dot)) return;
-    state.a = dot;
+    if (state.isConnected(id)) return;
+    state.a = id;
   },
   b: null,
 
   lines: [],
   addLine() {
     if (!state.a || !state.b) return;
-    if (state.b.dot) {
-      const dot = state.b.dot;
-      if (!state.isConnected(dot)) state.lines.push({ a: state.a, b: dot });
+    if (state.b.id) {
+      const id = state.b.id;
+      if (!state.isConnected(id)) state.lines.push({ a: state.a, b: id });
     }
     state.a = null;
     state.b = null;
   },
 
-  isConnected(dot): boolean /* why */ {
-    const index = state.lines.findIndex((line) => {
-      if (dot.side === line.a.side && dot.index === line.a.index) return true;
-      if (dot.side === line.b.side && dot.index === line.b.index) return true;
-      return false;
-    });
-    return index !== -1;
+  isConnected(id): boolean /* why */ {
+    return state.lines.findIndex((line) => line.a === id || line.b === id) !== -1;
   },
 });

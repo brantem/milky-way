@@ -3,15 +3,15 @@ import Items from './components/Items';
 import Lines from './components/Lines';
 
 import { AppProvider } from './lib/state';
-import { Side } from './lib/types';
+import { type Item, Side } from './lib/types';
 
 import './index.css';
 
 type AppProps = {
   height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
-  left: string[];
-  right: string[];
+  left: Item[];
+  right: Item[];
 };
 
 const App = ({ left, right, height, width }: IoProps) => {

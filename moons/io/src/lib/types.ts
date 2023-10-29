@@ -1,14 +1,19 @@
+export type Item = {
+  id: string;
+  text: string;
+};
+
 export enum Side {
   Left = 'left',
   Right = 'right',
 }
 
-export type Dot = {
-  side: Side;
-  index: number;
-};
-
 export type Coordinate = {
   x: number;
   y: number;
+};
+
+export type Line = {
+  a: string;
+  b: string;
 };

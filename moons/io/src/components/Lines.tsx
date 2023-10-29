@@ -1,7 +1,7 @@
 import { getDotCoord } from '../lib/helpers';
 import { useAppState } from '../lib/state';
 import { STROKE_WIDTH } from '../lib/constants';
-import type { Dot, Coordinate } from '../lib/types';
+import type { Coordinate, Line } from '../lib/types';
 
 const calcOffset = (start: Coordinate, end: Coordinate) => {
   const dx = start.x - end.x;
@@ -36,23 +36,23 @@ const BaseLine = ({ d }: { d: string }) => {
   );
 };
 
+const idToCoord = (id: string): Coordinate => {
+  const el = document.querySelector(`#${id} > .dot`)!;
+  return getDotCoord(el as HTMLDivElement);
+};
+
 const TempLine = () => {
   const [state] = useAppState();
   if (!state.a) return null;
   return (
     <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
-      <BaseLine d={generateLine(dotToCoord(state.a), state.b)} />
+      <BaseLine d={generateLine(idToCoord(state.a), state.b)} />
     </svg>
   );
 };
 
-const dotToCoord = (dot: Dot): Coordinate => {
-  const el = document.querySelector(`.dot[data-side="${dot.side}"][data-index="${dot.index}"]`)!;
-  return getDotCoord(el as HTMLDivElement);
-};
-
-const Line = ({ start, end }: { start: Dot; end: Dot }) => {
-  return <BaseLine d={generateLine(dotToCoord(start), dotToCoord(end))} />;
+const Line = ({ line }: { line: Line }) => {
+  return <BaseLine d={generateLine(idToCoord(line.a), idToCoord(line.b))} />;
 };
 
 const Lines = () => {
@@ -63,7 +63,7 @@ const Lines = () => {
       <TempLine />
       <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
         {state.lines.map((line, i) => (
-          <Line key={i} start={line.a} end={line.b} />
+          <Line key={i} line={line} />
         ))}
       </svg>
     </>
