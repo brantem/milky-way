@@ -23,13 +23,13 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
       onPointerDown={(e) => {
         if (e.button !== 0) return;
         if (!(e.target as any).classList.contains('dot')) return;
-        const el = e.target as HTMLDivElement;
+        const el = e.target as Element;
         set.start(el.parentElement!.id);
       }}
       onPointerMove={(e) => {
         if (!set.a) return;
         if ((e.target as any).classList.contains('dot')) {
-          const el = e.target as HTMLDivElement;
+          const el = e.target as Element;
           const id = el.parentElement!.id;
           if (id.split('-')[0] !== set.a.split('-')[0] && !set.isConnected(id)) {
             set.b = { id, ...getDotCoord(el) };

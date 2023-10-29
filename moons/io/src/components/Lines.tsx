@@ -38,7 +38,7 @@ const BaseLine = ({ d }: { d: string }) => {
 
 const idToCoord = (id: string): Coordinate => {
   const el = document.querySelector(`#${id} > .dot`)!;
-  return getDotCoord(el as HTMLDivElement);
+  return getDotCoord(el);
 };
 
 const TempLine = () => {

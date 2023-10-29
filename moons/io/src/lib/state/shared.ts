@@ -1,6 +1,7 @@
 import { proxy } from 'valtio';
 
 import type { Coordinate, Line } from '../types';
+import { getDotCoord } from '../helpers';
 
 declare module 'valtio' {
   function useSnapshot<T extends object>(p: T): T;
@@ -9,7 +10,7 @@ declare module 'valtio' {
 export type AppState = {
   a: string | null;
   start(id: string): void;
-  b: (Coordinate & { id?: string }) | null;
+  b: (Coordinate & { id?: string }) | null; // TODO: (string | Coordinate) | null
 
   lines: Line[];
   addLine(): void;
@@ -21,8 +22,15 @@ export const state = proxy<AppState>({
   a: null,
   start(id) {
     if (state.a) return;
-    if (state.isConnected(id)) return;
-    state.a = id;
+    const lineIndex = state.lines.findIndex((line) => line.a === id || line.b === id);
+    if (lineIndex !== -1) {
+      const [line] = state.lines.splice(lineIndex, 1);
+      state.a = line.a === id ? line.b : line.a;
+      const el = document.querySelector(`#${id} > .dot`)!;
+      state.b = { id, ...getDotCoord(el) };
+    } else {
+      state.a = id;
+    }
   },
   b: null,
 
