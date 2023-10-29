@@ -1,8 +1,6 @@
-import { useAppState } from '../lib/state';
-
-import type { Coordinate } from '../lib/types';
-
 import { STROKE_WIDTH } from '../lib/constants';
+import { useAppState } from '../lib/state';
+import type { Coordinate } from '../lib/types';
 
 const getCoord = (el: HTMLElement, pageX: number, pageY: number): Coordinate => {
   const rect = el.getBoundingClientRect();

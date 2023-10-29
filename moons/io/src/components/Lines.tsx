@@ -1,5 +1,5 @@
-import { useAppState } from '../lib/state';
 import { STROKE_WIDTH } from '../lib/constants';
+import { useAppState } from '../lib/state';
 import type { Coordinate, Line } from '../lib/types';
 
 const calcOffset = (a: Coordinate, b: Coordinate) => {
