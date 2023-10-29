@@ -1,7 +1,27 @@
-import { generateLine, getDotCoord } from '../lib/helpers';
+import { getDotCoord } from '../lib/helpers';
 import { useAppState } from '../lib/state';
 import { STROKE_WIDTH } from '../lib/constants';
 import type { Dot, Coordinate } from '../lib/types';
+
+const calcOffset = (start: Coordinate, end: Coordinate) => {
+  const dx = start.x - end.x;
+  const dy = start.y - end.y;
+  return Math.hypot(dx, dy) / Math.PI / 2;
+};
+
+// based on https://stackoverflow.com/a/49286885/10298958
+const generateLine = (start: Coordinate, end: Coordinate | null) => {
+  if (!end) return `M${start.x} ${start.y} ${start.x} ${start.y}`;
+  const mx = (end.x + start.x) * 0.5;
+  const my = (end.y + start.y) * 0.5;
+  const angle = Math.atan2(end.y - start.y, end.x - start.x) + Math.PI / 2;
+  const offset = calcOffset(start, end);
+  const offsetX = offset * Math.cos(angle);
+  const offsetY = offset * Math.sin(angle);
+  const cx = start.x > end.x ? mx - offsetX : mx + offsetX;
+  const cy = start.x > end.x ? my - offsetY : my + offsetY;
+  return `M${start.x} ${start.y} Q${cx} ${cy} ${end.x} ${end.y}`;
+};
 
 const BaseLine = ({ d }: { d: string }) => {
   return (
@@ -18,7 +38,7 @@ const BaseLine = ({ d }: { d: string }) => {
 
 const TempLine = () => {
   const [state] = useAppState();
-  if (!state.a || !state.b) return null;
+  if (!state.a) return null;
   return (
     <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
       <BaseLine d={generateLine(dotToCoord(state.a), state.b)} />

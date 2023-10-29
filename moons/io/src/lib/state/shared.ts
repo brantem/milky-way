@@ -20,6 +20,7 @@ export type AppState = {
 export const state = proxy<AppState>({
   a: null,
   start(dot) {
+    if (state.a) return;
     if (state.isConnected(dot)) return;
     state.a = dot;
   },
