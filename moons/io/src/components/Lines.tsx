@@ -1,26 +1,25 @@
-import { getDotCoord } from '../lib/helpers';
 import { useAppState } from '../lib/state';
 import { STROKE_WIDTH } from '../lib/constants';
 import type { Coordinate, Line } from '../lib/types';
 
-const calcOffset = (start: Coordinate, end: Coordinate) => {
-  const dx = start.x - end.x;
-  const dy = start.y - end.y;
+const calcOffset = (a: Coordinate, b: Coordinate) => {
+  const dx = a.x - b.x;
+  const dy = a.y - b.y;
   return Math.hypot(dx, dy) / Math.PI / 2;
 };
 
 // based on https://stackoverflow.com/a/49286885/10298958
-const generateLine = (start: Coordinate, end: Coordinate | null) => {
-  if (!end) return `M${start.x} ${start.y} ${start.x} ${start.y}`;
-  const mx = (end.x + start.x) * 0.5;
-  const my = (end.y + start.y) * 0.5;
-  const angle = Math.atan2(end.y - start.y, end.x - start.x) + Math.PI / 2;
-  const offset = calcOffset(start, end);
+const generateLine = (a: Coordinate, b: Coordinate | null) => {
+  if (!b) return `M${a.x} ${a.y} ${a.x} ${a.y}`;
+  const mx = (b.x + a.x) * 0.5;
+  const my = (b.y + a.y) * 0.5;
+  const angle = Math.atan2(b.y - a.y, b.x - a.x) + Math.PI / 2;
+  const offset = calcOffset(a, b);
   const offsetX = offset * Math.cos(angle);
   const offsetY = offset * Math.sin(angle);
-  const cx = start.x > end.x ? mx - offsetX : mx + offsetX;
-  const cy = start.x > end.x ? my - offsetY : my + offsetY;
-  return `M${start.x} ${start.y} Q${cx} ${cy} ${end.x} ${end.y}`;
+  const cx = a.x > b.x ? mx - offsetX : mx + offsetX;
+  const cy = a.x > b.x ? my - offsetY : my + offsetY;
+  return `M${a.x} ${a.y} Q${cx} ${cy} ${b.x} ${b.y}`;
 };
 
 const BaseLine = ({ d }: { d: string }) => {
@@ -37,16 +36,19 @@ const BaseLine = ({ d }: { d: string }) => {
 };
 
 const idToCoord = (id: string): Coordinate => {
+  const parentRect = document.getElementById('io')!.getBoundingClientRect();
   const el = document.querySelector(`#${id} > .dot`)!;
-  return getDotCoord(el);
+  const rect = el.getBoundingClientRect();
+  return { x: rect.x - parentRect.x + rect.width / 2, y: rect.y - parentRect.y + rect.width / 2 };
 };
 
 const TempLine = () => {
   const [state] = useAppState();
   if (!state.a) return null;
+  const b = typeof state.b === 'string' ? idToCoord(state.b) : state.b;
   return (
     <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
-      <BaseLine d={generateLine(idToCoord(state.a), state.b)} />
+      <BaseLine d={generateLine(idToCoord(state.a), b)} />
     </svg>
   );
 };

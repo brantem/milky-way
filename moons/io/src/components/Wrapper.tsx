@@ -3,7 +3,6 @@ import { useAppState } from '../lib/state';
 import type { Coordinate } from '../lib/types';
 
 import { STROKE_WIDTH } from '../lib/constants';
-import { getDotCoord } from '../lib/helpers';
 
 const getCoord = (el: HTMLElement, pageX: number, pageY: number): Coordinate => {
   const rect = el.getBoundingClientRect();
@@ -32,7 +31,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
           const el = e.target as Element;
           const id = el.parentElement!.id;
           if (id.split('-')[0] !== set.a.split('-')[0] && !set.isConnected(id)) {
-            set.b = { id, ...getDotCoord(el) };
+            set.b = id;
             return;
           }
         }
