@@ -18,3 +18,9 @@ export const generateLine = (start: Coordinate, end: Coordinate) => {
   const cy = start.x > end.x ? my - offsetY : my + offsetY;
   return `M${start.x} ${start.y} Q${cx} ${cy} ${end.x} ${end.y}`;
 };
+
+export const getDotCoord = (el: HTMLElement): Coordinate => {
+  const parentRect = document.getElementById('io')!.getBoundingClientRect();
+  const rect = el.getBoundingClientRect();
+  return { x: rect.x - parentRect.x + rect.width / 2, y: rect.y - parentRect.y + rect.width / 2 };
+};

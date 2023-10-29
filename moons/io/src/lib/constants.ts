@@ -1,1 +1,1 @@
-export const STROKE_WIDTH = 8;
+export const STROKE_WIDTH = 10;

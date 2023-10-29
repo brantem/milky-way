@@ -1,8 +1,9 @@
-import { generateLine } from '../lib/helpers';
+import { generateLine, getDotCoord } from '../lib/helpers';
 import { useAppState } from '../lib/state';
 import { STROKE_WIDTH } from '../lib/constants';
+import type { Dot, Coordinate } from '../lib/types';
 
-const Line = ({ d }: { d: string }) => {
+const BaseLine = ({ d }: { d: string }) => {
   return (
     <path
       d={d}
@@ -10,18 +11,42 @@ const Line = ({ d }: { d: string }) => {
       strokeWidth={STROKE_WIDTH}
       strokeLinecap="round"
       fill="transparent"
-      className="drop-shadow-lg"
+      className="drop-shadow-xlb"
     />
   );
+};
+
+const TempLine = () => {
+  const [state] = useAppState();
+  if (!state.start || !state.end) return null;
+  return (
+    <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
+      <BaseLine d={generateLine(state.start, state.end)} />
+    </svg>
+  );
+};
+
+const dotToCoord = (dot: Dot): Coordinate => {
+  const el = document.querySelector(`.dot[data-side="${dot.side}"][data-index="${dot.index}"]`)!;
+  return getDotCoord(el as HTMLDivElement);
+};
+
+const Line = ({ start, end }: { start: Dot; end: Dot }) => {
+  return <BaseLine d={generateLine(dotToCoord(start), dotToCoord(end))} />;
 };
 
 const Lines = () => {
   const [state] = useAppState();
 
   return (
-    <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
-      {state.start && state.end && <Line d={generateLine(state.start, state.end)} />}
-    </svg>
+    <>
+      <TempLine />
+      <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
+        {state.lines.map((line, i) => (
+          <Line key={i} start={line.start} end={line.end} />
+        ))}
+      </svg>
+    </>
   );
 };
 

@@ -3,7 +3,6 @@ import Items from './components/Items';
 import Lines from './components/Lines';
 
 import { AppProvider } from './lib/state';
-
 import { Side } from './lib/types';
 
 import './index.css';
@@ -21,9 +20,9 @@ const App = ({ left, right, height, width }: IoProps) => {
       <Wrapper>
         <Items items={left} side={Side.Left} />
 
-        <Items items={right} side={Side.Right} />
-
         <Lines />
+
+        <Items items={right} side={Side.Right} />
       </Wrapper>
     </div>
   );

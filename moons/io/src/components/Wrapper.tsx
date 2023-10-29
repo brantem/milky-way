@@ -3,12 +3,7 @@ import { useAppState } from '../lib/state';
 import type { Dot, Coordinate } from '../lib/types';
 
 import { STROKE_WIDTH } from '../lib/constants';
-
-const getDotCoord = (parent: HTMLElement, el: HTMLElement): Coordinate => {
-  const parentRect = parent.getBoundingClientRect();
-  const rect = el.getBoundingClientRect();
-  return { x: rect.x - parentRect.x + rect.width / 2, y: rect.y - parentRect.y + rect.width / 2 };
-};
+import { getDotCoord } from '../lib/helpers';
 
 const getCoord = (parent: HTMLElement, pageX: number, pageY: number): Coordinate => {
   const rect = parent.getBoundingClientRect();
@@ -24,21 +19,24 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const [, set] = useAppState();
   return (
     <div
-      className="relative w-full h-full flex items-center justify-center font-sans text-5xl font-semibold gap-52"
+      className="relative w-full h-full grid grid-cols-3 [grid-template-areas:'start_middle_end'] items-center justify-between font-sans text-4xl font-semibold"
       onPointerDown={(e) => {
         if (e.button !== 0) return;
         if (!(e.target as any).classList.contains('dot')) return;
         const el = e.target as HTMLDivElement;
-        set.start = { dot: el.dataset as unknown as Dot, ...getDotCoord(e.currentTarget, el) };
+        set.start = { dot: el.dataset as unknown as Dot, ...getDotCoord(el) };
       }}
       onPointerMove={(e) => {
         if (!set.start) return;
         if ((e.target as any).classList.contains('dot')) {
           const el = e.target as HTMLDivElement;
-          set.end = getDotCoord(e.currentTarget, el);
-        } else {
-          set.end = getCoord(e.currentTarget, e.pageX, e.pageY);
+          const dot = el.dataset as unknown as Dot;
+          if (dot.side !== set.start.dot.side) {
+            set.end = { dot, ...getDotCoord(el) };
+            return;
+          }
         }
+        set.end = getCoord(e.currentTarget, e.pageX, e.pageY);
       }}
       onPointerUp={() => {
         if (!set.start || !set.end) return;
