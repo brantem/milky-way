@@ -19,31 +19,26 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
   const [, set] = useAppState();
   return (
     <div
-      className="relative w-full h-full grid grid-cols-3 [grid-template-areas:'start_middle_end'] items-center justify-between font-sans text-4xl font-semibold"
+      className="relative w-full h-full grid grid-cols-[1fr_theme(spacing.52)_1fr] [grid-template-areas:'start_middle_end'] items-center justify-between font-sans text-4xl font-semibold"
       onPointerDown={(e) => {
         if (e.button !== 0) return;
         if (!(e.target as any).classList.contains('dot')) return;
         const el = e.target as HTMLDivElement;
-        set.start = { dot: el.dataset as unknown as Dot, ...getDotCoord(el) };
+        set.start(el.dataset as unknown as Dot);
       }}
       onPointerMove={(e) => {
-        if (!set.start) return;
+        if (!set.a) return;
         if ((e.target as any).classList.contains('dot')) {
           const el = e.target as HTMLDivElement;
           const dot = el.dataset as unknown as Dot;
-          if (dot.side !== set.start.dot.side) {
-            set.end = { dot, ...getDotCoord(el) };
+          if (dot.side !== set.a.side && !set.isConnected(dot)) {
+            set.b = { dot, ...getDotCoord(el) };
             return;
           }
         }
-        set.end = getCoord(e.currentTarget, e.pageX, e.pageY);
+        set.b = getCoord(e.currentTarget, e.pageX, e.pageY);
       }}
-      onPointerUp={() => {
-        if (!set.start || !set.end) return;
-        if (set.end.dot) set.lines.push({ start: set.start.dot, end: set.end.dot });
-        set.start = null;
-        set.end = null;
-      }}
+      onPointerUp={set.addLine}
     >
       {children}
     </div>

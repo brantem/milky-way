@@ -1,11 +1,6 @@
-import { Side } from '../lib/types';
+import type { Dot } from '../lib/types';
 
-type DotProps = {
-  side: Side;
-  index: number;
-};
-
-const Dot = ({ side, index }: DotProps) => {
+const Dot = ({ side, index }: Dot) => {
   return (
     <div
       data-side={side}

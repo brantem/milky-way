@@ -18,10 +18,10 @@ const BaseLine = ({ d }: { d: string }) => {
 
 const TempLine = () => {
   const [state] = useAppState();
-  if (!state.start || !state.end) return null;
+  if (!state.a || !state.b) return null;
   return (
     <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
-      <BaseLine d={generateLine(state.start, state.end)} />
+      <BaseLine d={generateLine(dotToCoord(state.a), state.b)} />
     </svg>
   );
 };
@@ -43,7 +43,7 @@ const Lines = () => {
       <TempLine />
       <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
         {state.lines.map((line, i) => (
-          <Line key={i} start={line.start} end={line.end} />
+          <Line key={i} start={line.a} end={line.b} />
         ))}
       </svg>
     </>

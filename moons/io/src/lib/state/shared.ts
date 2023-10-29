@@ -7,19 +7,41 @@ declare module 'valtio' {
 }
 
 export type AppState = {
-  start: (Coordinate & { dot: Dot }) | null;
-  end: (Coordinate & { dot?: Dot }) | null;
+  a: Dot | null;
+  start(dot: Dot): void;
+  b: (Coordinate & { dot?: Dot }) | null;
 
-  lines: { start: Dot; end: Dot }[];
+  lines: { a: Dot; b: Dot }[];
+  addLine(): void;
 
-  debug: boolean;
+  isConnected(dot: Dot): boolean;
 };
 
 export const state = proxy<AppState>({
-  start: null,
-  end: null,
+  a: null,
+  start(dot) {
+    if (state.isConnected(dot)) return;
+    state.a = dot;
+  },
+  b: null,
 
   lines: [],
+  addLine() {
+    if (!state.a || !state.b) return;
+    if (state.b.dot) {
+      const dot = state.b.dot;
+      if (!state.isConnected(dot)) state.lines.push({ a: state.a, b: dot });
+    }
+    state.a = null;
+    state.b = null;
+  },
 
-  debug: false,
+  isConnected(dot): boolean /* why */ {
+    const index = state.lines.findIndex((line) => {
+      if (dot.side === line.a.side && dot.index === line.a.index) return true;
+      if (dot.side === line.b.side && dot.index === line.b.index) return true;
+      return false;
+    });
+    return index !== -1;
+  },
 });
