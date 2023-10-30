@@ -20,7 +20,7 @@ const ColorPicker = () => {
         <div
           key={color}
           className={[
-            'h-10 w-10 relative transition-all cursor-pointer flex-shrink-0',
+            'h-10 w-10 relative cursor-pointer flex-shrink-0',
             color === state.color
               ? 'scale-[1.15] rounded-md z-10 shadow-lg'
               : 'hover:z-[11] hover:scale-110 hover:rounded-md hover:shadow-md',

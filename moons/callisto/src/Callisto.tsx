@@ -52,7 +52,9 @@ const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
 
           <Choices />
 
-          <DragOverlay>{activeId ? <BaseChoice choiceId={activeId} className="cursor-grabbing" /> : null}</DragOverlay>
+          <DragOverlay dropAnimation={null}>
+            {activeId ? <BaseChoice choiceId={activeId} className="cursor-grabbing" /> : null}
+          </DragOverlay>
         </div>
       </DndContext>
     </div>

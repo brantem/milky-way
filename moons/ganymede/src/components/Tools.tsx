@@ -4,7 +4,7 @@ const Button = (props: Omit<React.ComponentPropsWithoutRef<'button'>, 'className
   return (
     <button
       {...props}
-      className="border-0 h-10 w-10 bg-neutral-100 transition-all flex items-center justify-center text-neutral-500 hover:enabled:bg-neutral-200 hover:enabled:scale-110 hover:rounded-md enabled:cursor-pointer disabled:bg-neutral-50 disabled:text-neutral-300"
+      className="border-0 h-10 w-10 bg-neutral-100 flex items-center justify-center text-neutral-500 hover:enabled:bg-neutral-200 hover:enabled:scale-110 hover:rounded-md enabled:cursor-pointer disabled:bg-neutral-50 disabled:text-neutral-300"
     />
   );
 };
