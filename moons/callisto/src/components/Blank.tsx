@@ -9,10 +9,10 @@ type BlankProps = {
 };
 
 const Blank = ({ children }: BlankProps) => {
-  const [, a, id, b] = children.match(/(.*)(__\w+__)(.*)/)!;
+  const [, before, id, after] = children.match(/(.*)(__\w+__)(.*)/)!;
 
   const [state] = useAppState();
-  const choice = state.answers.find((item) => item.blankId === id)?.choice;
+  const choiceId = state.answers.find((item) => item.blankId === id)?.choiceId;
 
   const { setNodeRef } = useDroppable({
     id,
@@ -23,15 +23,15 @@ const Blank = ({ children }: BlankProps) => {
 
   return (
     <span className="inline-flex items-baseline -my-1" ref={setNodeRef}>
-      {a}
-      {choice ? (
-        <Choice choice={choice} />
+      {before}
+      {choiceId ? (
+        <Choice choiceId={choiceId} />
       ) : (
         <span className="bg-lime-100 rounded-lg text-center px-2 py-1 select-none min-w-[theme(spacing.32)]">
           &nbsp;
         </span>
       )}
-      {b}
+      {after}
     </span>
   );
 };

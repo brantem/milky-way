@@ -7,34 +7,34 @@ const data = [
   {
     text: "Every morning, I like to start my day with a healthy __1__. I usually have a bowl of __2__ topped with fresh __3__, a sprinkle of __4__, and a drizzle of __5__. It's the perfect way to energize myself for the day ahead.",
     choices: [
-      'breakfast', //__1__
-      'oatmeal', // __2__
-      'strawberries', // __3__
-      'honey', // __4__
-      'milk', // __5__
-      'coal',
+      { id: '1', text: 'breakfast' }, //__1__
+      { id: '2', text: 'oatmeal' }, // __2__
+      { id: '3', text: 'strawberries' }, // __3__
+      { id: '4', text: 'honey' }, // __4__
+      { id: '5', text: 'milk' }, // __5__
+      { id: '6', text: 'coal' },
     ],
   },
   {
     text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
     choices: [
-      'chihuahua', //__1__
-      'backyard', // __2__
-      'ball', // __3__
-      'spring', // __4__
-      'walk', // __5__
-      'grandfather',
+      { id: '1', text: 'chihuahua' }, //__1__
+      { id: '2', text: 'backyard' }, // __2__
+      { id: '3', text: 'ball' }, // __3__
+      { id: '4', text: 'spring' }, // __4__
+      { id: '5', text: 'walk' }, // __5__
+      { id: '6', text: 'grandfather' },
     ],
   },
   {
     text: 'The young boy __1__ in astonishment as the __2__ flew overhead. It was his first time at the __3__, and he could not hide his excitement. He skipped ahead, his __4__ jumping in rhythm with his steps. From this day onwards, his __5__ was clear - he wanted to become a pilot.',
     choices: [
-      'laughed', //__1__
-      'airplane', // __2__
-      'airport', // __3__
-      'heart', // __4__
-      'dream', // __5__
-      'table',
+      { id: '1', text: 'laughed' }, //__1__
+      { id: '2', text: 'airplane' }, // __2__
+      { id: '3', text: 'airport' }, // __3__
+      { id: '4', text: 'heart' }, // __4__
+      { id: '5', text: 'dream' }, // __5__
+      { id: '6', text: 'table' },
     ],
   },
 ];

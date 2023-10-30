@@ -1,4 +1,5 @@
 import { proxy } from 'valtio';
+import { Choice } from '../types';
 
 declare module 'valtio' {
   function useSnapshot<T extends object>(p: T): T;
@@ -6,45 +7,47 @@ declare module 'valtio' {
 
 type Answer = {
   blankId: string;
-  choice: string;
+  choiceId: string;
 };
 
 export type AppState = {
-  choices: string[];
+  m: Map<string, Choice>;
+  choiceIds: string[];
   answers: Answer[];
 
-  fillBlank(blankId: string, choice: string): void;
-  putBackChoice(choice: string): void;
+  fillBlank(blankId: string, choiceId: string): void;
+  putBackChoice(choiceId: string): void;
 };
 
 export const state = proxy<AppState>({
-  choices: [],
+  m: new Map(),
+  choiceIds: [],
   answers: [],
 
-  fillBlank(blankId, choice) {
+  fillBlank(blankId, choiceId) {
     let origin, target;
     for (let i = 0; i < state.answers.length; i++) {
       if (state.answers[i].blankId === blankId) target = i;
-      if (state.answers[i].choice === choice) origin = i;
+      if (state.answers[i].choiceId === choiceId) origin = i;
     }
     if (origin !== undefined && target !== undefined) {
       const temp = state.answers[origin].blankId;
       state.answers[origin].blankId = state.answers[target].blankId;
       state.answers[target].blankId = temp;
     } else if (origin === undefined && target !== undefined) {
-      state.choices = state.choices.filter((v) => v !== choice);
-      state.choices.push(state.answers[target].choice);
-      state.answers[target].choice = choice;
+      state.choiceIds = state.choiceIds.filter((id) => id !== choiceId);
+      state.choiceIds.push(state.answers[target].choiceId);
+      state.answers[target].choiceId = choiceId;
     } else {
-      state.choices = state.choices.filter((v) => v !== choice);
-      state.answers = state.answers.filter((answer) => answer.blankId !== blankId && answer.choice !== choice);
-      state.answers.push({ blankId, choice });
+      state.choiceIds = state.choiceIds.filter((id) => id !== choiceId);
+      state.answers = state.answers.filter((answer) => answer.blankId !== blankId && answer.choiceId !== choiceId);
+      state.answers.push({ blankId, choiceId });
     }
   },
-  putBackChoice(choice) {
-    const index = state.answers.findIndex((answer) => answer.choice === choice);
+  putBackChoice(choiceId) {
+    const index = state.answers.findIndex((answer) => answer.choiceId === choiceId);
     if (index === -1) return;
-    state.choices.push(choice);
+    state.choiceIds.push(choiceId);
     state.answers.splice(index, 1);
   },
 });

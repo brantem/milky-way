@@ -1,12 +1,12 @@
 import { useRef, useState } from 'react';
-import { ClientRect, DndContext, DragOverlay } from '@dnd-kit/core';
+import { type ClientRect, DndContext, DragOverlay } from '@dnd-kit/core';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 
 import Text from './components/Text';
 import Choices from './components/Choices';
 import { BaseChoice } from './components/Choice';
 
-import { AppProvider, useAppState } from './lib/state';
+import { AppProvider, type AppProviderProps, useAppState } from './lib/state';
 
 import './index.css';
 
@@ -52,16 +52,18 @@ const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
 
           <Choices />
 
-          <DragOverlay>{activeId ? <BaseChoice choice={activeId} className="cursor-grabbing" /> : null}</DragOverlay>
+          <DragOverlay>{activeId ? <BaseChoice choiceId={activeId} className="cursor-grabbing" /> : null}</DragOverlay>
         </div>
       </DndContext>
     </div>
   );
 };
 
-const Callisto = ({ choices, ...props }: AppProps & { choices: string[] }) => {
+type CallistoProps = AppProps & Omit<AppProviderProps, 'children'>;
+
+const Callisto = (props: CallistoProps) => {
   return (
-    <AppProvider choices={choices}>
+    <AppProvider {...props}>
       <App {...props} />
     </AppProvider>
   );

@@ -16,8 +16,8 @@ const Choices = () => {
 
   return (
     <div ref={setNodeRef} className="flex flex-wrap gap-3 justify-center">
-      {state.choices.map((choice, i) => (
-        <Choice key={i} choice={choice} />
+      {state.choiceIds.map((choiceId, i) => (
+        <Choice key={i} choiceId={choiceId} />
       ))}
     </div>
   );
