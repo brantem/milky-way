@@ -42,7 +42,9 @@ export const state = proxy<AppState>({
     }
   },
   putBackChoice(choice) {
+    const index = state.answers.findIndex((answer) => answer.choice === choice);
+    if (index === -1) return;
     state.choices.push(choice);
-    state.answers = state.answers.filter((answer) => answer.choice !== choice);
+    state.answers.splice(index, 1);
   },
 });
