@@ -6,7 +6,7 @@ import Text from './components/Text';
 import Choices from './components/Choices';
 import { BaseChoice } from './components/Choice';
 
-import { AppProvider, useAppState } from './state';
+import { AppProvider, useAppState } from './lib/state';
 
 import './index.css';
 

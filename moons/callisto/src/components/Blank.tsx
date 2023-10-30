@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 
 import Choice from './Choice';
 
-import { useAppState } from '../state';
+import { useAppState } from '../lib/state';
 
 type BlankProps = {
   children: string;
