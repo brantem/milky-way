@@ -18,7 +18,7 @@ type AppProps = {
 
 const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
   const callistoRef = useRef<HTMLDivElement>(null);
-  const { addValue, removeValue } = useAppState();
+  const [, set] = useAppState();
 
   const [activeId, setActiveId] = useState('');
 
@@ -38,10 +38,10 @@ const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
           setActiveId('');
           if (!over) return;
           if (over.id === 'choices') {
-            removeValue(active.id.toString());
+            set.putBackChoice(active.id.toString());
           } else {
             if (!over.data.current!.accepts.includes(active.data.current!.type)) return;
-            addValue(over.id.toString(), active.id.toString());
+            set.fillBlank(over.id.toString(), active.id.toString());
           }
         }}
       >

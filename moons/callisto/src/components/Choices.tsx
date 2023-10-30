@@ -5,7 +5,7 @@ import Choice from './Choice';
 import { useAppState } from '../lib/state';
 
 const Choices = () => {
-  const { choices } = useAppState();
+  const [state] = useAppState();
 
   const { setNodeRef } = useDroppable({
     id: 'choices',
@@ -16,7 +16,7 @@ const Choices = () => {
 
   return (
     <div ref={setNodeRef} className="flex flex-wrap gap-3 justify-center">
-      {choices.map((choice, i) => (
+      {state.choices.map((choice, i) => (
         <Choice key={i} choice={choice} />
       ))}
     </div>
