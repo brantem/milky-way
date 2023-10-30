@@ -31,6 +31,10 @@ export const state = proxy<AppState>({
       const temp = state.answers[origin].blankId;
       state.answers[origin].blankId = state.answers[target].blankId;
       state.answers[target].blankId = temp;
+    } else if (origin === undefined && target !== undefined) {
+      state.choices = state.choices.filter((v) => v !== choice);
+      state.choices.push(state.answers[target].choice);
+      state.answers[target].choice = choice;
     } else {
       state.choices = state.choices.filter((v) => v !== choice);
       state.answers = state.answers.filter((answer) => answer.blankId !== blankId && answer.choice !== choice);
