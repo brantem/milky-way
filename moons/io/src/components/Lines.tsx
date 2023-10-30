@@ -1,4 +1,4 @@
-import { STROKE_WIDTH } from '../lib/constants';
+import { STROKE_SIZE } from '../lib/constants';
 import { useAppState } from '../lib/state';
 import type { Coordinate, Line } from '../lib/types';
 
@@ -27,7 +27,7 @@ const BaseLine = ({ d }: { d: string }) => {
     <path
       d={d}
       stroke="#1a1a1a"
-      strokeWidth={STROKE_WIDTH}
+      strokeWidth={STROKE_SIZE}
       strokeLinecap="round"
       fill="transparent"
       className="drop-shadow-xlb"

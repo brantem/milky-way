@@ -1,4 +1,4 @@
-import { STROKE_WIDTH } from '../lib/constants';
+import { STROKE_SIZE } from '../lib/constants';
 import { useAppState } from '../lib/state';
 import type { Coordinate } from '../lib/types';
 
@@ -6,9 +6,9 @@ const getCoord = (el: HTMLElement, pageX: number, pageY: number): Coordinate => 
   const rect = el.getBoundingClientRect();
   const x = pageX - rect.x - window.scrollX;
   const y = pageY - rect.y - window.scrollY;
-  const min = STROKE_WIDTH - 4;
-  const maxX = rect.width - STROKE_WIDTH - 4;
-  const maxY = rect.height - STROKE_WIDTH - 4;
+  const min = STROKE_SIZE - 4;
+  const maxX = rect.width - STROKE_SIZE - 4;
+  const maxY = rect.height - STROKE_SIZE - 4;
   return { x: x > maxX ? maxX : x < min ? min : x, y: y > maxY ? maxY : y < min ? min : y };
 };
 
