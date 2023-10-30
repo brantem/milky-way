@@ -18,7 +18,7 @@ const App = ({ height = '100%', width = '100%' }: AppProps) => {
       <div className="relative h-full w-full bg-white overflow-hidden">
         <Canvas />
         <Renderer />
-        <div className="absolute right-0 bottom-0 left-0 z-10 flex justify-center bg-white gap-4 p-2 border-solid border-0 border-t border-neutral-100">
+        <div className="absolute right-0 bottom-0 left-0 z-10 flex justify-center bg-white gap-4 p-2 border-solid border-0 border-t border-neutral-100 h-14">
           <ColorPicker />
           <Tools />
         </div>

@@ -3,11 +3,22 @@ import { useEffect, useRef } from 'react';
 import { getBoundingClientRectById, getPath } from '../lib/helpers';
 import { Onnx, TeachableMachine, type Model } from '../lib/model';
 import { useAppState } from '../lib/state';
+import { STROKE_SIZE } from '../lib/constants';
 
 const TempPath = () => {
   const [state] = useAppState();
   if (!state.points.length) return null;
   return <path d={getPath(state.points)} fill={state.color} />;
+};
+
+const getPoint = (el: Element, pageX: number, pageY: number, pressure: number) => {
+  const rect = el.getBoundingClientRect();
+  const x = pageX - rect.x - window.scrollX;
+  const y = pageY - rect.y - window.scrollY;
+  const min = STROKE_SIZE / 2 - 4;
+  const maxX = rect.width - STROKE_SIZE / 2 + 4;
+  const maxY = rect.height - STROKE_SIZE / 2 + 4;
+  return [x > maxX ? maxX : x < min ? min : x, y > maxY ? maxY : y < min ? min : y, pressure];
 };
 
 const Canvas = () => {
@@ -39,12 +50,12 @@ const Canvas = () => {
 
   return (
     <svg
-      className="absolute inset-0 h-full w-full z-[9] touch-none"
+      className="absolute inset-0 h-[calc(100%-theme(spacing.14))] w-full z-[9] touch-none"
       onPointerDown={(e) => {
         if (e.button !== 0) return;
-        const rect = (e.target as any).getBoundingClientRect();
-        (e.target as any).setPointerCapture(e.pointerId);
-        initialPointRef.current = [e.pageX - rect.x - window.scrollX, e.pageY - rect.y - window.scrollY, e.pressure];
+        const el = e.target as any;
+        el.setPointerCapture(e.pointerId);
+        initialPointRef.current = getPoint(el, e.pageX, e.pageY, e.pressure);
       }}
       onPointerMove={(e) => {
         if (e.buttons !== 1) return;
@@ -52,8 +63,7 @@ const Canvas = () => {
           set.addPoint(initialPointRef.current);
           initialPointRef.current = undefined;
         }
-        const rect = (e.target as any).getBoundingClientRect();
-        set.addPoint([e.pageX - rect.x - window.scrollX, e.pageY - rect.y - window.scrollY, e.pressure]);
+        set.addPoint(getPoint(e.target as any, e.pageX, e.pageY, e.pressure));
       }}
       onPointerUp={async () => {
         const path = set.createPath();

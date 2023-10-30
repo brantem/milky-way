@@ -1,5 +1,7 @@
 import { getStroke } from 'perfect-freehand';
 
+import { STROKE_SIZE } from './constants';
+
 const average = (a: number, b: number) => (a + b) / 2;
 
 const getSvgPathFromStroke = (points: number[][]) => {
@@ -29,7 +31,7 @@ const getSvgPathFromStroke = (points: number[][]) => {
 };
 
 const options = {
-  size: 32,
+  size: STROKE_SIZE,
   smoothing: 0.5,
   thinning: 0.5,
   streamline: 0.5,

@@ -7,7 +7,7 @@ const Renderer = () => {
   if (!state.visiblePaths.length) return null;
   return (
     <>
-      <svg className="absolute inset-0 h-full w-full z-[7]">
+      <svg className="absolute inset-0 h-[calc(100%-theme(spacing.14))] w-full z-[7]">
         {state.visiblePaths.map(({ id, color, d }) => (
           <path id={id} key={id} d={d} fill={color} />
         ))}
