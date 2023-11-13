@@ -8,4 +8,4 @@ export const useAppState = () => {
   return [useSnapshot(value), value];
 };
 
-export { AppProvider, type AppProviderProps } from './provider';
+export { AppProvider, type AppProviderHandle, type AppProviderProps } from './provider';

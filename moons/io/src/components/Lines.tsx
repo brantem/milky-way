@@ -64,7 +64,7 @@ const Lines = () => {
     <>
       <TempLine />
       <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
-        {state.lines.map((line, i) => (
+        {state.visibleLines.map((line, i) => (
           <Line key={i} line={line} />
         ))}
       </svg>

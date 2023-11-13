@@ -28,13 +28,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           { id: '5', text: 'Broccoli' },
         ]),
         right: shuffle([
-          { id: '6', text: 'Four equal sides' },
-          { id: '7', text: 'Tokyo' },
-          { id: '8', text: 'Phobos' },
-          { id: '9', text: 'Mona Lisa' },
-          { id: '10', text: 'Vegetable' },
+          { id: '1', text: 'Four equal sides' },
+          { id: '2', text: 'Tokyo' },
+          { id: '3', text: 'Phobos' },
+          { id: '4', text: 'Mona Lisa' },
+          { id: '5', text: 'Vegetable' },
         ]),
       }}
+      onChange={(data, points) => console.log(data, points)}
     />
   </React.StrictMode>,
 );

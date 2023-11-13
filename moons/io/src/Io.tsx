@@ -1,8 +1,10 @@
+import { forwardRef } from 'react';
+
 import Wrapper from './components/Wrapper';
 import Items from './components/Items';
 import Lines from './components/Lines';
 
-import { AppProvider } from './lib/state';
+import { AppProvider, type AppProviderHandle, type AppProviderProps } from './lib/state';
 import { type Item, Side } from './lib/types';
 
 import './index.css';
@@ -30,14 +32,14 @@ const App = ({ data, height, width }: IoProps) => {
   );
 };
 
-type IoProps = AppProps;
+type IoProps = AppProps & Omit<AppProviderProps, 'children'>;
 
-const Io = (props: IoProps) => {
+const Io = forwardRef<AppProviderHandle, IoProps>((props, ref) => {
   return (
-    <AppProvider {...props}>
+    <AppProvider ref={ref} {...props}>
       <App {...props} />
     </AppProvider>
   );
-};
+});
 
 export default Io;
