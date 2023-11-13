@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { forwardRef, useRef, useState } from 'react';
 import { type ClientRect, DndContext, DragOverlay } from '@dnd-kit/core';
 import { restrictToParentElement } from '@dnd-kit/modifiers';
 
@@ -6,7 +6,7 @@ import Text from './components/Text';
 import Choices from './components/Choices';
 import { BaseChoice } from './components/Choice';
 
-import { AppProvider, type AppProviderProps, useAppState } from './lib/state';
+import { AppProvider, type AppProviderHandle, type AppProviderProps, useAppState } from './lib/state';
 
 import './index.css';
 
@@ -20,7 +20,7 @@ type AppProps = {
 
 const App = ({ data, height = '100%', width = '100%' }: AppProps) => {
   const callistoRef = useRef<HTMLDivElement>(null);
-  const [, set] = useAppState();
+  const [set] = useAppState();
 
   const [activeId, setActiveId] = useState('');
 
@@ -65,12 +65,12 @@ const App = ({ data, height = '100%', width = '100%' }: AppProps) => {
 
 type CallistoProps = AppProps & Omit<AppProviderProps, 'children'>;
 
-const Callisto = (props: CallistoProps) => {
+const Callisto = forwardRef<AppProviderHandle, CallistoProps>((props, ref) => {
   return (
-    <AppProvider {...props}>
+    <AppProvider ref={ref} {...props}>
       <App {...props} />
     </AppProvider>
   );
-};
+});
 
 export default Callisto;

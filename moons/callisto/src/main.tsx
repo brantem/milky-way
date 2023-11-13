@@ -61,6 +61,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         text: item.text,
         choices: shuffle(item.choices),
       }}
+      onChange={(data, points) => console.log(data, points)}
     />
   </React.StrictMode>,
 );
