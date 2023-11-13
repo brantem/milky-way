@@ -7,18 +7,21 @@ import { Choice } from '../types';
 export const AppContext = createContext<AppState>({});
 
 export type AppProviderProps = {
-  choices: Choice[];
+  data: {
+    text: string;
+    choices: Choice[];
+  };
   children: React.ReactNode;
 };
 
 export const AppProvider = ({ children, ...props }: AppProviderProps) => {
   const value = useRef(state).current;
   useEffect(() => {
-    const choices = props.choices || [];
+    const choices = props.data.choices || [];
     const m = new Map<Choice['id'], Choice>();
     choices.forEach((choice) => m.set(choice.id, choice));
     value.m = m;
     value.choiceIds = Array.from(m.keys());
-  }, [props]);
+  }, [props.data]);
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };

@@ -10,19 +10,21 @@ import './index.css';
 type AppProps = {
   height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
-  left: Item[];
-  right: Item[];
+  data: {
+    left: Item[];
+    right: Item[];
+  };
 };
 
-const App = ({ left, right, height, width }: IoProps) => {
+const App = ({ data, height, width }: IoProps) => {
   return (
     <div id="io" style={{ height, width }}>
       <Wrapper>
-        <Items items={left} side={Side.Left} />
+        <Items items={data.left} side={Side.Left} />
 
         <Lines />
 
-        <Items items={right} side={Side.Right} />
+        <Items items={data.right} side={Side.Right} />
       </Wrapper>
     </div>
   );

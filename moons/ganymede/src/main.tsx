@@ -8,25 +8,27 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Ganymede
       width={1024}
       height={768}
-      // model={{
-      //   type: 'onnx',
-      //   urls: {
-      //     modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
-      //   },
-      //   input: {
-      //     width: 28,
-      //     height: 28,
-      //   },
-      // }}
-      model={{
-        type: 'teachable_machine',
-        urls: {
-          baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
-        },
-        input: {
-          width: 96,
-          height: 96,
-          background: '#fff',
+      data={{
+        // model: {
+        //   type: 'onnx',
+        //   urls: {
+        //     modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
+        //   },
+        //   input: {
+        //     width: 28,
+        //     height: 28,
+        //   },
+        // },
+        model: {
+          type: 'teachable_machine',
+          urls: {
+            baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+          },
+          input: {
+            width: 96,
+            height: 96,
+            background: '#fff',
+          },
         },
       }}
       debug

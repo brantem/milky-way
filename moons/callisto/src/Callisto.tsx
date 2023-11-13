@@ -11,12 +11,14 @@ import { AppProvider, type AppProviderProps, useAppState } from './lib/state';
 import './index.css';
 
 type AppProps = {
-  text: string;
+  data: {
+    text: string;
+  };
   height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
 };
 
-const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
+const App = ({ data, height = '100%', width = '100%' }: AppProps) => {
   const callistoRef = useRef<HTMLDivElement>(null);
   const [, set] = useAppState();
 
@@ -47,7 +49,7 @@ const App = ({ text, height = '100%', width = '100%' }: AppProps) => {
       >
         <div className="relative font-sans text-4xl font-semibold h-full w-full p-6 flex flex-col">
           <div className="flex-1 mx-auto">
-            <Text text={text} />
+            <Text text={data.text} />
           </div>
 
           <Choices />

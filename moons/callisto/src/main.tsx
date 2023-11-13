@@ -54,6 +54,13 @@ const item = data[Math.floor(Math.random() * data.length)];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Callisto width={1024} height={768} text={item.text} choices={shuffle(item.choices)} />
+    <Callisto
+      width={1024}
+      height={768}
+      data={{
+        text: item.text,
+        choices: shuffle(item.choices),
+      }}
+    />
   </React.StrictMode>,
 );

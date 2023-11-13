@@ -19,20 +19,22 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Io
       width={1024}
       height={768}
-      left={shuffle([
-        { id: '1', text: 'Square' },
-        { id: '2', text: 'Japan' },
-        { id: '3', text: 'Mars' },
-        { id: '4', text: 'Leonardo da Vinci' },
-        { id: '5', text: 'Broccoli' },
-      ])}
-      right={shuffle([
-        { id: '6', text: 'Four equal sides' },
-        { id: '7', text: 'Tokyo' },
-        { id: '8', text: 'Phobos' },
-        { id: '9', text: 'Mona Lisa' },
-        { id: '10', text: 'Vegetable' },
-      ])}
+      data={{
+        left: shuffle([
+          { id: '1', text: 'Square' },
+          { id: '2', text: 'Japan' },
+          { id: '3', text: 'Mars' },
+          { id: '4', text: 'Leonardo da Vinci' },
+          { id: '5', text: 'Broccoli' },
+        ]),
+        right: shuffle([
+          { id: '6', text: 'Four equal sides' },
+          { id: '7', text: 'Tokyo' },
+          { id: '8', text: 'Phobos' },
+          { id: '9', text: 'Mona Lisa' },
+          { id: '10', text: 'Vegetable' },
+        ]),
+      }}
     />
   </React.StrictMode>,
 );
