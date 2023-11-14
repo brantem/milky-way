@@ -55,8 +55,6 @@ const ClearButton = () => {
 };
 
 const Tools = () => {
-  const [state] = useAppState();
-  if (state.autoClear) return null;
   return (
     <div className="flex [&>button:first-child]:rounded-l-md [&>button:last-child]:rounded-r-md">
       <UndoButton />

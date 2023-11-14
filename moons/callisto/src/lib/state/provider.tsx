@@ -24,7 +24,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
   const value = useRef(state).current;
 
   useImperativeHandle(ref, () => ({
-    reset: () => {
+    reset() {
       value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));
       value.answers = [];
     },

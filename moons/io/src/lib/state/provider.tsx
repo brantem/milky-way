@@ -19,7 +19,9 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
   const value = useRef(state).current;
 
   useImperativeHandle(ref, () => ({
-    reset: () => (value.lines = []),
+    reset() {
+      value.lines = [];
+    },
   }));
 
   useEffect(() => {

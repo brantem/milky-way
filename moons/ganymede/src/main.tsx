@@ -30,8 +30,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             background: '#fff',
           },
         },
+        tests: [
+          {
+            label: 'square',
+          },
+          {
+            label: 'triangle',
+            color: '#ef4444',
+          },
+        ],
       }}
-      debug
+      onChange={(data, points) => console.log(data, points)}
     />
   </React.StrictMode>,
 );

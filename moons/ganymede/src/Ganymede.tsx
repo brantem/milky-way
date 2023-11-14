@@ -1,9 +1,11 @@
+import { forwardRef } from 'react';
+
 import Canvas from './components/Canvas';
 import Renderer from './components/Renderer';
 import ColorPicker from './components/ColorPicker';
 import Tools from './components/Tools';
 
-import { AppProvider, type AppProviderProps } from './lib/state';
+import { AppProvider, type AppProviderHandle, type AppProviderProps } from './lib/state';
 
 import './index.css';
 
@@ -29,12 +31,12 @@ const App = ({ height = '100%', width = '100%' }: AppProps) => {
 
 type GanymedeProps = AppProps & Omit<AppProviderProps, 'children'>;
 
-const Ganymede = (props: GanymedeProps) => {
+const Ganymede = forwardRef<AppProviderHandle, GanymedeProps>((props, ref) => {
   return (
-    <AppProvider {...props}>
+    <AppProvider ref={ref} {...props}>
       <App {...props} />
     </AppProvider>
   );
-};
+});
 
 export default Ganymede;

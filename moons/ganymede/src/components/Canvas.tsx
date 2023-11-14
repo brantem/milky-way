@@ -1,14 +1,18 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { getBoundingClientRectById, getPath } from '../lib/helpers';
 import { Onnx, TeachableMachine, type Model } from '../lib/model';
 import { useAppState } from '../lib/state';
 import { STROKE_SIZE } from '../lib/constants';
 
-const TempPath = () => {
+type TempPathProps = {
+  points: number[][];
+};
+
+const TempPath = ({ points }: TempPathProps) => {
   const [state] = useAppState();
-  if (!state.points.length) return null;
-  return <path d={getPath(state.points)} fill={state.color} />;
+  if (!points.length) return null;
+  return <path d={getPath(points)} fill={state.color} />;
 };
 
 const getPoint = (el: Element, pageX: number, pageY: number, pressure: number) => {
@@ -25,6 +29,8 @@ const Canvas = () => {
   const [state, set] = useAppState();
   const model = useRef<Model | null>(null);
   const initialPointRef = useRef<number[]>();
+
+  const [points, setPoints] = useState<number[][]>([]);
 
   useEffect(() => {
     (async () => {
@@ -59,14 +65,16 @@ const Canvas = () => {
       }}
       onPointerMove={(e) => {
         if (e.buttons !== 1) return;
-        if (initialPointRef.current) {
-          set.addPoint(initialPointRef.current);
+        const initialPoint = initialPointRef.current;
+        if (initialPoint) {
+          setPoints((prev) => [...prev, initialPoint]);
           initialPointRef.current = undefined;
         }
-        set.addPoint(getPoint(e.target as any, e.pageX, e.pageY, e.pressure));
+        setPoints((prev) => [...prev, getPoint(e.target as any, e.pageX, e.pageY, e.pressure)]);
       }}
       onPointerUp={async () => {
-        const path = set.createPath();
+        const path = set.createPath(points);
+        setPoints([]);
         if (!path || !state.model || !model.current) return;
         await new Promise((resolve) => setTimeout(resolve, 50)); // next tick
 
@@ -117,7 +125,7 @@ const Canvas = () => {
         });
       }}
     >
-      <TempPath />
+      <TempPath points={points} />
     </svg>
   );
 };

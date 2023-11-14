@@ -11,12 +11,9 @@ declare module 'valtio' {
 export type AppState = {
   color: string;
 
-  points: number[][];
-  addPoint(point: number[]): void;
-
   paths: Path[];
   get visiblePaths(): Path[];
-  createPath(): Path | null;
+  createPath(points: number[][]): Path | null;
 
   model: ModelOpts | null;
   addPrediction(id: Path['id'], prediction: Prediction): void;
@@ -25,18 +22,11 @@ export type AppState = {
 
   clear(): void;
 
-  autoClear: boolean;
   debug: boolean;
 };
 
 export const state = proxy<AppState>({
   color: '#000',
-
-  points: [],
-  addPoint(point) {
-    if (state.autoClear) state.paths = [];
-    state.points.push(point);
-  },
 
   paths: [],
   get visiblePaths(): Path[] /* why */ {
@@ -44,10 +34,9 @@ export const state = proxy<AppState>({
     if (state.n >= state.paths.length) return [];
     return state.paths.slice(0, state.n * -1);
   },
-  createPath() {
-    if (!state.points.length) return null;
-    const path: Path = { id: nanoid(), color: state.color, d: getPath(state.points) };
-    state.points = [];
+  createPath(points) {
+    if (!points.length) return null;
+    const path: Path = { id: nanoid(), color: state.color, d: getPath(points) };
     state.paths = [...state.visiblePaths, path];
     state.n = 0;
     return path;
@@ -63,11 +52,9 @@ export const state = proxy<AppState>({
   n: 0,
 
   clear() {
-    state.points = [];
     state.paths = [];
     state.n = 0;
   },
 
-  autoClear: false,
   debug: false,
 });
