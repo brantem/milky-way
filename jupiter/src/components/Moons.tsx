@@ -4,7 +4,6 @@ const Moons = () => {
   return (
     <div className="flex flex-col gap-3 items-start w-full">
       <Moon
-        name="Ganymede"
         url="https://moons.brantem.com/ganymede/bundle.js"
         width={1024}
         height={768}
@@ -44,7 +43,6 @@ const Moons = () => {
       />
 
       <Moon
-        name="Callisto"
         url="https://moons.brantem.com/callisto/bundle.js"
         width={1024}
         height={768}
@@ -63,7 +61,6 @@ const Moons = () => {
       />
 
       <Moon
-        name="Io"
         url="https://moons.brantem.com/io/bundle.js"
         width={1024}
         height={768}

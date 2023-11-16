@@ -44,9 +44,16 @@ importers:
       react-error-boundary:
         specifier: ^4.0.11
         version: 4.0.11(react@18.2.0)
+      react-resizable-panels:
+        specifier: ^0.0.57
+        version: 0.0.57(react-dom@18.2.0)(react@18.2.0)
       tailwindcss:
         specifier: ^3.3.3
         version: 3.3.3
+    devDependencies:
+      '@tailwindcss/typography':
+        specifier: ^0.5.10
+        version: 0.5.10(tailwindcss@3.3.3)
 
   moons/callisto:
     dependencies:
@@ -1375,6 +1382,18 @@ packages:
 
   /@swc/types@0.1.5:
     resolution: {integrity: sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==}
+    dev: true
+
+  /@tailwindcss/typography@0.5.10(tailwindcss@3.3.3):
+    resolution: {integrity: sha512-Pe8BuPJQJd3FfRnm6H0ulKIGoMEQS+Vq01R6M5aCrFB/ccR/shT+0kXLjouGC1gFLm9hopTFN+DMP0pfwRWzPw==}
+    peerDependencies:
+      tailwindcss: '>=3.0.0 || insiders'
+    dependencies:
+      lodash.castarray: 4.4.0
+      lodash.isplainobject: 4.0.6
+      lodash.merge: 4.6.2
+      postcss-selector-parser: 6.0.10
+      tailwindcss: 3.3.3
     dev: true
 
   /@teachablemachine/image@0.8.5(@tensorflow/tfjs@4.12.0):
@@ -3523,6 +3542,14 @@ packages:
     dependencies:
       p-locate: 5.0.0
 
+  /lodash.castarray@4.4.0:
+    resolution: {integrity: sha512-aVx8ztPv7/2ULbArGJ2Y42bG1mEQ5mGjpdvrbJcJFU3TbYybe+QlLS4pst9zV52ymy2in1KpFPiZnAOATxD4+Q==}
+    dev: true
+
+  /lodash.isplainobject@4.0.6:
+    resolution: {integrity: sha512-oSXzaWypCMHkPC3NvBEaPHf0KsA5mvPrOPgQWDsbg8n7orZ290M0BmC/jgRZ4vcJ6DTAhjrsSYgdsW/F+MFOBA==}
+    dev: true
+
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
 
@@ -4462,6 +4489,14 @@ packages:
       postcss: 8.4.31
       postcss-selector-parser: 6.0.13
 
+  /postcss-selector-parser@6.0.10:
+    resolution: {integrity: sha512-IQ7TZdoaqbT+LCpShg46jnZVlhWD2w6iQYAcYXfHARZ7X1t/UGhhceQDs5X0cGqKvYlHNOuv7Oa1xmb0oQuA3w==}
+    engines: {node: '>=4'}
+    dependencies:
+      cssesc: 3.0.0
+      util-deprecate: 1.0.2
+    dev: true
+
   /postcss-selector-parser@6.0.13:
     resolution: {integrity: sha512-EaV1Gl4mUEV4ddhDnv/xtj7sxwrwxdetHdWUGnT4VJQf+4d05v6lHYZr8N573k5Z0BViss7BDhfWtKS3+sfAqQ==}
     engines: {node: '>=4'}
@@ -4672,6 +4707,16 @@ packages:
   /react-refresh@0.14.0:
     resolution: {integrity: sha512-wViHqhAd8OHeLS/IRMJjTSDHF3U9eWi62F/MledQGPdJGDhodXJ9PBLNGr6WWL7qlH12Mt3TyTpbS+hGXMjCzQ==}
     engines: {node: '>=0.10.0'}
+    dev: false
+
+  /react-resizable-panels@0.0.57(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-JXdepIfa28d8cyU2xRVw3ZIIUTkkgvPuGQgC4Y+znVbQlPS/mNttGJzukSI5Xkw8i55i2TdB2uvCCNsBvFhqMg==}
+    peerDependencies:
+      react: ^16.14.0 || ^17.0.0 || ^18.0.0
+      react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0
+    dependencies:
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
     dev: false
 
   /react@18.2.0:
