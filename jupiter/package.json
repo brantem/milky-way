@@ -16,10 +16,12 @@
     "@types/react": "^18.2.31",
     "@types/react-dom": "^18.2.14",
     "astro": "^3.3.2",
+    "clsx": "^2.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-error-boundary": "^4.0.11",
     "react-resizable-panels": "^0.0.57",
+    "tailwind-merge": "^2.0.0",
     "tailwindcss": "^3.3.3"
   },
   "devDependencies": {
