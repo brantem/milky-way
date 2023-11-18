@@ -57,11 +57,10 @@ const Planet = () => {
           <div
             className={cn(
               'h-full w-full',
-              planet.large.actions?.active &&
-                'flex flex-col gap-2 bg-neutral-50 rounded-lg overflow-hidden p-2 shadow-sm',
+              planet.large.actions?.active && 'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm',
             )}
           >
-            <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative rounded-md overflow-hidden h-full">
+            <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full">
               <Moon
                 url={planet.large.url}
                 width={planet.large.width}
@@ -71,7 +70,7 @@ const Planet = () => {
               />
             </div>
             {planet.large.actions?.active && (
-              <div className="flex justify-between gap-2">
+              <div className="flex justify-between gap-2 p-2">
                 <div className="flex gap-2">
                   <EditorButton />
                   {planet.large.actions.reset && <ResetButton />}

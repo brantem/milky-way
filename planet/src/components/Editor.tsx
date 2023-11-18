@@ -23,19 +23,19 @@ const Editor = () => {
     <div
       id="editor"
       className={cn(
-        'fixed h-full w-full p-2 pt-1 inset-0 transition-transform duration-500 bg-white z-[20]',
+        'fixed h-full w-full p-2 inset-0 transition-transform duration-500 bg-neutral-100 z-[20]',
         isOpen ? 'translate-y-0' : 'translate-y-full',
       )}
     >
       <form
-        className="h-full w-full bg-neutral-50 p-2 rounded-lg flex flex-col gap-2"
+        className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm"
         onSubmit={(e) => {
           e.preventDefault();
           if (value) updatePlanet(JSON.parse(value));
           toggle();
         }}
       >
-        <div className="bg-white h-full w-full rounded-md shadow-sm overflow-y-auto overscroll-contain flex-1 flex">
+        <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex">
           <CodeMirror
             value={JSON.stringify(planet, null, 2)}
             height="100%"
@@ -45,7 +45,7 @@ const Editor = () => {
           />
         </div>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end p-2">
           <Button shadowClassName="bg-violet-600" contentClassName="bg-violet-500 text-white px-4 py-2" type="submit">
             Save
           </Button>
