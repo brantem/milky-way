@@ -40,7 +40,7 @@ const Moon = ({ url, ...props }: MoonProps) => {
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component {...props} />
+        <Component {...{ width: '100%', height: '100%', ...props }} />
       </Suspense>
     </ErrorBoundary>
   );

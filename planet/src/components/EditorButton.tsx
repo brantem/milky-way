@@ -1,10 +1,21 @@
 import Button from './Button';
 
-import { cn } from '../lib/helpers';
+import { useStore } from '../lib/store';
 
-const EditButton = () => {
+const EditorButton = () => {
+  const toggle = useStore((state) => state.toggleEditor);
+
   return (
-    <Button className="aspect-square" shadowClassName="bg-lime-600" contentClassName="bg-lime-500 text-white">
+    <Button
+      className="aspect-square"
+      shadowClassName="bg-violet-600"
+      contentClassName="bg-violet-500 text-white"
+      onClick={async () => {
+        toggle();
+        await new Promise((resolve) => setTimeout(resolve, 0));
+        document.getElementById('editor')?.scrollIntoView({ behavior: 'smooth' });
+      }}
+    >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
         <path
           fillRule="evenodd"
@@ -16,4 +27,4 @@ const EditButton = () => {
   );
 };
 
-export default EditButton;
+export default EditorButton;

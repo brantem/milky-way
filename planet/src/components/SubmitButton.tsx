@@ -12,15 +12,13 @@ const SubmitButton = () => {
     if (!isSubmitted) return;
     setIsSubmitted(true);
     setTimeout(() => setIsClicked(false), 350);
+    setTimeout(() => setIsSubmitted(false), 2000);
   }, [isSubmitted]);
 
   return (
     <Button
-      shadowClassName={!isClicked && isSubmitted ? 'bg-green-600' : 'bg-black'}
-      contentClassName={cn(
-        'text-white px-4 py-2 font-medium text-sm',
-        !isClicked && isSubmitted ? 'bg-green-500' : 'bg-neutral-800',
-      )}
+      shadowClassName={!isClicked && isSubmitted ? 'bg-lime-600' : 'bg-black'}
+      contentClassName={cn('text-white px-4 py-2', !isClicked && isSubmitted ? 'bg-lime-500' : 'bg-neutral-800')}
       onClick={() => {
         if (isClicked) return;
         setIsClicked(true);
@@ -51,8 +49,8 @@ const SubmitButton = () => {
 
       <span
         className={cn(
-          'absolute inset-0 flex items-center justify-center h-full w-full transition-opacity delay-[350ms]',
-          isSubmitted ? 'opacity-100' : 'opacity-0',
+          'absolute inset-0 flex items-center justify-center h-full w-full transition-opacity',
+          isSubmitted ? 'delay-[350ms] opacity-100' : 'opacity-0',
         )}
       >
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">

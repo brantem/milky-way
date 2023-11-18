@@ -1,12 +1,13 @@
 ---
-import Bla from '../components/Bla';
+import Editor from '../components/Editor';
+import Planet from '../components/Planet';
 ---
 
 <html lang="en" class="h-full w-full">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Jupiter</title>
+    <title>Planet</title>
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <script type="importmap">
@@ -18,7 +19,7 @@ import Bla from '../components/Bla';
       }
     </script>
   </head>
-  <body class="h-full w-full bg-neutral-100 p-1">
-    <Bla client:only />
+  <body class="h-full w-full bg-neutral-100 p-1 [scrollbar-gutter:stable]">
+    <Planet client:only />
   </body>
 </html>
