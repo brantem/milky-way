@@ -18,70 +18,6 @@ importers:
         specifier: ^5.2.2
         version: 5.2.2
 
-  planet:
-    dependencies:
-      '@astrojs/node':
-        specifier: ^6.0.3
-        version: 6.0.3(astro@3.3.2)
-      '@astrojs/react':
-        specifier: ^3.0.3
-        version: 3.0.3(@types/react-dom@18.2.14)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)(vite@4.5.0)
-      '@astrojs/tailwind':
-        specifier: ^5.0.2
-        version: 5.0.2(astro@3.3.2)(tailwindcss@3.3.3)
-      '@codemirror/lang-json':
-        specifier: ^6.0.1
-        version: 6.0.1
-      '@codemirror/view':
-        specifier: ^6.22.0
-        version: 6.22.0
-      '@types/react':
-        specifier: ^18.2.31
-        version: 18.2.31
-      '@types/react-dom':
-        specifier: ^18.2.14
-        version: 18.2.14
-      '@uiw/codemirror-theme-github':
-        specifier: ^4.21.20
-        version: 4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0)
-      '@uiw/react-codemirror':
-        specifier: ^4.21.20
-        version: 4.21.20(@babel/runtime@7.23.2)(@codemirror/autocomplete@6.11.0)(@codemirror/language@6.9.2)(@codemirror/lint@6.4.2)(@codemirror/search@6.5.4)(@codemirror/state@6.3.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.22.0)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
-      astro:
-        specifier: ^3.3.2
-        version: 3.3.2(typescript@5.2.2)
-      clsx:
-        specifier: ^2.0.0
-        version: 2.0.0
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      react-error-boundary:
-        specifier: ^4.0.11
-        version: 4.0.11(react@18.2.0)
-      react-markdown:
-        specifier: ^9.0.1
-        version: 9.0.1(@types/react@18.2.31)(react@18.2.0)
-      react-resizable-panels:
-        specifier: ^0.0.57
-        version: 0.0.57(react-dom@18.2.0)(react@18.2.0)
-      tailwind-merge:
-        specifier: ^2.0.0
-        version: 2.0.0
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.3.3
-      zustand:
-        specifier: ^4.4.6
-        version: 4.4.6(@types/react@18.2.31)(react@18.2.0)
-    devDependencies:
-      '@tailwindcss/typography':
-        specifier: ^0.5.10
-        version: 0.5.10(tailwindcss@3.3.3)
-
   moons/callisto:
     dependencies:
       '@dnd-kit/core':
@@ -90,67 +26,6 @@ importers:
       '@dnd-kit/modifiers':
         specifier: ^6.0.1
         version: 6.0.1(@dnd-kit/core@6.0.8)(react@18.2.0)
-      react:
-        specifier: ^18.2.0
-        version: 18.2.0
-      react-dom:
-        specifier: ^18.2.0
-        version: 18.2.0(react@18.2.0)
-      valtio:
-        specifier: ^1.11.3
-        version: 1.11.3(@types/react@18.2.31)(react@18.2.0)
-    devDependencies:
-      '@types/node':
-        specifier: ^20.8.7
-        version: 20.8.7
-      '@types/react':
-        specifier: ^18.2.31
-        version: 18.2.31
-      '@types/react-dom':
-        specifier: ^18.2.14
-        version: 18.2.14
-      '@typescript-eslint/eslint-plugin':
-        specifier: ^6.8.0
-        version: 6.8.0(@typescript-eslint/parser@6.8.0)(eslint@8.51.0)(typescript@5.2.2)
-      '@typescript-eslint/parser':
-        specifier: ^6.8.0
-        version: 6.8.0(eslint@8.51.0)(typescript@5.2.2)
-      '@vitejs/plugin-react-swc':
-        specifier: ^3.4.0
-        version: 3.4.0(vite@4.5.0)
-      autoprefixer:
-        specifier: ^10.4.16
-        version: 10.4.16(postcss@8.4.31)
-      eslint:
-        specifier: ^8.51.0
-        version: 8.51.0
-      eslint-plugin-react-hooks:
-        specifier: ^4.6.0
-        version: 4.6.0(eslint@8.51.0)
-      eslint-plugin-react-refresh:
-        specifier: ^0.4.3
-        version: 0.4.3(eslint@8.51.0)
-      postcss:
-        specifier: ^8.4.31
-        version: 8.4.31
-      postcss-simple-scope:
-        specifier: ^1.0.0
-        version: 1.0.0
-      tailwindcss:
-        specifier: ^3.3.3
-        version: 3.3.3
-      typescript:
-        specifier: ^5.2.2
-        version: 5.2.2
-      vite:
-        specifier: ^4.5.0
-        version: 4.5.0(@types/node@20.8.7)
-      vite-plugin-css-injected-by-js:
-        specifier: ^3.3.0
-        version: 3.3.0(vite@4.5.0)
-
-  moons/europa:
-    dependencies:
       react:
         specifier: ^18.2.0
         version: 18.2.0
@@ -349,6 +224,70 @@ importers:
       vite-plugin-css-injected-by-js:
         specifier: ^3.3.0
         version: 3.3.0(vite@4.5.0)
+
+  planet:
+    dependencies:
+      '@astrojs/node':
+        specifier: ^6.0.3
+        version: 6.0.3(astro@3.3.2)
+      '@astrojs/react':
+        specifier: ^3.0.3
+        version: 3.0.3(@types/react-dom@18.2.14)(@types/react@18.2.31)(react-dom@18.2.0)(react@18.2.0)(vite@4.5.0)
+      '@astrojs/tailwind':
+        specifier: ^5.0.2
+        version: 5.0.2(astro@3.3.2)(tailwindcss@3.3.3)
+      '@codemirror/lang-json':
+        specifier: ^6.0.1
+        version: 6.0.1
+      '@codemirror/view':
+        specifier: ^6.22.0
+        version: 6.22.0
+      '@types/react':
+        specifier: ^18.2.31
+        version: 18.2.31
+      '@types/react-dom':
+        specifier: ^18.2.14
+        version: 18.2.14
+      '@uiw/codemirror-theme-github':
+        specifier: ^4.21.20
+        version: 4.21.20(@codemirror/language@6.9.2)(@codemirror/state@6.3.1)(@codemirror/view@6.22.0)
+      '@uiw/react-codemirror':
+        specifier: ^4.21.20
+        version: 4.21.20(@babel/runtime@7.23.2)(@codemirror/autocomplete@6.11.0)(@codemirror/language@6.9.2)(@codemirror/lint@6.4.2)(@codemirror/search@6.5.4)(@codemirror/state@6.3.1)(@codemirror/theme-one-dark@6.1.2)(@codemirror/view@6.22.0)(codemirror@6.0.1)(react-dom@18.2.0)(react@18.2.0)
+      astro:
+        specifier: ^3.3.2
+        version: 3.3.2(typescript@5.2.2)
+      clsx:
+        specifier: ^2.0.0
+        version: 2.0.0
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
+      react-error-boundary:
+        specifier: ^4.0.11
+        version: 4.0.11(react@18.2.0)
+      react-markdown:
+        specifier: ^9.0.1
+        version: 9.0.1(@types/react@18.2.31)(react@18.2.0)
+      react-resizable-panels:
+        specifier: ^0.0.57
+        version: 0.0.57(react-dom@18.2.0)(react@18.2.0)
+      tailwind-merge:
+        specifier: ^2.0.0
+        version: 2.0.0
+      tailwindcss:
+        specifier: ^3.3.3
+        version: 3.3.3
+      zustand:
+        specifier: ^4.4.6
+        version: 4.4.6(@types/react@18.2.31)(react@18.2.0)
+    devDependencies:
+      '@tailwindcss/typography':
+        specifier: ^0.5.10
+        version: 0.5.10(tailwindcss@3.3.3)
 
 packages:
 
