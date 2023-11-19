@@ -1,6 +1,7 @@
 import Button from '../Button';
 
 import { useStore } from '../../lib/store';
+import { sleep } from '../../lib/helpers';
 
 const EditorButton = () => {
   const toggle = useStore((state) => state.toggleEditor);
@@ -12,7 +13,7 @@ const EditorButton = () => {
       contentClassName="bg-violet-500 text-white"
       onClick={async () => {
         toggle();
-        await new Promise((resolve) => setTimeout(resolve, 0));
+        await sleep(0);
         document.getElementById('editor')?.scrollIntoView({ behavior: 'smooth' });
       }}
     >

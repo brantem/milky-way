@@ -2,17 +2,25 @@ import { useState, useEffect } from 'react';
 
 import Button from '../Button';
 
-import { cn } from '../../lib/helpers';
+import { cn, sleep } from '../../lib/helpers';
 
-const SubmitButton = () => {
+type SubmitButtonProps = {
+  onClick(): void;
+};
+
+const SubmitButton = ({ onClick }: SubmitButtonProps) => {
   const [isClicked, setIsClicked] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
-    if (!isSubmitted) return;
-    setIsSubmitted(true);
-    setTimeout(() => setIsClicked(false), 350);
-    setTimeout(() => setIsSubmitted(false), 2000);
+    (async () => {
+      if (!isSubmitted) return;
+      setIsSubmitted(true);
+      await sleep(350);
+      setIsClicked(false);
+      await sleep(2000);
+      setIsSubmitted(false);
+    })();
   }, [isSubmitted]);
 
   return (
@@ -22,7 +30,8 @@ const SubmitButton = () => {
       onClick={() => {
         if (isClicked) return;
         setIsClicked(true);
-        setTimeout(() => setIsSubmitted(true), 250);
+        onClick();
+        setIsSubmitted(true);
       }}
       disabled={isClicked || isSubmitted}
     >

@@ -1,3 +1,5 @@
+import { useState, useEffect } from 'react';
+
 import { STROKE_SIZE } from '../lib/constants';
 import { useAppState } from '../lib/state';
 import type { Coordinate, Line } from '../lib/types';
@@ -42,6 +44,30 @@ const idToCoord = (id: string): Coordinate => {
   return { x: rect.x - parentRect.x + rect.width / 2, y: rect.y - parentRect.y + rect.width / 2 };
 };
 
+const useIdToCoord = (id: string | Coordinate | null): Coordinate => {
+  const getCoord = () => {
+    if (!id) return;
+    if (typeof id !== 'string') return setCoord(coord);
+    setCoord(idToCoord(id));
+  };
+
+  const [coord, setCoord] = useState<Coordinate>(() => {
+    if (!id || typeof id !== 'string') return { x: 0, y: 0 };
+    return idToCoord(id);
+  });
+
+  useEffect(() => {
+    window.addEventListener('resize', getCoord);
+    return () => window.removeEventListener('resize', getCoord);
+  }, []);
+
+  useEffect(() => {
+    getCoord();
+  }, []);
+
+  return coord;
+};
+
 const TempLine = () => {
   const [state] = useAppState();
   if (!state.a) return null;
@@ -54,7 +80,9 @@ const TempLine = () => {
 };
 
 const Line = ({ line }: { line: Line }) => {
-  return <BaseLine d={generateLine(idToCoord(line.a), idToCoord(line.b))} />;
+  const a = useIdToCoord(line.a);
+  const b = useIdToCoord(line.b);
+  return <BaseLine d={generateLine(a, b)} />;
 };
 
 const Lines = () => {

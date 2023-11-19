@@ -38,10 +38,12 @@ const Editor = () => {
         <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex">
           <CodeMirror
             value={JSON.stringify(moons, null, 2)}
+            width="100%"
             height="100%"
             theme={githubLight}
             extensions={[json(), EditorView.lineWrapping]}
             onChange={(v) => setValue(v)}
+            className="w-full h-full"
           />
         </div>
 

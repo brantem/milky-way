@@ -1,11 +1,6 @@
 import { create } from 'zustand';
 
-type Moon = {
-  url: string;
-  width?: React.CSSProperties['width'];
-  height?: React.CSSProperties['height'];
-  data: Record<string, any>;
-};
+import type { Moon } from './types';
 
 type Moons = {
   small?: Moon;
@@ -86,6 +81,31 @@ export const useStore = create<State>()((set) => ({
         next: true,
       },
     },
+    // large: {
+    //   url: 'https://moons.brantem.com/io/bundle.js',
+    //   data: {
+    //     left: [
+    //       { id: '1', text: 'Square' },
+    //       { id: '2', text: 'Japan' },
+    //       { id: '3', text: 'Mars' },
+    //       { id: '4', text: 'Leonardo da Vinci' },
+    //       { id: '5', text: 'Broccoli' },
+    //     ],
+    //     right: [
+    //       { id: '1', text: 'Four equal sides' },
+    //       { id: '2', text: 'Tokyo' },
+    //       { id: '3', text: 'Phobos' },
+    //       { id: '4', text: 'Mona Lisa' },
+    //       { id: '5', text: 'Vegetable' },
+    //     ],
+    //   },
+    //   actions: {
+    //     active: true,
+    //     reset: true,
+    //     submit: true,
+    //     next: true,
+    //   },
+    // },
   },
   updateMoons(moons) {
     set({ moons });

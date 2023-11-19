@@ -2,9 +2,13 @@ import { useState } from 'react';
 
 import Button from '../Button';
 
-import { cn } from '../../lib/helpers';
+import { cn, sleep } from '../../lib/helpers';
 
-const ResetButton = () => {
+type ResetButtonProps = {
+  onClick(): void;
+};
+
+const ResetButton = ({ onClick }: ResetButtonProps) => {
   const [isClicked, setIsClicked] = useState(false);
 
   return (
@@ -12,10 +16,12 @@ const ResetButton = () => {
       className="aspect-square"
       shadowClassName="bg-red-600"
       contentClassName="bg-red-500 text-white"
-      onClick={() => {
+      onClick={async () => {
         if (isClicked) return;
         setIsClicked(true);
-        setTimeout(() => setIsClicked(false), 250);
+        onClick();
+        await sleep(250);
+        setIsClicked(false);
       }}
       disabled={isClicked}
     >

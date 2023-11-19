@@ -15,7 +15,7 @@ enum Action {
 
 export type AppProviderHandle = {
   snapshot(): { data: Data; points: number };
-  subscribe(action: Action, data: any): boolean;
+  execute(action: Action, data: any): boolean;
 };
 
 export type AppProviderProps = {
@@ -40,7 +40,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
 
   useImperativeHandle(ref, () => ({
     snapshot,
-    subscribe(action) {
+    execute(action) {
       switch (action) {
         case Action.Reset:
           value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));

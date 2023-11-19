@@ -16,7 +16,7 @@ enum Action {
 
 export type AppProviderHandle = {
   snapshot(): { data: Data; points: number };
-  subscribe(action: Action, data: any): boolean;
+  execute(action: Action, data: any): boolean;
 };
 
 type Test = {
@@ -57,7 +57,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
 
   useImperativeHandle(ref, () => ({
     snapshot,
-    subscribe(action, data) {
+    execute(action, data) {
       switch (action) {
         case Action.SetColor:
           value.color = data;
