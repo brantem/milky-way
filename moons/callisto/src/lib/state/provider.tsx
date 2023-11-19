@@ -4,6 +4,17 @@ import { subscribe } from 'valtio';
 import { type AppState, state } from './shared';
 import { Choice } from '../types';
 
+const shuffle = <T,>(a: T[]): T[] => {
+  const b = a.slice();
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = b[i];
+    b[i] = b[j];
+    b[j] = temp;
+  }
+  return b;
+};
+
 // @ts-expect-error because i still don't know how to make ts happy
 export const AppContext = createContext<AppState>({});
 
@@ -21,7 +32,10 @@ export type AppProviderHandle = {
 export type AppProviderProps = {
   data: {
     text: string;
-    choices: Choice[];
+    choices: {
+      items: Choice[];
+      shuffle?: boolean;
+    };
   };
   onChange(data: Data, points: number): void;
   children: React.ReactNode;
@@ -53,12 +67,13 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
   }));
 
   useEffect(() => {
-    const choices = props.data.choices || [];
+    let choices = props.data.choices.items || [];
+    if (props.data.choices.shuffle) choices = shuffle(choices);
     const m = new Map<Choice['id'], Choice>();
     choices.forEach((choice) => m.set(choice.id, choice));
     value.m = m;
     value.choiceIds = Array.from(m.keys());
-  }, [props.data]);
+  }, [props.data.choices]);
 
   useEffect(() => {
     const unsubscribe = subscribe(state, () => {

@@ -1,3 +1,8 @@
+export type File = {
+  key: string;
+  body: string;
+};
+
 export type Moon = {
   url: string;
   width?: React.CSSProperties['width'];

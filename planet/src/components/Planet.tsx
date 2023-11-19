@@ -11,7 +11,7 @@ import { cn } from '../lib/helpers';
 import { useStore } from '../lib/store';
 
 const Planet = () => {
-  const moons = useStore((state) => state.moons);
+  const { files, moons } = useStore((state) => ({ files: state.files, moons: state.moons }));
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
@@ -28,6 +28,7 @@ const Planet = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
                       <Moon
                         ref={mediumRef}
+                        files={files}
                         moon={moons.medium}
                         onChange={(data, points) => console.log(data, points)}
                         onPublish={(action: string, data: any) => {
@@ -50,6 +51,7 @@ const Planet = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
                       <Moon
                         ref={smallRef}
+                        files={files}
                         moon={moons.small}
                         onChange={(data, points) => console.log(data, points)}
                         onPublish={(action: string, data: any) => {
@@ -70,51 +72,54 @@ const Planet = () => {
       )}
       <Panel id="planet-moons-large" order={2} collapsible minSizePixels={100}>
         <div className="p-2 pl-1 h-full w-full">
-          <div
-            className={cn(
-              'h-full w-full',
-              moons.large.actions?.active && 'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm',
-            )}
-          >
-            <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full">
-              <Moon
-                ref={largeRef}
-                moon={moons.large}
-                onChange={(data, points) => console.log(data, points)}
-                onPublish={(action: string, data: any) => {
-                  smallRef.current?.execute?.(action, data);
-                  mediumRef.current?.execute?.(action, data);
-                }}
-              />
-            </div>
-            {moons.large.actions?.active && (
-              <div className="flex justify-between gap-2 p-2">
-                <div className="flex gap-2">
-                  <EditorButton />
-                  {moons.large.actions.reset && (
-                    <ResetButton
-                      onClick={() => {
-                        smallRef.current?.execute?.('reset');
-                        mediumRef.current?.execute?.('reset');
-                        largeRef.current?.execute?.('reset');
-                      }}
-                    />
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  {moons.large.actions.submit && (
-                    <SubmitButton
-                      onClick={() => {
-                        if (smallRef.current?.snapshot) console.log('small', smallRef.current.snapshot());
-                        if (mediumRef.current?.snapshot) console.log('medium', mediumRef.current.snapshot());
-                        if (largeRef.current?.snapshot) console.log('large', largeRef.current.snapshot());
-                      }}
-                    />
-                  )}
-                </div>
+          {(({ actions, ...moon }) => (
+            <div
+              className={cn(
+                'h-full w-full',
+                moons.large.actions?.active && 'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm',
+              )}
+            >
+              <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full">
+                <Moon
+                  ref={largeRef}
+                  files={files}
+                  moon={moon}
+                  onChange={(data, points) => console.log(data, points)}
+                  onPublish={(action: string, data: any) => {
+                    smallRef.current?.execute?.(action, data);
+                    mediumRef.current?.execute?.(action, data);
+                  }}
+                />
               </div>
-            )}
-          </div>
+              {actions?.active && (
+                <div className="flex justify-between gap-2 p-2">
+                  <div className="flex gap-2">
+                    <EditorButton />
+                    {actions.reset && (
+                      <ResetButton
+                        onClick={() => {
+                          smallRef.current?.execute?.('reset');
+                          mediumRef.current?.execute?.('reset');
+                          largeRef.current?.execute?.('reset');
+                        }}
+                      />
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    {actions.submit && (
+                      <SubmitButton
+                        onClick={() => {
+                          if (smallRef.current?.snapshot) console.log('small', smallRef.current.snapshot());
+                          if (mediumRef.current?.snapshot) console.log('medium', mediumRef.current.snapshot());
+                          if (largeRef.current?.snapshot) console.log('large', largeRef.current.snapshot());
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          ))(moons.large)}
         </div>
       </Panel>
     </PanelGroup>

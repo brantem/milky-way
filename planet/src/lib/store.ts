@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import type { Moon } from './types';
+import type { File, Moon } from './types';
 
 type Moons = {
   small?: Moon;
@@ -15,6 +15,7 @@ type Moons = {
 };
 
 interface State {
+  files: File[];
   moons: Moons;
   updateMoons(moons: Moons): void;
 
@@ -22,36 +23,36 @@ interface State {
   toggleEditor(): void;
 }
 
+type a = JSX.IntrinsicElements;
+
 export const useStore = create<State>()((set) => ({
+  files: [
+    {
+      key: 'content.md',
+      body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
+    },
+    {
+      key: 'tests.json',
+      body: '[{"text":"Draw a square with any color","data":{"label":"square"}},{"text":"Draw a triangle with [](color://#ef4444)","data":{"label":"triangle","color":"#ef4444"}}]',
+    },
+  ],
   moons: {
     small: {
       url: 'https://moons.brantem.com/deimos/bundle.js',
       data: {
-        items: [
-          {
-            text: 'Exercitation ad dolore anim duis pariatur ipsum aute do nostrud irure eiusmod est mollit aute officia.\n\n```\nconst a = 1;\n```',
-          },
-          {
-            text: '```\nconst a = 1;\n```\n\nIpsum dolore ullamco eiusmod officia in aute fugiat nisi excepteur cupidatat elit aliqua laboris.',
-          },
-          {
-            text: 'Exercitation velit irure `excepteur` enim aliquip eiusmod veniam do sint **ipsum** pariatur commodo irureesse do.',
-          },
-          {
-            text: 'Lorem *ullamco* Lorem ea.',
-          },
-        ],
+        file: 'tests.json',
       },
     },
     medium: {
       url: 'https://moons.brantem.com/phobos/bundle.js',
       data: {
-        text: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
+        file: 'content.md',
       },
     },
     large: {
       url: 'https://moons.brantem.com/ganymede/bundle.js',
       data: {
+        file: 'tests.json',
         model: {
           type: 'teachable_machine',
           urls: {
@@ -63,46 +64,51 @@ export const useStore = create<State>()((set) => ({
             background: '#fff',
           },
         },
-        tests: [
-          {
-            label: 'square',
-          },
-          {
-            label: 'triangle',
-            color: '#ef4444',
-          },
-        ],
       },
+
+      // url: "https://moons.brantem.com/callisto/bundle.js",
+      // data: {
+      //   text: "Every morning, I like to start my day with a healthy __1__. I usually have a bowl of __2__ topped with fresh __3__, a sprinkle of __4__, and a drizzle of __5__. It's the perfect way to energize myself for the day ahead.",
+      //   choices: [
+      //     { id: '1', text: 'breakfast' },
+      //     { id: '2', text: 'oatmeal' },
+      //     { id: '3', text: 'strawberries' },
+      //     { id: '4', text: 'honey' },
+      //     { id: '5', text: 'milk' },
+      //     { id: '6', text: 'coal' },
+      //   ],
+      // }
+
+      // url: 'https://moons.brantem.com/io/bundle.js',
+      // data: {
+      //   left: {
+      //     items: [
+      //       { id: '1', text: 'Square' },
+      //       { id: '2', text: 'Japan' },
+      //       { id: '3', text: 'Mars' },
+      //       { id: '4', text: 'Leonardo da Vinci' },
+      //       { id: '5', text: 'Broccoli' },
+      //     ],
+      //     shuffle: true,
+      //   },
+      //   right: {
+      //     items: [
+      //       { id: '1', text: 'Four equal sides' },
+      //       { id: '2', text: 'Tokyo' },
+      //       { id: '3', text: 'Phobos' },
+      //       { id: '4', text: 'Mona Lisa' },
+      //       { id: '5', text: 'Vegetable' },
+      //     ],
+      //     shuffle: true,
+      //   },
+      // },
       actions: {
         active: true,
         reset: true,
         submit: true,
       },
+      debug: true,
     },
-    // large: {
-    //   url: 'https://moons.brantem.com/io/bundle.js',
-    //   data: {
-    //     left: [
-    //       { id: '1', text: 'Square' },
-    //       { id: '2', text: 'Japan' },
-    //       { id: '3', text: 'Mars' },
-    //       { id: '4', text: 'Leonardo da Vinci' },
-    //       { id: '5', text: 'Broccoli' },
-    //     ],
-    //     right: [
-    //       { id: '1', text: 'Four equal sides' },
-    //       { id: '2', text: 'Tokyo' },
-    //       { id: '3', text: 'Phobos' },
-    //       { id: '4', text: 'Mona Lisa' },
-    //       { id: '5', text: 'Vegetable' },
-    //     ],
-    //   },
-    //   actions: {
-    //     active: true,
-    //     reset: true,
-    //     submit: true,
-    //   },
-    // },
   },
   updateMoons(moons) {
     set({ moons });

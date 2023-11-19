@@ -13,8 +13,14 @@ type AppProps = {
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
   data: {
-    left: Item[];
-    right: Item[];
+    left: {
+      items: Item[];
+      shuffle?: boolean;
+    };
+    right: {
+      items: Item[];
+      shuffle?: boolean;
+    };
   };
 };
 
@@ -22,11 +28,11 @@ const App = ({ width = '100%', height = '100%', data }: IoProps) => {
   return (
     <div id="io" style={{ width, height }}>
       <Wrapper>
-        <Items items={data.left} side={Side.Left} />
+        <Items {...data.left} side={Side.Left} />
 
         <Lines />
 
-        <Items items={data.right} side={Side.Right} />
+        <Items {...data.right} side={Side.Right} />
       </Wrapper>
     </div>
   );

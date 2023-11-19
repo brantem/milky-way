@@ -39,17 +39,6 @@ const data = [
   },
 ];
 
-const shuffle = <T,>(a: T[]): T[] => {
-  const b = a.slice();
-  for (let i = b.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = b[i];
-    b[i] = b[j];
-    b[j] = temp;
-  }
-  return b;
-};
-
 const item = data[Math.floor(Math.random() * data.length)];
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -59,7 +48,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={768}
       data={{
         text: item.text,
-        choices: shuffle(item.choices),
+        choices: {
+          items: item.choices,
+          shuffle: true,
+        },
       }}
       onChange={(data, points) => console.log(data, points)}
     />

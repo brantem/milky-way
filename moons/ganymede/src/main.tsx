@@ -8,7 +8,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Ganymede
       width={1024}
       height={768}
+      files={[
+        {
+          key: 'tests.json',
+          body: '[{"text":"Draw a square with any color","data":{"label":"square"}},{"text":"Draw a triangle with [](color://#ef4444)","data":{"label":"triangle","color":"#ef4444"}}]',
+        },
+      ]}
       data={{
+        tests: {
+          file: 'tests.json',
+        },
         // model: {
         //   type: 'onnx',
         //   urls: {
@@ -30,15 +39,6 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             background: '#fff',
           },
         },
-        tests: [
-          {
-            label: 'square',
-          },
-          {
-            label: 'triangle',
-            color: '#ef4444',
-          },
-        ],
       }}
       onChange={(data, points) => console.log(data, points)}
     />

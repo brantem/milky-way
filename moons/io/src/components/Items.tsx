@@ -2,12 +2,24 @@ import Dot from './Dot';
 
 import { type Item, Side } from '../lib/types';
 
+const shuffle = <T,>(a: T[]): T[] => {
+  const b = a.slice();
+  for (let i = b.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    const temp = b[i];
+    b[i] = b[j];
+    b[j] = temp;
+  }
+  return b;
+};
+
 type ItemsProps = {
   items: Item[];
   side: Side;
+  shuffle?: boolean;
 };
 
-const Items = ({ items, side }: ItemsProps) => {
+const Items = ({ items, side, shuffle: _shuffle }: ItemsProps) => {
   return (
     <ol
       className={[
@@ -15,7 +27,7 @@ const Items = ({ items, side }: ItemsProps) => {
         side === Side.Left ? '[grid-area:start]' : '[grid-area:end]',
       ].join(' ')}
     >
-      {items.map((item) => (
+      {(_shuffle ? shuffle(items) : items).map((item) => (
         <li
           key={item.id}
           id={`${side}-${item.id}`}
