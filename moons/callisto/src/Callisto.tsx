@@ -11,21 +11,21 @@ import { AppProvider, type AppProviderHandle, type AppProviderProps, useAppState
 import './index.css';
 
 type AppProps = {
+  width?: React.CSSProperties['width'];
+  height?: React.CSSProperties['height'];
   data: {
     text: string;
   };
-  height?: React.CSSProperties['height'];
-  width?: React.CSSProperties['width'];
 };
 
-const App = ({ data, height = '100%', width = '100%' }: AppProps) => {
+const App = ({ width = '100%', height = '100%', data }: AppProps) => {
   const callistoRef = useRef<HTMLDivElement>(null);
   const [set] = useAppState();
 
   const [activeId, setActiveId] = useState('');
 
   return (
-    <div ref={callistoRef} id="callisto" style={{ height, width }}>
+    <div ref={callistoRef} id="callisto" style={{ width, height }}>
       <DndContext
         modifiers={[
           (args) => {

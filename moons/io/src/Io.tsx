@@ -10,17 +10,17 @@ import { type Item, Side } from './lib/types';
 import './index.css';
 
 type AppProps = {
-  height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
+  height?: React.CSSProperties['height'];
   data: {
     left: Item[];
     right: Item[];
   };
 };
 
-const App = ({ data, height, width }: IoProps) => {
+const App = ({ width = '100%', height = '100%', data }: IoProps) => {
   return (
-    <div id="io" style={{ height, width }}>
+    <div id="io" style={{ width, height }}>
       <Wrapper>
         <Items items={data.left} side={Side.Left} />
 

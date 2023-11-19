@@ -26,8 +26,8 @@ const Loading = () => {
 };
 
 export type MoonHandle = {
-  snapshot(): { data: Record<string, any>; points: number };
-  subscribe(action: string, data?: any): void;
+  snapshot?: () => { data: Record<string, any>; points: number };
+  subscribe?: (action: string, data?: any) => void;
 };
 
 // TODO: Remove export

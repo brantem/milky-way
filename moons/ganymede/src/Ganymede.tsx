@@ -10,13 +10,13 @@ import { AppProvider, type AppProviderHandle, type AppProviderProps } from './li
 import './index.css';
 
 type AppProps = {
-  height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
+  height?: React.CSSProperties['height'];
 };
 
-const App = ({ height = '100%', width = '100%' }: AppProps) => {
+const App = ({ width = '100%', height = '100%' }: AppProps) => {
   return (
-    <div id="ganymede" style={{ height, width }}>
+    <div id="ganymede" style={{ width, height }}>
       <div className="relative h-full w-full bg-white overflow-hidden">
         <Canvas />
         <Renderer />
