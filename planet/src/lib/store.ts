@@ -10,7 +10,6 @@ type Moons = {
       active?: boolean;
       reset?: boolean;
       submit?: boolean;
-      next?: boolean;
     };
   };
 };
@@ -78,7 +77,6 @@ export const useStore = create<State>()((set) => ({
         active: true,
         reset: true,
         submit: true,
-        next: true,
       },
     },
     // large: {
@@ -103,7 +101,6 @@ export const useStore = create<State>()((set) => ({
     //     active: true,
     //     reset: true,
     //     submit: true,
-    //     next: true,
     //   },
     // },
   },

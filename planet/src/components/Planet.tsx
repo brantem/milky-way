@@ -111,11 +111,6 @@ const Planet = () => {
                       }}
                     />
                   )}
-                  {moons.large.actions.next && (
-                    <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 text-white px-4 py-2">
-                      Next
-                    </Button>
-                  )}
                 </div>
               </div>
             )}
