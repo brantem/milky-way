@@ -7,8 +7,15 @@ import { Choice } from '../types';
 // @ts-expect-error because i still don't know how to make ts happy
 export const AppContext = createContext<AppState>({});
 
+type Data = Pick<AppState, 'answers'>;
+
+enum Action {
+  Reset = 'reset',
+}
+
 export type AppProviderHandle = {
-  reset(): void;
+  snapshot(): { data: Data; points: number };
+  subscribe(action: Action, data: any): boolean;
 };
 
 export type AppProviderProps = {
@@ -16,17 +23,32 @@ export type AppProviderProps = {
     text: string;
     choices: Choice[];
   };
-  onChange(answers: AppState['answers'], points: number): void;
+  onChange(data: Data, points: number): void;
   children: React.ReactNode;
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ children, onChange, ...props }, ref) => {
   const value = useRef(state).current;
 
+  const snapshot = () => {
+    const answers = JSON.parse(JSON.stringify(state.answers)) as AppState['answers']; // unwrap
+    const points = answers.reduce((points, answer) => {
+      return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
+    }, 0);
+    return { data: { answers }, points };
+  };
+
   useImperativeHandle(ref, () => ({
-    reset() {
-      value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));
-      value.answers = [];
+    snapshot,
+    subscribe(action) {
+      switch (action) {
+        case Action.Reset:
+          value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));
+          value.answers = [];
+          return true;
+        default:
+          return false;
+      }
     },
   }));
 
@@ -40,11 +62,8 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
 
   useEffect(() => {
     const unsubscribe = subscribe(state, () => {
-      const answers = JSON.parse(JSON.stringify(state.answers)) as AppState['answers']; // unwrap
-      const points = answers.reduce((points, answer) => {
-        return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
-      }, 0);
-      onChange(answers, points);
+      const { data, points } = snapshot();
+      onChange(data, points);
     });
     return () => unsubscribe();
   }, []);

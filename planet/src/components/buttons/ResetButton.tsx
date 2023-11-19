@@ -1,8 +1,8 @@
 import { useState } from 'react';
 
-import Button from './Button';
+import Button from '../Button';
 
-import { cn } from '../lib/helpers';
+import { cn } from '../../lib/helpers';
 
 const ResetButton = () => {
   const [isClicked, setIsClicked] = useState(false);

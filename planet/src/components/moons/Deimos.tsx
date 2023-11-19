@@ -1,15 +1,18 @@
+import { forwardRef } from 'react';
+
+import type { MoonHandle, MoonProps } from '../Moon';
 import Markdown from '../Markdown';
 
-type DeimosProps = {
+type DeimosProps = MoonProps & {
   data: {
     items: { text: string }[];
   };
 };
 
-const Deimos = ({ data }: DeimosProps) => {
+const Deimos = forwardRef<MoonHandle, DeimosProps>(({ data }) => {
   return (
     <div className="h-full w-full overflow-y-auto bg-yellow-50/50">
-      <ol className="list-none">
+      <ol className="list-none overflow-hidden">
         {data.items.map((item, i) => (
           <li
             key={i}
@@ -24,6 +27,6 @@ const Deimos = ({ data }: DeimosProps) => {
       </ol>
     </div>
   );
-};
+});
 
 export default Deimos;

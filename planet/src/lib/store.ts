@@ -7,7 +7,7 @@ type Moon = {
   data: Record<string, any>;
 };
 
-type Planet = {
+type Moons = {
   small?: Moon;
   medium?: Moon;
   large: Moon & {
@@ -21,15 +21,15 @@ type Planet = {
 };
 
 interface State {
-  planet: Planet;
-  updatePlanet(planet: Planet): void;
+  moons: Moons;
+  updateMoons(moons: Moons): void;
 
   isEditorOpen: boolean;
   toggleEditor(): void;
 }
 
 export const useStore = create<State>()((set) => ({
-  planet: {
+  moons: {
     small: {
       url: 'https://moons.brantem.com/deimos/bundle.js',
       data: {
@@ -87,8 +87,8 @@ export const useStore = create<State>()((set) => ({
       },
     },
   },
-  updatePlanet(planet) {
-    set({ planet });
+  updateMoons(moons) {
+    set({ moons });
   },
 
   isEditorOpen: false,

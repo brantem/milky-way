@@ -7,9 +7,16 @@ import type { Path } from '../types';
 // @ts-expect-error because i want to sleep
 export const AppContext = createContext<AppState>({});
 
+type Data = Pick<AppState, 'paths'>;
+
+enum Action {
+  Reset = 'reset',
+  SetColor = 'color:set',
+}
+
 export type AppProviderHandle = {
-  get(): { data: Path[]; points: number };
-  reset(): void;
+  snapshot(): { data: Data; points: number };
+  subscribe(action: Action, data: any): boolean;
 };
 
 type Test = {
@@ -19,7 +26,7 @@ type Test = {
 
 export type AppProviderProps = {
   data: Pick<AppState, 'model'> & { tests: Test[] };
-  onChange(paths: Path[], points: number): void;
+  onChange(data: Data, points: number): void;
   debug?: boolean;
   children: React.ReactNode;
 };
@@ -43,14 +50,25 @@ const calculatePoints = (tests: Test[], paths: Path[]) => {
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ children, onChange, ...props }, ref) => {
   const value = useRef(state).current;
 
+  const snapshot = () => {
+    const paths = JSON.parse(JSON.stringify(state.visiblePaths));
+    return { data: { paths }, points: calculatePoints(props.data.tests, paths) };
+  };
+
   useImperativeHandle(ref, () => ({
-    get() {
-      const data = JSON.parse(JSON.stringify(state.visiblePaths));
-      return { data, points: calculatePoints(props.data.tests, data) };
-    },
-    reset() {
-      value.color = '#000';
-      value.clear();
+    snapshot,
+    subscribe(action, data) {
+      switch (action) {
+        case Action.SetColor:
+          value.color = data;
+          return true;
+        case Action.Reset:
+          value.color = '#000';
+          value.clear();
+          return true;
+        default:
+          return false;
+      }
     },
   }));
 
@@ -61,8 +79,8 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
 
   useEffect(() => {
     const unsubscribe = subscribe(state, () => {
-      const paths = JSON.parse(JSON.stringify(state.visiblePaths));
-      onChange(paths, calculatePoints(props.data.tests, paths));
+      const { data, points } = snapshot();
+      onChange(data, points);
     });
     return () => unsubscribe();
   }, []);

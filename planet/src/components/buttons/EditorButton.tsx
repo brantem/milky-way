@@ -1,6 +1,6 @@
-import Button from './Button';
+import Button from '../Button';
 
-import { useStore } from '../lib/store';
+import { useStore } from '../../lib/store';
 
 const EditorButton = () => {
   const toggle = useStore((state) => state.toggleEditor);

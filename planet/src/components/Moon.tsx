@@ -1,15 +1,5 @@
-import { Suspense, useState, lazy } from 'react';
+import { Suspense, forwardRef, lazy } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-
-type MoonProps = {
-  url: string;
-
-  height?: React.CSSProperties['height'];
-  width?: React.CSSProperties['width'];
-  data: Record<string, any>;
-  onChange?: (data: Record<string, any>, points: number) => void;
-  debug?: boolean;
-};
 
 const Loading = () => {
   return (
@@ -35,15 +25,32 @@ const Loading = () => {
   );
 };
 
-const Moon = ({ url, ...props }: MoonProps) => {
+export type MoonHandle = {
+  snapshot(): { data: Record<string, any>; points: number };
+  subscribe(action: string, data?: any): void;
+};
+
+// TODO: Remove export
+export type MoonProps = {
+  url: string;
+
+  height?: React.CSSProperties['height'];
+  width?: React.CSSProperties['width'];
+  data: Record<string, any>;
+  onChange?: (data: Record<string, any>, points: number) => void;
+  onPublish?: (action: string, data?: any) => void;
+  debug?: boolean;
+};
+
+const Moon = forwardRef<MoonHandle, MoonProps>(({ url, ...props }, ref) => {
   const Component = lazy(() => import(/* @vite-ignore */ url));
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component {...{ width: '100%', height: '100%', ...props }} />
+        <Component ref={ref} {...{ width: '100%', height: '100%', ...props }} />
       </Suspense>
     </ErrorBoundary>
   );
-};
+});
 
 export default Moon;
