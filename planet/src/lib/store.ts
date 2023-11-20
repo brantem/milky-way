@@ -2,116 +2,130 @@ import { create } from 'zustand';
 
 import type { File, Moon } from './types';
 
-type Moons = {
-  small?: Moon;
-  medium?: Moon;
-  large: Moon & {
-    actions: {
-      active?: boolean;
-      reset?: boolean;
-      submit?: boolean;
-    };
-  };
-};
-
 interface State {
   files: File[];
-  moons: Moons;
-  updateMoons(moons: Moons): void;
+  saveFile(key: File['key'], body: File['body']): void;
+  deleteFile(key: File['key']): void;
 
   isEditorOpen: boolean;
   toggleEditor(): void;
 }
 
-type a = JSX.IntrinsicElements;
-
 export const useStore = create<State>()((set) => ({
   files: [
+    {
+      key: 'planet.json',
+      body: JSON.stringify(
+        {
+          // small: {
+          //   url: 'https://moons.brantem.com/deimos/bundle.js',
+          //   data: {
+          //     file: 'tests.json',
+          //   },
+          // },
+          medium: {
+            url: 'https://moons.brantem.com/phobos/bundle.js',
+            data: {
+              file: 'content.md',
+            },
+          },
+          large: {
+            // url: 'https://moons.brantem.com/ganymede/bundle.js',
+            // data: {
+            //   tests: {
+            //     file: 'tests.json',
+            //   },
+            //   model: {
+            //     type: 'teachable_machine',
+            //     urls: {
+            //       baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+            //     },
+            //     input: {
+            //       width: 96,
+            //       height: 96,
+            //       background: '#fff',
+            //     },
+            //   },
+            // },
+
+            // url: 'https://moons.brantem.com/callisto/bundle.js',
+            // data: {
+            //   text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
+            //   choices: {
+            //     items: [
+            //       { id: '1', text: 'chihuahua' },
+            //       { id: '2', text: 'backyard' },
+            //       { id: '3', text: 'ball' },
+            //       { id: '4', text: 'spring' },
+            //       { id: '5', text: 'walk' },
+            //       { id: '6', text: 'grandfather' },
+            //     ],
+            //     shuffle: true,
+            //   },
+            // },
+
+            url: 'https://moons.brantem.com/io/bundle.js',
+            data: {
+              left: {
+                items: [
+                  { id: '1', text: 'Square' },
+                  { id: '2', text: 'Japan' },
+                  { id: '3', text: 'Mars' },
+                  { id: '4', text: 'Leonardo da Vinci' },
+                  { id: '5', text: 'Broccoli' },
+                ],
+                shuffle: true,
+              },
+              right: {
+                items: [
+                  { id: '1', text: 'Four equal sides' },
+                  { id: '2', text: 'Tokyo' },
+                  { id: '3', text: 'Phobos' },
+                  { id: '4', text: 'Mona Lisa' },
+                  { id: '5', text: 'Vegetable' },
+                ],
+                shuffle: true,
+              },
+            },
+            actions: {
+              active: true,
+              reset: true,
+              submit: true,
+            },
+            debug: true,
+          },
+        },
+        null,
+        2,
+      ),
+    },
     {
       key: 'content.md',
       body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
     },
     {
       key: 'tests.json',
-      body: '[{"text":"Draw a square with any color","data":{"label":"square"}},{"text":"Draw a triangle with [](color://#ef4444)","data":{"label":"triangle","color":"#ef4444"}}]',
+      body: JSON.stringify(
+        [
+          { text: 'Draw a square with any color', data: { label: 'square' } },
+          { text: 'Draw a triangle with [](color://#ef4444)', data: { label: 'triangle', color: '#ef4444' } },
+        ],
+        null,
+        2,
+      ),
     },
   ],
-  moons: {
-    small: {
-      url: 'https://moons.brantem.com/deimos/bundle.js',
-      data: {
-        file: 'tests.json',
-      },
-    },
-    medium: {
-      url: 'https://moons.brantem.com/phobos/bundle.js',
-      data: {
-        file: 'content.md',
-      },
-    },
-    large: {
-      url: 'https://moons.brantem.com/ganymede/bundle.js',
-      data: {
-        file: 'tests.json',
-        model: {
-          type: 'teachable_machine',
-          urls: {
-            baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
-          },
-          input: {
-            width: 96,
-            height: 96,
-            background: '#fff',
-          },
-        },
-      },
-
-      // url: "https://moons.brantem.com/callisto/bundle.js",
-      // data: {
-      //   text: "Every morning, I like to start my day with a healthy __1__. I usually have a bowl of __2__ topped with fresh __3__, a sprinkle of __4__, and a drizzle of __5__. It's the perfect way to energize myself for the day ahead.",
-      //   choices: [
-      //     { id: '1', text: 'breakfast' },
-      //     { id: '2', text: 'oatmeal' },
-      //     { id: '3', text: 'strawberries' },
-      //     { id: '4', text: 'honey' },
-      //     { id: '5', text: 'milk' },
-      //     { id: '6', text: 'coal' },
-      //   ],
-      // }
-
-      // url: 'https://moons.brantem.com/io/bundle.js',
-      // data: {
-      //   left: {
-      //     items: [
-      //       { id: '1', text: 'Square' },
-      //       { id: '2', text: 'Japan' },
-      //       { id: '3', text: 'Mars' },
-      //       { id: '4', text: 'Leonardo da Vinci' },
-      //       { id: '5', text: 'Broccoli' },
-      //     ],
-      //     shuffle: true,
-      //   },
-      //   right: {
-      //     items: [
-      //       { id: '1', text: 'Four equal sides' },
-      //       { id: '2', text: 'Tokyo' },
-      //       { id: '3', text: 'Phobos' },
-      //       { id: '4', text: 'Mona Lisa' },
-      //       { id: '5', text: 'Vegetable' },
-      //     ],
-      //     shuffle: true,
-      //   },
-      // },
-      actions: {
-        active: true,
-        reset: true,
-        submit: true,
-      },
-      debug: true,
-    },
+  saveFile(key, body) {
+    set((state) => {
+      const index = state.files.findIndex((file) => file.key === key);
+      if (index === -1) return { files: [...state.files, { key, body }] };
+      const files = state.files.slice();
+      files[index].body = body;
+      return { files };
+    });
   },
-  updateMoons(moons) {
-    set({ moons });
+  deleteFile(key) {
+    set((state) => ({ files: state.files.filter((file) => file.key !== key) }));
   },
 
   isEditorOpen: false,

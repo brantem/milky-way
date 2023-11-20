@@ -32,8 +32,7 @@ export type MoonHandle = {
   execute?: (action: string, data?: any) => void;
 };
 
-// TODO: Remove export
-export type MoonProps = {
+type MoonProps = {
   files?: File[];
   moon: _Moon;
   onChange?: (data: Record<string, any>, points: number) => void;
