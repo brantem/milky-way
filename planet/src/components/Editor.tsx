@@ -111,9 +111,8 @@ const Files = ({ activeFileKey, onFileClick, onFileCreated, onFileDeleted }: Fil
         {files.map((file) => {
           const isActive = file.key === activeFileKey;
           return (
-            <div className="flex items-center bg-neutral-100 group">
+            <div key={file.key} className="flex items-center bg-neutral-100 group">
               <Button
-                key={file.key}
                 type="button"
                 shadowClassName="bg-neutral-200/50 rounded-r-none"
                 contentClassName="bg-white px-4 flex items-center rounded-r-none group-disabled:cursor-default"
