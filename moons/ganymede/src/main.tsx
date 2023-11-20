@@ -11,7 +11,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       files={[
         {
           key: 'tests.json',
-          body: '[{"text":"Draw a square with any color","data":{"label":"square"}},{"text":"Draw a triangle with [](color://#ef4444)","data":{"label":"triangle","color":"#ef4444"}}]',
+          body: JSON.stringify([
+            {
+              text: 'Draw a square with any color',
+              data: { label: 'square' },
+            },
+            {
+              text: 'Draw a triangle with [](color://#ef4444)',
+              data: { label: 'triangle', color: '#ef4444' },
+            },
+          ]),
         },
       ]}
       data={{
