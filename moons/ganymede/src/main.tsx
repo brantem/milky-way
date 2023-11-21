@@ -6,8 +6,8 @@ import Ganymede from './Ganymede';
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Ganymede
-      width={1024}
-      height={768}
+      // width={1024}
+      // height={768}
       files={[
         {
           key: 'tests.json',
