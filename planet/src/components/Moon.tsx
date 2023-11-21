@@ -1,7 +1,8 @@
-import { Suspense, forwardRef, lazy } from 'react';
+import { Suspense, forwardRef, lazy, useRef, useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import type { File, Moon as _Moon } from '../lib/types';
+import { useFiles } from '../lib/store';
 
 const Loading = () => {
   return (
@@ -33,18 +34,21 @@ export type MoonHandle = {
 };
 
 export type MoonProps = {
-  files?: File[];
   moon: _Moon;
   onChange?: (files: File[], points: number) => void;
   onPublish?: (action: string, data?: any) => void;
 };
 
-const Moon = forwardRef<MoonHandle, MoonProps>(({ files, moon: { url, ...moon }, ...props }, ref) => {
+const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
+  const filter = (file: File) => moon.files.includes(file.key);
+  const filesRef = useRef(useFiles.getState().files.filter(filter));
+  useEffect(() => useFiles.subscribe((state) => (filesRef.current = state.files.filter(filter))), []);
+
   const Component = lazy(() => import(/* @vite-ignore */ url));
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component ref={ref} files={files} {...moon} {...{ width: '100%', height: '100%', ...props }} />
+        <Component ref={ref} {...moon} files={filesRef.current} {...{ width: '100%', height: '100%', ...props }} />
       </Suspense>
     </ErrorBoundary>
   );

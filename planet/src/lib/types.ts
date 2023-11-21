@@ -6,6 +6,7 @@ export type File = {
 export type Moon = {
   id: string;
   url: string;
+  files: File['key'][];
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
   data: Record<string, any>;

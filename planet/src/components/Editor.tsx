@@ -9,7 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useStore } from '../lib/store';
+import { useEditor, useFiles } from '../lib/store';
 import { cn } from '../lib/helpers';
 
 const ROOT = 'planets/';
@@ -21,7 +21,7 @@ type AddFileProps = {
 
 const AddFile = ({ onFileCreated }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const saveFile = useStore((state) => state.saveFile);
+  const saveFile = useFiles((state) => state.save);
 
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [key, setKey] = useState('');
@@ -113,7 +113,7 @@ type FileProps = {
 };
 
 const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
-  const deleteFile = useStore((state) => state.deleteFile);
+  const deleteFile = useFiles((state) => state.delete);
 
   return (
     <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
@@ -152,10 +152,10 @@ type FolderProps = SidebarProps & {
 };
 
 const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const { folders, files } = useStore((state) => {
+  const { folders, files } = useFiles((state) => {
     let folders = new Set<string>();
     let files = [];
-    for (let file of state.getFiles(path)) {
+    for (let file of state.get(path)) {
       if (file.key.includes('/')) {
         folders.add(file.key.split('/')[0]);
       } else {
@@ -230,12 +230,8 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 };
 
 const Editor = () => {
-  const { files, saveFile, isOpen, toggle } = useStore((state) => ({
-    files: state.files,
-    saveFile: state.saveFile,
-    isOpen: state.isEditorOpen,
-    toggle: state.toggleEditor,
-  }));
+  const { isOpen, toggle } = useEditor();
+  const { files, saveFile } = useFiles((state) => ({ files: state.files, saveFile: state.save }));
 
   const [activeFileKey, setActiveFileKey] = useState(files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});

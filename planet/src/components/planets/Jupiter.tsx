@@ -8,29 +8,30 @@ import SubmitButton from '../buttons/SubmitButton';
 
 import type { Moon as _Moon, Planet } from '../../lib/types';
 import { cn } from '../../lib/helpers';
-import { useStore } from '../../lib/store';
+import { useFiles, usePoints } from '../../lib/store';
 
-const PREFIX = 'planets/jupiter/';
+const ROOT = 'planets/jupiter/';
 
 const Jupiter = () => {
-  const { files, saveFile, savePoints } = useStore((state) => ({
-    files: state.getFiles(PREFIX),
-    saveFile: state.saveFile,
-    savePoints: state.savePoints,
+  const { planet, saveFile } = useFiles((state) => ({
+    planet: JSON.parse(state.get(ROOT).find((file) => file.key === '_planet.json')?.body || '{}') as Planet,
+    saveFile: state.save,
   }));
-  const planet = JSON.parse(files.find((file) => file.key === '_planet.json')?.body || '{}') as Planet;
+  const savePoints = usePoints((state) => state.save);
 
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
   const handleChange: (id: _Moon['id']) => Required<MoonProps>['onChange'] = (id) => (files, points) => {
-    for (let file of files) saveFile(PREFIX + 'outputs/' + file.key, file.body);
+    // TODO: find a way to save file without rerender everything
+    // for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
     savePoints(id, points);
   };
 
   const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of files) saveFile(PREFIX + 'outputs/' + file.key, file.body);
+    // TODO: find a way to save file without rerender everything
+    // for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
     savePoints(id, points);
   };
 
@@ -52,7 +53,6 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
-                        files={files}
                         moon={planet.medium}
                         onChange={handleChange(planet.medium.id)}
                         onPublish={(action: string, data: any) => {
@@ -75,7 +75,6 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
-                        files={files}
                         moon={planet.small}
                         onChange={handleChange(planet.small.id)}
                         onPublish={(action: string, data: any) => {
@@ -107,7 +106,6 @@ const Jupiter = () => {
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
                 <Moon
                   ref={largeRef}
-                  files={files}
                   moon={moon}
                   onChange={handleChange(planet.large.id)}
                   onPublish={(action: string, data: any) => {

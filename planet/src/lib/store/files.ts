@@ -1,22 +1,16 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-import type { File, Moon, Planet } from './types';
+import type { File, Moon, Planet } from '../types';
 
 interface State {
   files: File[];
-  getFiles(prefix: string): File[];
-  saveFile(key: File['key'], body: File['body']): void;
-  deleteFile(key: File['key']): void;
-
-  points: Record<string, number>;
-  savePoints(id: Moon['id'], points: number): void;
-
-  isEditorOpen: boolean;
-  toggleEditor(): void;
+  get(path: string): File[];
+  save(key: File['key'], body: File['body']): void;
+  delete(key: File['key']): void;
 }
 
-export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]]>(
+export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]]>(
   persist(
     (set, get) => ({
       files: [
@@ -28,21 +22,24 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
                 id: 'deimos',
                 active: true,
                 url: 'https://moons.brantem.com/deimos/bundle.js',
+                files: ['planets/jupiter/tests.json'],
                 data: {
-                  file: 'tests.json',
+                  file: 'planets/jupiter/tests.json',
                 },
               },
               medium: {
                 id: 'phobos',
                 active: true,
                 url: 'https://moons.brantem.com/phobos/bundle.js',
+                files: ['planets/jupiter/content.md'],
                 data: {
-                  file: 'content.md',
+                  file: 'planets/jupiter/content.md',
                 },
               },
               large: {
                 id: 'io',
                 url: 'https://moons.brantem.com/io/bundle.js',
+                files: [],
                 data: {
                   left: {
                     items: [
@@ -110,6 +107,7 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
             {
               id: 'callisto',
               url: 'https://moons.brantem.com/callisto/bundle.js',
+              files: [],
               data: {
                 text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
                 choices: {
@@ -124,7 +122,7 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
                   shuffle: true,
                 },
               },
-            },
+            } satisfies Moon,
             null,
             2,
           ),
@@ -135,9 +133,10 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
             {
               id: 'ganymede',
               url: 'https://moons.brantem.com/ganymede/bundle.js',
+              files: ['planets/jupiter/tests.json', 'planets/jupiter/outputs/deimos.json'],
               data: {
                 tests: {
-                  file: 'tests.json',
+                  file: 'planets/jupiter/tests.json',
                 },
                 model: {
                   type: 'teachable_machine',
@@ -166,6 +165,7 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
             {
               id: 'io',
               url: 'https://moons.brantem.com/io/bundle.js',
+              files: [],
               data: {
                 left: {
                   items: [
@@ -194,13 +194,13 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
           ),
         },
       ],
-      getFiles(prefix) {
+      get(path) {
         return get().files.reduce((files, file) => {
-          if (file.key.startsWith(prefix)) return [...files, { ...file, key: file.key.replace(prefix, '') }];
+          if (file.key.startsWith(path)) return [...files, { ...file, key: file.key.replace(path, '') }];
           return files;
         }, [] as File[]);
       },
-      saveFile(key, body) {
+      save(key, body) {
         set((state) => {
           const index = state.files.findIndex((file) => file.key === key);
           if (index === -1) return { files: [...state.files, { key, body }] };
@@ -209,24 +209,13 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
           return { files };
         });
       },
-      deleteFile(key) {
+      delete(key) {
         set((state) => ({ files: state.files.filter((file) => file.key !== key) }));
-      },
-
-      points: {},
-      savePoints(id, points) {
-        set((state) => ({ points: { ...state.points, [id]: points } }));
-      },
-
-      isEditorOpen: false,
-      toggleEditor() {
-        set((state) => ({ isEditorOpen: !state.isEditorOpen }));
       },
     }),
     {
-      name: 'planet',
+      name: 'files',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ files: state.files, points: state.points }),
     },
   ),
 );

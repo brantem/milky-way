@@ -1,10 +1,10 @@
 import Button from '../Button';
 
-import { useStore } from '../../lib/store';
+import { useEditor } from '../../lib/store';
 import { sleep } from '../../lib/helpers';
 
 const EditorButton = () => {
-  const toggle = useStore((state) => state.toggleEditor);
+  const toggle = useEditor((state) => state.toggle);
 
   return (
     <Button
