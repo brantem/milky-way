@@ -208,8 +208,8 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
 
 const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) => {
   return (
-    <div className="text-sm font-mono overflow-hidden">
-      <div className="bg-white rounded-lg shadow-sm border border-neutral-200/50 p-2 pt-1 h-full overflow-y-auto">
+    <div className="text-sm font-mono overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
+      <div className="overflow-y-auto h-full p-2 pt-1">
         <div
           className={cn(
             'relative flex flex-col',
