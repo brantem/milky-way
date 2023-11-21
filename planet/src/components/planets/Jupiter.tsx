@@ -1,37 +1,40 @@
-import { useRef } from 'react';
+import { useRef, useEffect } from 'react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
-import Moon, { type MoonHandle, type MoonProps } from '../Moon';
+import Moon, { type MoonHandle } from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 
-import type { Moon as _Moon, Planet } from '../../lib/types';
+import type { File, Moon as _Moon, Planet as _Planet } from '../../lib/types';
 import { cn } from '../../lib/helpers';
 import { useFiles, usePoints } from '../../lib/store';
 
+type Planet = _Planet & {
+  version: number;
+};
+
 const ROOT = 'planets/jupiter/';
 
+const usePlanet = () => {
+  const version = useFiles((state) => state.version);
+  const find = (file: File) => file.key === '_planet.json';
+  const ref = useRef(useFiles.getState().get(ROOT).find(find));
+  useEffect(() => useFiles.subscribe((state) => (ref.current = state.get(ROOT).find(find))), []);
+  return { version, ...JSON.parse(ref.current?.body || '{}') } as Planet;
+};
+
 const Jupiter = () => {
-  const { planet, saveFile } = useFiles((state) => ({
-    planet: JSON.parse(state.get(ROOT).find((file) => file.key === '_planet.json')?.body || '{}') as Planet,
-    saveFile: state.save,
-  }));
+  const planet = usePlanet();
+  const saveFile = useFiles((state) => state.save);
   const savePoints = usePoints((state) => state.save);
 
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
-  const handleChange: (id: _Moon['id']) => Required<MoonProps>['onChange'] = (id) => (files, points) => {
-    // TODO: find a way to save file without rerender everything
-    // for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
-    savePoints(id, points);
-  };
-
   const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    // TODO: find a way to save file without rerender everything
-    // for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
+    for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
     savePoints(id, points);
   };
 
@@ -42,7 +45,7 @@ const Jupiter = () => {
   };
 
   return (
-    <PanelGroup id="planet" direction="horizontal">
+    <PanelGroup key={planet.version} id="planet" direction="horizontal">
       {(planet.small.active || planet.medium.active) && (
         <>
           <Panel id="planet-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
@@ -53,8 +56,8 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
+                        basePath={ROOT}
                         moon={planet.medium}
-                        onChange={handleChange(planet.medium.id)}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -75,8 +78,8 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
+                        basePath={ROOT}
                         moon={planet.small}
-                        onChange={handleChange(planet.small.id)}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -106,8 +109,8 @@ const Jupiter = () => {
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
                 <Moon
                   ref={largeRef}
+                  basePath={ROOT}
                   moon={moon}
-                  onChange={handleChange(planet.large.id)}
                   onPublish={(action: string, data: any) => {
                     smallRef.current?.execute?.(action, data);
                     mediumRef.current?.execute?.(action, data);

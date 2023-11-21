@@ -1,8 +1,8 @@
-import { Suspense, forwardRef, lazy, useRef, useEffect } from 'react';
+import { Suspense, forwardRef, lazy, useRef, useEffect, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import type { File, Moon as _Moon } from '../lib/types';
-import { useFiles } from '../lib/store';
+import { useFiles, usePoints } from '../lib/store';
 
 const Loading = () => {
   return (
@@ -33,22 +33,40 @@ export type MoonHandle = {
   execute?: (action: string, data?: any) => void;
 };
 
-export type MoonProps = {
+type MoonProps = {
+  basePath: string;
   moon: _Moon;
-  onChange?: (files: File[], points: number) => void;
   onPublish?: (action: string, data?: any) => void;
 };
 
-const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
-  const filter = (file: File) => moon.files.includes(file.key);
+const useMoonFiles = (keys: File['key'][]) => {
+  const filter = (file: File) => keys.includes(file.key);
   const filesRef = useRef(useFiles.getState().files.filter(filter));
   useEffect(() => useFiles.subscribe((state) => (filesRef.current = state.files.filter(filter))), []);
+  return filesRef.current;
+};
+
+const Moon = forwardRef<MoonHandle, MoonProps>(({ basePath, moon: { url, ...moon }, ...props }, ref) => {
+  const files = useMoonFiles(moon.files);
+  const saveFile = useFiles((state) => state.save);
+  const savePoints = usePoints((state) => state.save);
+
+  const handleChange = useCallback((files: File[], points: number) => {
+    for (let file of files) saveFile(basePath + 'outputs/' + file.key, file.body);
+    savePoints(moon.id, points);
+  }, []);
 
   const Component = lazy(() => import(/* @vite-ignore */ url));
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component ref={ref} {...moon} files={filesRef.current} {...{ width: '100%', height: '100%', ...props }} />
+        <Component
+          ref={ref}
+          {...moon}
+          files={files}
+          {...{ width: '100%', height: '100%', ...props }}
+          onChange={handleChange}
+        />
       </Suspense>
     </ErrorBoundary>
   );

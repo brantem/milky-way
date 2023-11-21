@@ -4,6 +4,9 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import type { File, Moon, Planet } from '../types';
 
 interface State {
+  version: number;
+  incrementVersion(): void;
+
   files: File[];
   get(path: string): File[];
   save(key: File['key'], body: File['body']): void;
@@ -13,6 +16,11 @@ interface State {
 export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]]>(
   persist(
     (set, get) => ({
+      version: 0,
+      incrementVersion() {
+        set((state) => ({ version: state.version + 1 }));
+      },
+
       files: [
         {
           key: 'planets/jupiter/_planet.json',
@@ -216,6 +224,7 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
     {
       name: 'files',
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({ files: state.files }),
     },
   ),
 );

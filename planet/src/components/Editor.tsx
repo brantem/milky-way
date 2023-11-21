@@ -231,7 +231,11 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 
 const Editor = () => {
   const { isOpen, toggle } = useEditor();
-  const { files, saveFile } = useFiles((state) => ({ files: state.files, saveFile: state.save }));
+  const { files, saveFile, incrementVersion } = useFiles((state) => ({
+    files: state.files,
+    saveFile: state.save,
+    incrementVersion: state.incrementVersion,
+  }));
 
   const [activeFileKey, setActiveFileKey] = useState(files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -268,9 +272,8 @@ const Editor = () => {
               className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1 border border-neutral-200/50"
               onSubmit={(e) => {
                 e.preventDefault();
-                Object.keys(values).forEach((key) => {
-                  saveFile(key, values[key]);
-                });
+                Object.keys(values).forEach((key) => saveFile(key, values[key]));
+                incrementVersion();
                 toggle();
               }}
             >
