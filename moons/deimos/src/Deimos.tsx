@@ -1,6 +1,6 @@
-import Markdown from 'react-markdown';
+import Markdown from './components/Markdown';
 
-import type { File } from './lib/types.ts';
+import type { File } from './lib/types';
 
 import './index.css';
 
@@ -11,6 +11,7 @@ type DeimosProps = {
   data: {
     file: string;
   };
+  onPublish(action: string, data?: any): void;
 };
 
 type Item = {
@@ -20,7 +21,7 @@ type Item = {
 
 type Item2 = Record<string, any>;
 
-const Deimos = ({ width = '100%', height = '100%', files, data }: DeimosProps) => {
+const Deimos = ({ width = '100%', height = '100%', files, data, onPublish }: DeimosProps) => {
   const items = (JSON.parse(files.find((file) => file.key === data.file)?.body || '[]') || []) as Item[];
   const items2 = (JSON.parse(files.find((file) => file.key === 'outputs/deimos.json')?.body || '[]') || []) as Item2[];
 
@@ -60,10 +61,8 @@ const Deimos = ({ width = '100%', height = '100%', files, data }: DeimosProps) =
                   {i + 1}
                 </span>
                 <Markdown
-                  className={[
-                    'markdown relative z-10 max-w-none',
-                    isCompleted ? 'text-lime-900' : isFailed ? 'text-rose-900' : 'text-yellow-900',
-                  ].join(' ')}
+                  className={isCompleted ? 'text-lime-900' : isFailed ? 'text-rose-900' : 'text-yellow-900'}
+                  onPublish={onPublish}
                 >
                   {item.text}
                 </Markdown>

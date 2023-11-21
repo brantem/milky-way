@@ -32,7 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               },
             },
             {
-              text: 'Lorem *ullamco* Lorem ea.',
+              text: 'Lorem *ullamco* Lorem ea. [](color://#0891b2)',
             },
           ]),
         },
@@ -54,6 +54,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       data={{
         file: 'items.json',
       }}
+      onPublish={(action, data) => console.log(action, data)}
     />
   </React.StrictMode>,
 );
