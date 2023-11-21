@@ -47,9 +47,14 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             height: 96,
             background: '#fff',
           },
+          probability: {
+            min: 90,
+            max: 100,
+          },
         },
       }}
-      onChange={(data, points) => console.log(data, points)}
+      onChange={(files, points) => console.log(files, points)}
+      debug
     />
   </React.StrictMode>,
 );

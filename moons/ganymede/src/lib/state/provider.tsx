@@ -2,12 +2,10 @@ import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } fro
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
-import type { File, Path } from '../types';
+import type { File } from '../types';
 
 // @ts-expect-error because i want to sleep
 export const AppContext = createContext<AppState>({});
-
-type Data = Pick<AppState, 'paths'>;
 
 enum Action {
   Reset = 'reset',
@@ -15,7 +13,7 @@ enum Action {
 }
 
 export type AppProviderHandle = {
-  snapshot(): { data: Data; points: number };
+  snapshot(): { files: File[]; points: number };
   execute(action: Action, data: any): boolean;
 };
 
@@ -30,25 +28,9 @@ type Test = {
 export type AppProviderProps = {
   files: File[];
   data: Pick<AppState, 'model'> & { tests: { file: string } };
-  onChange(data: Data, points: number): void;
+  onChange(files: File[], points: number): void;
   debug?: boolean;
   children: React.ReactNode;
-};
-
-const calculatePoints = (tests: Test[], paths: Path[]) => {
-  let points = 0;
-  a: for (let i = 0; i < tests.length; i++) {
-    for (let j = 0; j < paths.length; j++) {
-      const prediction = paths[j].prediction;
-      if (!prediction) continue;
-      if (prediction.label !== tests[i].data.label) continue;
-      if (prediction.probability * 100 < 95) continue;
-      if (tests[i].data.color && paths[j].color !== tests[i].data.color) continue;
-      points += 1;
-      continue a;
-    }
-  }
-  return points;
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
@@ -56,9 +38,42 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     const tests = (JSON.parse(files.find((file) => file.key === props.data.tests.file)?.body || '[]') || []) as Test[];
     const value = useRef(state).current;
 
-    const snapshot = () => {
-      const paths = JSON.parse(JSON.stringify(state.visiblePaths));
-      return { data: { paths }, points: calculatePoints(tests, paths) };
+    const snapshot: AppProviderHandle['snapshot'] = () => {
+      let points = 0;
+      const items = tests.map((test) => {
+        const path = state.visiblePaths.find((path) => {
+          if (!path.prediction) return;
+          if (path.prediction.label !== test.data.label) return;
+          const probability = path.prediction.probability * 100;
+          if (probability >= state.model!.probability.min && probability <= state.model!.probability.max) return;
+          if (test.data.color && path.color !== test.data.color) return;
+          points += 1;
+          return path;
+        });
+        if (!path) return null;
+        return {
+          color: path.color,
+          label: path.prediction?.label,
+        };
+      });
+
+      return {
+        files: [
+          {
+            key: 'ganymede.json',
+            body: JSON.stringify({
+              color: state.color,
+              paths: state.paths,
+              n: state.n,
+            }),
+          },
+          {
+            key: 'deimos.json',
+            body: JSON.stringify(items),
+          },
+        ],
+        points,
+      };
     };
 
     useImperativeHandle(ref, () => ({
@@ -85,8 +100,8 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
 
     useEffect(() => {
       const unsubscribe = subscribe(state, () => {
-        const { data, points } = snapshot();
-        onChange(data, points);
+        const { files, points } = snapshot();
+        onChange(files, points);
       });
       return () => unsubscribe();
     }, []);

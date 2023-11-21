@@ -26,4 +26,8 @@ export type ModelOpts = {
     height: number;
     background?: string;
   };
+  probability: {
+    min: number;
+    max: number;
+  };
 };

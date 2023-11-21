@@ -57,6 +57,10 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
                 //       height: 96,
                 //       background: '#fff',
                 //     },
+                //     probability: {
+                //       min: 90,
+                //       max: 100,
+                //     },
                 //   },
                 // },
 
