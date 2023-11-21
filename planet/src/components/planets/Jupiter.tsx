@@ -10,7 +10,7 @@ import type { Moon as _Moon, Planet } from '../../lib/types';
 import { cn } from '../../lib/helpers';
 import { useStore } from '../../lib/store';
 
-const PREFIX = 'jupiter/';
+const PREFIX = 'planets/jupiter/';
 
 const Jupiter = () => {
   const { files, saveFile, savePoints } = useStore((state) => ({
@@ -18,7 +18,7 @@ const Jupiter = () => {
     saveFile: state.saveFile,
     savePoints: state.savePoints,
   }));
-  const planet = JSON.parse(files.find((file) => file.key === 'planet.json')?.body || '{}') as Planet;
+  const planet = JSON.parse(files.find((file) => file.key === 'data.json')?.body || '{}') as Planet;
 
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
@@ -49,7 +49,7 @@ const Jupiter = () => {
               {planet.medium.active && (
                 <Panel id="planet-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
-                    <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
+                    <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
                         files={files}
@@ -72,7 +72,7 @@ const Jupiter = () => {
               {planet.small.active && (
                 <Panel id="planet-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
-                    <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
+                    <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
                         files={files}
@@ -100,10 +100,11 @@ const Jupiter = () => {
             <div
               className={cn(
                 'h-full w-full',
-                planet.large.actions?.active && 'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm',
+                planet.large.actions?.active &&
+                  'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm border border-neutral-200/50',
               )}
             >
-              <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full">
+              <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
                 <Moon
                   ref={largeRef}
                   files={files}
