@@ -31,7 +31,7 @@ const Phobos = ({ width = '100%', height = '100%', files, data, onPublish }: Pho
                 const color = href.split('color://')[1];
                 return (
                   <span
-                    className="group inline-block border-2 border-solid border-neutral-200 rounded-md h-6 w-6 !-mb-1.5 overflow-hidden cursor-pointer"
+                    className="group inline-block border-2 border-solid border-black/10 rounded-md h-6 w-6 !-mb-1.5 overflow-hidden cursor-pointer"
                     onClick={() => onPublish('color:set', color)}
                   >
                     <span
