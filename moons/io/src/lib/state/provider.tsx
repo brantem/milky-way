@@ -28,7 +28,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
     const points = state.lines.reduce((points, line) => {
       return line.a.split('-')[1] === line.b.split('-')[1] ? ++points : points;
     }, 0);
-    return { files: [{ key: 'io.json', body: JSON.stringify(state.lines) }], points };
+    return { files: [{ key: 'io.json', body: JSON.stringify({ lines: state.lines }) }], points };
   };
 
   useImperativeHandle(ref, () => ({

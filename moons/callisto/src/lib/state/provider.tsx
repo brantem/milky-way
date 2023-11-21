@@ -46,7 +46,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
     const points = state.answers.reduce((points, answer) => {
       return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
     }, 0);
-    return { files: [{ key: 'callisto.json', body: JSON.stringify(state.answers) }], points };
+    return { files: [{ key: 'callisto.json', body: JSON.stringify({ answers: state.answers }) }], points };
   };
 
   useImperativeHandle(ref, () => ({
