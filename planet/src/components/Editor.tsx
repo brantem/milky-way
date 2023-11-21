@@ -110,40 +110,43 @@ const Files = ({ activeFileKey, onFileClick, onFileCreated, onFileDeleted }: Fil
       <div className="bg-neutral-100 z-10 flex gap-2 pr-2 -mt-[3px] pt-[3px]">
         {files.map((file) => {
           const isActive = file.key === activeFileKey;
+          const isDeletable = !file.key.endsWith('planet.json');
           return (
             <div key={file.key} className="flex items-center bg-neutral-100 group">
               <Button
                 type="button"
-                shadowClassName="bg-neutral-200/50 rounded-r-none"
-                contentClassName="bg-white px-4 rounded-r-none group-disabled:cursor-default"
+                shadowClassName={cn('bg-neutral-200/50', isDeletable && 'rounded-r-none')}
+                contentClassName={cn('bg-white px-4 group-disabled:cursor-default', isDeletable && 'rounded-r-none')}
                 disabled={isActive}
                 onClick={() => onFileClick(file)}
               >
                 {file.key}
               </Button>
-              <Button
-                type="button"
-                className="aspect-square"
-                shadowClassName="bg-neutral-200/50 rounded-l-none"
-                contentClassName={cn(
-                  'bg-white text-white rounded-l-none text-neutral-300 group-enabled:group-hover:text-rose-500',
-                  isActive
-                    ? 'group-enabled:![transform:translate3d(0,0,0)] group-enabled:group-hover:![transform:translate3d(0,-2px,0)]'
-                    : 'group-active:![transform:translate3d(0,0,0)] group-hover:![transform:translate3d(0,-3px,0)]',
-                )}
-                onClick={() => {
-                  deleteFile(file.key);
-                  onFileDeleted();
-                }}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
-                  <path
-                    fillRule="evenodd"
-                    d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </Button>
+              {isDeletable && (
+                <Button
+                  type="button"
+                  className="aspect-square"
+                  shadowClassName="bg-neutral-200/50 rounded-l-none"
+                  contentClassName={cn(
+                    'bg-white text-white rounded-l-none text-neutral-300 group-enabled:group-hover:text-rose-500',
+                    isActive
+                      ? 'group-enabled:![transform:translate3d(0,0,0)] group-enabled:group-hover:![transform:translate3d(0,-2px,0)]'
+                      : 'group-active:![transform:translate3d(0,0,0)] group-hover:![transform:translate3d(0,-3px,0)]',
+                  )}
+                  onClick={() => {
+                    deleteFile(file.key);
+                    onFileDeleted();
+                  }}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
+                    <path
+                      fillRule="evenodd"
+                      d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </Button>
+              )}
             </div>
           );
         })}

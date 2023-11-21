@@ -1,3 +1,8 @@
+export type File = {
+  key: string;
+  body: string;
+};
+
 export type Item = {
   id: string;
   text: string;

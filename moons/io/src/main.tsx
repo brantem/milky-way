@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           ],
         },
       }}
-      onChange={(data, points) => console.log(data, points)}
+      onChange={(files, points) => console.log(files, points)}
     />
   </React.StrictMode>,
 );
