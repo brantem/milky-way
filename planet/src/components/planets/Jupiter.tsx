@@ -1,43 +1,52 @@
 import { useRef } from 'react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
-import Moon, { type MoonHandle } from './Moon';
-import Button from './Button';
-import EditorButton from './buttons/EditorButton';
-import ResetButton from './buttons/ResetButton';
-import SubmitButton from './buttons/SubmitButton';
+import Moon, { type MoonHandle, type MoonProps } from '../Moon';
+import EditorButton from '../buttons/EditorButton';
+import ResetButton from '../buttons/ResetButton';
+import SubmitButton from '../buttons/SubmitButton';
 
-import type { Moon as _Moon } from '../lib/types';
-import { cn } from '../lib/helpers';
-import { useStore } from '../lib/store';
+import type { Moon as _Moon, Planet } from '../../lib/types';
+import { cn } from '../../lib/helpers';
+import { useStore } from '../../lib/store';
 
-type Planet = {
-  small?: _Moon;
-  medium?: _Moon;
-  large: _Moon & {
-    actions: {
-      active?: boolean;
-      reset?: boolean;
-      submit?: boolean;
-    };
-  };
-};
+const PREFIX = 'jupiter/';
 
-const Planet = () => {
-  const files = useStore((state) => state.files);
+const Jupiter = () => {
+  const { files, saveFile, savePoints } = useStore((state) => ({
+    files: state.getFiles(PREFIX),
+    saveFile: state.saveFile,
+    savePoints: state.savePoints,
+  }));
   const planet = JSON.parse(files.find((file) => file.key === 'planet.json')?.body || '{}') as Planet;
 
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
+  const handleChange: (id: _Moon['id']) => Required<MoonProps>['onChange'] = (id) => (files, points) => {
+    for (let file of files) saveFile(PREFIX + 'outputs/' + file.key, file.body);
+    savePoints(id, points);
+  };
+
+  const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
+    for (let file of files) saveFile(PREFIX + 'outputs/' + file.key, file.body);
+    savePoints(id, points);
+  };
+
+  const handleSubmit = () => {
+    if (smallRef.current?.snapshot) handleSnapshot(planet.small.id, smallRef.current.snapshot());
+    if (mediumRef.current?.snapshot) handleSnapshot(planet.medium.id, mediumRef.current.snapshot());
+    if (largeRef.current?.snapshot) handleSnapshot(planet.large.id, largeRef.current.snapshot());
+  };
+
   return (
     <PanelGroup id="planet" direction="horizontal">
-      {(planet.small || planet.medium) && (
+      {(planet.small.active || planet.medium.active) && (
         <>
           <Panel id="planet-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
             <PanelGroup id="planet-side-inner" direction="vertical" className="pl-1">
-              {planet.medium && (
+              {planet.medium.active && (
                 <Panel id="planet-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
@@ -45,7 +54,7 @@ const Planet = () => {
                         ref={mediumRef}
                         files={files}
                         moon={planet.medium}
-                        onChange={(data, points) => console.log(data, points)}
+                        onChange={handleChange(planet.medium.id)}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -55,12 +64,12 @@ const Planet = () => {
                   </div>
                 </Panel>
               )}
-              {planet.small && planet.medium && (
+              {planet.small.active && planet.medium.active && (
                 <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:calc(100%-theme(spacing.2))] relative before:content-[''] before:absolute before:-top-3 before:left-1 before:h-7 before:w-[calc(100%-theme(spacing.2))] before:z-10">
                   <div className="w-[var(--size,theme(spacing.12))] h-1 rounded-full bg-neutral-300 transition-all" />
                 </PanelResizeHandle>
               )}
-              {planet.small && (
+              {planet.small.active && (
                 <Panel id="planet-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden">
@@ -68,7 +77,7 @@ const Planet = () => {
                         ref={smallRef}
                         files={files}
                         moon={planet.small}
-                        onChange={(data, points) => console.log(data, points)}
+                        onChange={handleChange(planet.small.id)}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -99,7 +108,7 @@ const Planet = () => {
                   ref={largeRef}
                   files={files}
                   moon={moon}
-                  onChange={(data, points) => console.log(data, points)}
+                  onChange={handleChange(planet.large.id)}
                   onPublish={(action: string, data: any) => {
                     smallRef.current?.execute?.(action, data);
                     mediumRef.current?.execute?.(action, data);
@@ -120,17 +129,7 @@ const Planet = () => {
                       />
                     )}
                   </div>
-                  <div className="flex gap-2">
-                    {actions.submit && (
-                      <SubmitButton
-                        onClick={() => {
-                          if (smallRef.current?.snapshot) console.log('small', smallRef.current.snapshot());
-                          if (mediumRef.current?.snapshot) console.log('medium', mediumRef.current.snapshot());
-                          if (largeRef.current?.snapshot) console.log('large', largeRef.current.snapshot());
-                        }}
-                      />
-                    )}
-                  </div>
+                  <div className="flex gap-2">{actions.submit && <SubmitButton onClick={handleSubmit} />}</div>
                 </div>
               )}
             </div>
@@ -141,4 +140,4 @@ const Planet = () => {
   );
 };
 
-export default Planet;
+export default Jupiter;

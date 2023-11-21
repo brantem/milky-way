@@ -1,5 +1,5 @@
 ---
-import Planet from '../components/Planet';
+import Jupiter from '../components/planets/Jupiter';
 import Editor from '../components/Editor';
 
 import '../styles/globals.css';
@@ -9,7 +9,7 @@ import '../styles/globals.css';
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>Planet</title>
+    <title>Jupiter</title>
     <link rel="preconnect" href="https://rsms.me/" />
     <link rel="stylesheet" href="https://rsms.me/inter/inter.css" />
     <script type="importmap">
@@ -22,7 +22,7 @@ import '../styles/globals.css';
     </script>
   </head>
   <body class="h-full w-full bg-neutral-100 p-1 [scrollbar-gutter:stable]">
-    <Planet client:only />
+    <Jupiter client:only />
     <Editor client:only />
   </body>
 </html>

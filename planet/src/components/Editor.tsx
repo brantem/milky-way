@@ -45,7 +45,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
           type={isInputVisible ? 'submit' : 'button'}
           className="aspect-square"
           shadowClassName={cn('bg-sky-600 z-[9]', isInputVisible && 'rounded-r-none')}
-          contentClassName={cn('bg-sky-500 text-white flex items-center', isInputVisible && 'rounded-r-none')}
+          contentClassName={cn('bg-sky-500 text-white', isInputVisible && 'rounded-r-none')}
           onClick={() => {
             setIsInputVisible(true);
             inputRef.current?.focus();
@@ -77,7 +77,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
           type="reset"
           className="aspect-square"
           shadowClassName="bg-neutral-200/50 rounded-l-none"
-          contentClassName="bg-white text-white rounded-l-none flex items-center text-rose-500"
+          contentClassName="bg-white text-white rounded-l-none text-rose-500"
           onClick={() => {
             setIsInputVisible(false);
             setKey('');
@@ -115,7 +115,7 @@ const Files = ({ activeFileKey, onFileClick, onFileCreated, onFileDeleted }: Fil
               <Button
                 type="button"
                 shadowClassName="bg-neutral-200/50 rounded-r-none"
-                contentClassName="bg-white px-4 flex items-center rounded-r-none group-disabled:cursor-default"
+                contentClassName="bg-white px-4 rounded-r-none group-disabled:cursor-default"
                 disabled={isActive}
                 onClick={() => onFileClick(file)}
               >
@@ -126,7 +126,7 @@ const Files = ({ activeFileKey, onFileClick, onFileCreated, onFileDeleted }: Fil
                 className="aspect-square"
                 shadowClassName="bg-neutral-200/50 rounded-l-none"
                 contentClassName={cn(
-                  'bg-white text-white rounded-l-none flex items-center text-neutral-300 group-enabled:group-hover:text-rose-500',
+                  'bg-white text-white rounded-l-none text-neutral-300 group-enabled:group-hover:text-rose-500',
                   isActive
                     ? 'group-enabled:![transform:translate3d(0,0,0)] group-enabled:group-hover:![transform:translate3d(0,-2px,0)]'
                     : 'group-active:![transform:translate3d(0,0,0)] group-hover:![transform:translate3d(0,-3px,0)]',
@@ -162,7 +162,7 @@ const Editor = () => {
     toggle: state.toggleEditor,
   }));
 
-  const [activeFileKey, setActiveFileKey] = useState('planet.json');
+  const [activeFileKey, setActiveFileKey] = useState(files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});
 
   const file = files.find((file) => file.key === activeFileKey)!;
@@ -201,7 +201,7 @@ const Editor = () => {
       </div>
 
       <form
-        className="h-full w-full bg-neutral-100 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1"
+        className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1"
         onSubmit={(e) => {
           e.preventDefault();
           Object.keys(values).forEach((key) => {

@@ -28,14 +28,14 @@ const Loading = () => {
 };
 
 export type MoonHandle = {
-  snapshot?: () => { data: Record<string, any>; points: number };
+  snapshot?: () => { files: File[]; points: number };
   execute?: (action: string, data?: any) => void;
 };
 
-type MoonProps = {
+export type MoonProps = {
   files?: File[];
   moon: _Moon;
-  onChange?: (data: Record<string, any>, points: number) => void;
+  onChange?: (files: File[], points: number) => void;
   onPublish?: (action: string, data?: any) => void;
 };
 

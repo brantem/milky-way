@@ -1,45 +1,48 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-import type { File } from './types';
+import type { File, Moon, Planet } from './types';
 
 interface State {
   files: File[];
+  getFiles(prefix: string): File[];
   saveFile(key: File['key'], body: File['body']): void;
   deleteFile(key: File['key']): void;
+
+  points: Record<string, number>;
+  savePoints(id: Moon['id'], points: number): void;
 
   isEditorOpen: boolean;
   toggleEditor(): void;
 }
 
-export const useStore = create<State>()(
+export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]]>(
   persist(
-    (set) => ({
+    (set, get) => ({
       files: [
         {
-          key: 'planet.json',
+          key: 'jupiter/planet.json',
           body: JSON.stringify(
             {
               small: {
+                id: 'deimos',
+                active: true,
                 url: 'https://moons.brantem.com/deimos/bundle.js',
-                points: null,
                 data: {
                   file: 'tests.json',
                 },
               },
               medium: {
+                id: 'phobos',
+                active: true,
                 url: 'https://moons.brantem.com/phobos/bundle.js',
-                points: null,
                 data: {
                   file: 'content.md',
                 },
               },
               large: {
+                // id: 'ganymede',
                 // url: 'https://moons.brantem.com/ganymede/bundle.js',
-                // maxPoints: {
-                //   min: 2,
-                //   max: 2,
-                // },
                 // data: {
                 //   tests: {
                 //     file: 'tests.json',
@@ -57,11 +60,8 @@ export const useStore = create<State>()(
                 //   },
                 // },
 
+                // id: 'callisto',
                 // url: 'https://moons.brantem.com/callisto/bundle.js',
-                // maxPoints: {
-                //   min: 5,
-                //   max: 5,
-                // },
                 // data: {
                 //   text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
                 //   choices: {
@@ -77,11 +77,8 @@ export const useStore = create<State>()(
                 //   },
                 // },
 
+                id: 'io',
                 url: 'https://moons.brantem.com/io/bundle.js',
-                points: {
-                  min: 5,
-                  max: 5,
-                },
                 data: {
                   left: {
                     items: [
@@ -104,6 +101,7 @@ export const useStore = create<State>()(
                     shuffle: true,
                   },
                 },
+
                 actions: {
                   active: true,
                   reset: true,
@@ -111,17 +109,17 @@ export const useStore = create<State>()(
                 },
                 debug: true,
               },
-            },
+            } satisfies Planet,
             null,
             2,
           ),
         },
         {
-          key: 'content.md',
+          key: 'jupiter/content.md',
           body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
         },
         {
-          key: 'tests.json',
+          key: 'jupiter/tests.json',
           body: JSON.stringify(
             [
               {
@@ -143,6 +141,12 @@ export const useStore = create<State>()(
           ),
         },
       ],
+      getFiles(prefix) {
+        return get().files.reduce((files, file) => {
+          if (file.key.startsWith(prefix)) return [...files, { ...file, key: file.key.replace(prefix, '') }];
+          return files;
+        }, [] as File[]);
+      },
       saveFile(key, body) {
         set((state) => {
           const index = state.files.findIndex((file) => file.key === key);
@@ -156,6 +160,11 @@ export const useStore = create<State>()(
         set((state) => ({ files: state.files.filter((file) => file.key !== key) }));
       },
 
+      points: {},
+      savePoints(id, points) {
+        set((state) => ({ points: { ...state.points, [id]: points } }));
+      },
+
       isEditorOpen: false,
       toggleEditor() {
         set((state) => ({ isEditorOpen: !state.isEditorOpen }));
@@ -164,7 +173,7 @@ export const useStore = create<State>()(
     {
       name: 'planet',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ files: state.files }),
+      partialize: (state) => ({ files: state.files, points: state.points }),
     },
   ),
 );
