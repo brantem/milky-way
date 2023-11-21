@@ -96,7 +96,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     useEffect(() => {
       value.model = props.data.model || null;
       value.debug = Boolean(props.debug);
-    }, [props.data.model, props.debug]);
+    }, []);
 
     useEffect(() => {
       const unsubscribe = subscribe(state, () => {
