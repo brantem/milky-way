@@ -70,7 +70,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
     choices.forEach((choice) => m.set(choice.id, choice));
     value.m = m;
     value.choiceIds = Array.from(m.keys());
-  }, [props.data.choices]);
+  }, []);
 
   useEffect(() => {
     const unsubscribe = subscribe(state, () => {
