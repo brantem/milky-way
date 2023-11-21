@@ -2,7 +2,7 @@ import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } fro
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
-import { Choice } from '../types';
+import type { File, Choice } from '../types';
 
 const shuffle = <T,>(a: T[]): T[] => {
   const b = a.slice();
@@ -18,14 +18,12 @@ const shuffle = <T,>(a: T[]): T[] => {
 // @ts-expect-error because i still don't know how to make ts happy
 export const AppContext = createContext<AppState>({});
 
-type Data = Pick<AppState, 'answers'>;
-
 enum Action {
   Reset = 'reset',
 }
 
 export type AppProviderHandle = {
-  snapshot(): { data: Data; points: number };
+  snapshot(): { files: File[]; points: number };
   execute(action: Action, data: any): boolean;
 };
 
@@ -37,19 +35,18 @@ export type AppProviderProps = {
       shuffle?: boolean;
     };
   };
-  onChange(data: Data, points: number): void;
+  onChange(files: File[], points: number): void;
   children: React.ReactNode;
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ children, onChange, ...props }, ref) => {
   const value = useRef(state).current;
 
-  const snapshot = () => {
-    const answers = JSON.parse(JSON.stringify(state.answers)) as AppState['answers']; // unwrap
-    const points = answers.reduce((points, answer) => {
+  const snapshot: AppProviderHandle['snapshot'] = () => {
+    const points = state.answers.reduce((points, answer) => {
       return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
     }, 0);
-    return { data: { answers }, points };
+    return { files: [{ key: 'callisto.json', body: JSON.stringify(state.answers) }], points };
   };
 
   useImperativeHandle(ref, () => ({
@@ -77,8 +74,8 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ ch
 
   useEffect(() => {
     const unsubscribe = subscribe(state, () => {
-      const { data, points } = snapshot();
-      onChange(data, points);
+      const { files, points } = snapshot();
+      onChange(files, points);
     });
     return () => unsubscribe();
   }, []);

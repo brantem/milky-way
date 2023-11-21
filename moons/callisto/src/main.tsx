@@ -42,7 +42,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           shuffle: true,
         },
       }}
-      onChange={(data, points) => console.log(data, points)}
+      onChange={(files, points) => console.log(files, points)}
     />
   </React.StrictMode>,
 );
