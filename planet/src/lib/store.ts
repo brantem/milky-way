@@ -21,7 +21,7 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
     (set, get) => ({
       files: [
         {
-          key: 'planets/jupiter/data.json',
+          key: 'planets/jupiter/_planet.json',
           body: JSON.stringify(
             {
               small: {
@@ -41,46 +41,6 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
                 },
               },
               large: {
-                // id: 'ganymede',
-                // url: 'https://moons.brantem.com/ganymede/bundle.js',
-                // data: {
-                //   tests: {
-                //     file: 'tests.json',
-                //   },
-                //   model: {
-                //     type: 'teachable_machine',
-                //     urls: {
-                //       baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
-                //     },
-                //     input: {
-                //       width: 96,
-                //       height: 96,
-                //       background: '#fff',
-                //     },
-                //     probability: {
-                //       min: 90,
-                //       max: 100,
-                //     },
-                //   },
-                // },
-
-                // id: 'callisto',
-                // url: 'https://moons.brantem.com/callisto/bundle.js',
-                // data: {
-                //   text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
-                //   choices: {
-                //     items: [
-                //       { id: '1', text: 'chihuahua' },
-                //       { id: '2', text: 'backyard' },
-                //       { id: '3', text: 'ball' },
-                //       { id: '4', text: 'spring' },
-                //       { id: '5', text: 'walk' },
-                //       { id: '6', text: 'grandfather' },
-                //     ],
-                //     shuffle: true,
-                //   },
-                // },
-
                 id: 'io',
                 url: 'https://moons.brantem.com/io/bundle.js',
                 data: {
@@ -140,6 +100,95 @@ export const useStore = create<State, [['zustand/persist', Pick<State, 'files'>]
                 },
               },
             ],
+            null,
+            2,
+          ),
+        },
+        {
+          key: 'planets/jupiter/examples/callisto.json',
+          body: JSON.stringify(
+            {
+              id: 'callisto',
+              url: 'https://moons.brantem.com/callisto/bundle.js',
+              data: {
+                text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
+                choices: {
+                  items: [
+                    { id: '1', text: 'chihuahua' },
+                    { id: '2', text: 'backyard' },
+                    { id: '3', text: 'ball' },
+                    { id: '4', text: 'spring' },
+                    { id: '5', text: 'walk' },
+                    { id: '6', text: 'grandfather' },
+                  ],
+                  shuffle: true,
+                },
+              },
+            },
+            null,
+            2,
+          ),
+        },
+        {
+          key: 'planets/jupiter/examples/ganymede.json',
+          body: JSON.stringify(
+            {
+              id: 'ganymede',
+              url: 'https://moons.brantem.com/ganymede/bundle.js',
+              data: {
+                tests: {
+                  file: 'tests.json',
+                },
+                model: {
+                  type: 'teachable_machine',
+                  urls: {
+                    baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+                  },
+                  input: {
+                    width: 96,
+                    height: 96,
+                    background: '#fff',
+                  },
+                  probability: {
+                    min: 90,
+                    max: 100,
+                  },
+                },
+              },
+            },
+            null,
+            2,
+          ),
+        },
+        {
+          key: 'planets/jupiter/examples/io.json',
+          body: JSON.stringify(
+            {
+              id: 'io',
+              url: 'https://moons.brantem.com/io/bundle.js',
+              data: {
+                left: {
+                  items: [
+                    { id: '1', text: 'Square' },
+                    { id: '2', text: 'Japan' },
+                    { id: '3', text: 'Mars' },
+                    { id: '4', text: 'Leonardo da Vinci' },
+                    { id: '5', text: 'Broccoli' },
+                  ],
+                  shuffle: true,
+                },
+                right: {
+                  items: [
+                    { id: '1', text: 'Four equal sides' },
+                    { id: '2', text: 'Tokyo' },
+                    { id: '3', text: 'Phobos' },
+                    { id: '4', text: 'Mona Lisa' },
+                    { id: '5', text: 'Vegetable' },
+                  ],
+                  shuffle: true,
+                },
+              },
+            },
             null,
             2,
           ),

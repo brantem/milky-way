@@ -18,7 +18,7 @@ const Jupiter = () => {
     saveFile: state.saveFile,
     savePoints: state.savePoints,
   }));
-  const planet = JSON.parse(files.find((file) => file.key === 'data.json')?.body || '{}') as Planet;
+  const planet = JSON.parse(files.find((file) => file.key === '_planet.json')?.body || '{}') as Planet;
 
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
