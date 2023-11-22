@@ -34,6 +34,9 @@ export type MoonHandle = {
 };
 
 type MoonProps = {
+  parent: {
+    id: string;
+  };
   moon: _Moon;
   onPublish?: (action: string, data?: any) => void;
 };

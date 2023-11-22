@@ -42,6 +42,10 @@ const Jupiter = () => {
     if (largeRef.current?.snapshot) handleSnapshot(planet.large.id, largeRef.current.snapshot());
   };
 
+  const parent = {
+    id: planet.id,
+  };
+
   return (
     <PanelGroup key={planet.version} id="planet" direction="horizontal">
       {(planet.small.active || planet.medium.active) && (
@@ -54,6 +58,7 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
+                        parent={parent}
                         moon={planet.medium}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
@@ -75,6 +80,7 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
+                        parent={parent}
                         moon={planet.small}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
@@ -105,6 +111,7 @@ const Jupiter = () => {
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
                 <Moon
                   ref={largeRef}
+                  parent={parent}
                   moon={moon}
                   onPublish={(action: string, data: any) => {
                     smallRef.current?.execute?.(action, data);

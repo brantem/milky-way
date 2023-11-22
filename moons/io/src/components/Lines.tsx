@@ -38,8 +38,10 @@ const BaseLine = ({ d }: { d: string }) => {
 };
 
 const idToCoord = (id: string): Coordinate => {
-  const parentRect = document.getElementById('io')!.getBoundingClientRect();
-  const el = document.querySelector(`#${id} > .dot`)!;
+  const parent = document.getElementById('io');
+  const el = document.querySelector(`#${id} > .dot`);
+  if (!parent || !el) return { x: 0, y: 0 };
+  const parentRect = parent.getBoundingClientRect();
   const rect = el.getBoundingClientRect();
   return { x: rect.x - parentRect.x + rect.width / 2, y: rect.y - parentRect.y + rect.width / 2 };
 };

@@ -28,11 +28,11 @@ const App = ({ width = '100%', height = '100%', data }: IoProps) => {
   return (
     <div id="io" style={{ width, height }}>
       <Wrapper>
-        <Items {...data.left} side={Side.Left} />
+        <Items items={data.left.items} side={Side.Left} />
 
         <Lines />
 
-        <Items {...data.right} side={Side.Right} />
+        <Items items={data.right.items} side={Side.Right} />
       </Wrapper>
     </div>
   );

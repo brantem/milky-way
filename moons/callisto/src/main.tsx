@@ -8,6 +8,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Callisto
       width={1024}
       height={768}
+      parent={{
+        id: 'aXjyt3QFH51MWJ4c7WSmS',
+      }}
       files={[
         {
           key: 'callisto.json',

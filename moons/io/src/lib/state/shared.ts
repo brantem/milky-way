@@ -7,6 +7,9 @@ declare module 'valtio' {
 }
 
 export type AppState = {
+  leftIds: string[];
+  rightIds: string[];
+
   a: string | null;
   start(id: string): void;
   b: (string | Coordinate) | null;
@@ -19,6 +22,9 @@ export type AppState = {
 };
 
 export const state = proxy<AppState>({
+  leftIds: [],
+  rightIds: [],
+
   a: null,
   start(id) {
     if (state.a) return;

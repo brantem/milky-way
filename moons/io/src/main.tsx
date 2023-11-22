@@ -12,10 +12,12 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         {
           key: 'io.json',
           body: JSON.stringify({
+            leftIds: ['3', '4', '2', '1', '5'],
+            rightIds: ['2', '5', '3', '1', '4'],
             lines: [
               {
-                a: 'left-4',
-                b: 'right-4',
+                a: 'left-3',
+                b: 'right-3',
               },
             ],
           }),
@@ -46,6 +48,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
             { id: '4', text: 'Mona Lisa' },
             { id: '5', text: 'Vegetable' },
           ],
+          shuffle: true,
         },
       }}
       onChange={(files, points) => console.log(files, points)}

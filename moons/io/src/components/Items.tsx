@@ -1,17 +1,8 @@
 import Dot from './Dot';
 
 import { type Item, Side } from '../lib/types';
-
-const shuffle = <T,>(a: T[]): T[] => {
-  const b = a.slice();
-  for (let i = b.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = b[i];
-    b[i] = b[j];
-    b[j] = temp;
-  }
-  return b;
-};
+import { useAppState } from '../lib/state';
+import { useMemo } from 'react';
 
 type ItemsProps = {
   items: Item[];
@@ -19,7 +10,15 @@ type ItemsProps = {
   shuffle?: boolean;
 };
 
-const Items = ({ items, side, shuffle: _shuffle }: ItemsProps) => {
+const Items = ({ items, side }: ItemsProps) => {
+  const m = useMemo(() => {
+    const m = new Map();
+    items.forEach((item) => m.set(item.id, item));
+    return m;
+  }, []);
+
+  const [state] = useAppState();
+
   return (
     <ol
       className={[
@@ -27,23 +26,26 @@ const Items = ({ items, side, shuffle: _shuffle }: ItemsProps) => {
         side === Side.Left ? '[grid-area:start]' : '[grid-area:end]',
       ].join(' ')}
     >
-      {(_shuffle ? shuffle(items) : items).map((item) => (
-        <li
-          key={item.id}
-          id={`${side}-${item.id}`}
-          className={[
-            'grid items-center gap-3',
-            side === Side.Left
-              ? "grid-cols-[1fr_42px] [grid-template-areas:'text_dot']"
-              : "grid-cols-[42px_1fr] [grid-template-areas:'dot_text']",
-          ].join(' ')}
-        >
-          <span className={['[grid-area:text]', side === Side.Left ? 'text-end' : 'text-start'].join(' ')}>
-            {item.text}
-          </span>
-          <Dot side={side} />
-        </li>
-      ))}
+      {(side === Side.Left ? state.leftIds : state.rightIds).map((id) => {
+        const item = m.get(id);
+        return (
+          <li
+            key={item.id}
+            id={`${side}-${item.id}`}
+            className={[
+              'grid items-center gap-3',
+              side === Side.Left
+                ? "grid-cols-[1fr_42px] [grid-template-areas:'text_dot']"
+                : "grid-cols-[42px_1fr] [grid-template-areas:'dot_text']",
+            ].join(' ')}
+          >
+            <span className={['[grid-area:text]', side === Side.Left ? 'text-end' : 'text-start'].join(' ')}>
+              {item.text}
+            </span>
+            <Dot side={side} />
+          </li>
+        );
+      })}
     </ol>
   );
 };

@@ -3,17 +3,7 @@ import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
 import type { File, Choice, Answer } from '../types';
-
-const shuffle = <T,>(a: T[]): T[] => {
-  const b = a.slice();
-  for (let i = b.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    const temp = b[i];
-    b[i] = b[j];
-    b[j] = temp;
-  }
-  return b;
-};
+import { shuffle } from '../helpers';
 
 // @ts-expect-error because i still don't know how to make ts happy
 export const AppContext = createContext<AppState>({});
@@ -28,6 +18,9 @@ export type AppProviderHandle = {
 };
 
 export type AppProviderProps = {
+  parent: {
+    id: string;
+  };
   files: File[];
   data: {
     initial: {
@@ -47,7 +40,7 @@ export type AppProviderProps = {
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ files, data, children, onChange }, ref) => {
+  ({ parent, files, data, children, onChange }, ref) => {
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
@@ -73,7 +66,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
 
     useEffect(() => {
       let choices = data.choices.items || [];
-      if (data.choices.shuffle) choices = shuffle(choices);
+      if (data.choices.shuffle) choices = shuffle(choices, parent.id);
 
       const m = new Map<Choice['id'], Choice>();
       choices.forEach((choice) => m.set(choice.id, choice));
