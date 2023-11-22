@@ -46,7 +46,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
           if (path.prediction.label !== test.data.label) return;
           const probability = path.prediction.probability * 100;
           if (!(probability >= state.model!.probability.min && probability <= state.model!.probability.max)) return;
-          if (test.data.color && path.color !== test.data.color) return;
+          if (test.data.color && path.color !== test.data.color) return path;
           points += 1;
           return path;
         });
