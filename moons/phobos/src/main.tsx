@@ -14,7 +14,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       ]}
       data={{
-        file: 'text.md',
+        content: {
+          file: 'text.md',
+        },
       }}
       onPublish={(action, data) => console.log(action, data)}
     />

@@ -9,7 +9,10 @@ type DeimosProps = {
   width?: React.CSSProperties['width'];
   files: File[];
   data: {
-    file: string;
+    tasks: {
+      file: string;
+      output: string;
+    };
   };
   onPublish(action: string, data?: any): void;
 };
@@ -22,15 +25,25 @@ type Item = {
 type Item2 = Record<string, any>;
 
 const Deimos = ({ width = '100%', height = '100%', files, data, onPublish }: DeimosProps) => {
-  const items = (JSON.parse(files.find((file) => file.key === data.file)?.body || '[]') || []) as Item[];
-  const items2 = (JSON.parse(files.find((file) => file.key === 'outputs/deimos.json')?.body || '[]') || []) as Item2[];
+  const getFile = (key: string, exact?: boolean) => {
+    const file = files.find((file) => {
+      if (exact) {
+        return file.key === key;
+      } else {
+        return file.key.endsWith(key);
+      }
+    });
+    return JSON.parse(file?.body || '[]') || [];
+  };
+
+  const items = getFile(data.tasks.file, true) as Item[];
+  const items2 = getFile(data.tasks.output) as Item2[];
 
   const check = (index: number): [isCompleted: boolean, isFailed: boolean] => {
     const item = items[index];
     const item2 = items2[index];
     if (!item2) return [false, false];
-    const keys = Object.keys(item.data);
-    if (keys.every((key) => item.data[key] === item2[key])) return [true, false];
+    if (Object.keys(item.data).every((key) => item.data[key] === item2[key])) return [true, false];
     return [false, true];
   };
 

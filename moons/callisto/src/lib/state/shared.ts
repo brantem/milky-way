@@ -1,14 +1,9 @@
 import { proxy } from 'valtio';
-import { Choice } from '../types';
+import { Choice, Answer } from '../types';
 
 declare module 'valtio' {
   function useSnapshot<T extends object>(p: T): T;
 }
-
-type Answer = {
-  blankId: string;
-  choiceId: string;
-};
 
 export type AppState = {
   m: Map<string, Choice>;

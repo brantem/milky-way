@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={400}
       files={[
         {
-          key: 'items.json',
+          key: 'tasks.json',
           body: JSON.stringify([
             {
               text: 'Exercitation ad dolore anim duis pariatur ipsum aute do nostrud irure eiusmod est mollit aute officia.\n\n```\nconst a = 1;\n```',
@@ -37,10 +37,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           ]),
         },
         {
-          key: 'outputs/deimos.json',
+          key: 'deimos.json',
           body: JSON.stringify([
             {
               a: 1,
+              b: 1,
             },
             {
               a: 1,
@@ -52,7 +53,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       ]}
       data={{
-        file: 'items.json',
+        tasks: {
+          file: 'tasks.json',
+          output: 'deimos.json',
+        },
       }}
       onPublish={(action, data) => console.log(action, data)}
     />

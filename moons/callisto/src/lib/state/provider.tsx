@@ -2,7 +2,7 @@ import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } fro
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
-import type { File, Choice } from '../types';
+import type { File, Choice, Answer } from '../types';
 
 const shuffle = <T,>(a: T[]): T[] => {
   const b = a.slice();
@@ -28,7 +28,14 @@ export type AppProviderHandle = {
 };
 
 export type AppProviderProps = {
+  files: File[];
   data: {
+    initial: {
+      file: string;
+    };
+    output: {
+      file: string;
+    };
     text: string;
     choices: {
       items: Choice[];
@@ -39,46 +46,58 @@ export type AppProviderProps = {
   children: React.ReactNode;
 };
 
-export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(({ children, onChange, ...props }, ref) => {
-  const value = useRef(state).current;
+export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
+  ({ files, data, children, onChange }, ref) => {
+    const value = useRef(state).current;
 
-  const snapshot: AppProviderHandle['snapshot'] = () => {
-    const points = state.answers.reduce((points, answer) => {
-      return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
-    }, 0);
-    return { files: [{ key: 'callisto.json', body: JSON.stringify({ answers: state.answers }) }], points };
-  };
+    const snapshot: AppProviderHandle['snapshot'] = () => {
+      const points = state.answers.reduce((points, answer) => {
+        return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
+      }, 0);
+      return { files: [{ key: data.output.file, body: JSON.stringify({ answers: state.answers }) }], points };
+    };
 
-  useImperativeHandle(ref, () => ({
-    snapshot,
-    execute(action) {
-      switch (action) {
-        case Action.Reset:
-          value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));
-          value.answers = [];
-          return true;
-        default:
-          return false;
+    useImperativeHandle(ref, () => ({
+      snapshot,
+      execute(action) {
+        switch (action) {
+          case Action.Reset:
+            value.choiceIds.push(...value.answers.map((answer) => answer.choiceId));
+            value.answers = [];
+            return true;
+          default:
+            return false;
+        }
+      },
+    }));
+
+    useEffect(() => {
+      let choices = data.choices.items || [];
+      if (data.choices.shuffle) choices = shuffle(choices);
+
+      const m = new Map<Choice['id'], Choice>();
+      choices.forEach((choice) => m.set(choice.id, choice));
+      value.m = m;
+
+      const file = files.find((file) => file.key === data.initial.file);
+      const answers = (JSON.parse(file?.body || '{}')?.answers || []) as Answer[];
+      if (answers.length) {
+        const choiceIds = answers.map((answer) => answer.choiceId);
+        value.choiceIds = Array.from(m.keys()).filter((choiceId) => !choiceIds.includes(choiceId));
+        value.answers = answers;
+      } else {
+        value.choiceIds = Array.from(m.keys());
       }
-    },
-  }));
+    }, []);
 
-  useEffect(() => {
-    let choices = props.data.choices.items || [];
-    if (props.data.choices.shuffle) choices = shuffle(choices);
-    const m = new Map<Choice['id'], Choice>();
-    choices.forEach((choice) => m.set(choice.id, choice));
-    value.m = m;
-    value.choiceIds = Array.from(m.keys());
-  }, []);
+    useEffect(() => {
+      const unsubscribe = subscribe(state, () => {
+        const { files, points } = snapshot();
+        onChange(files, points);
+      });
+      return () => unsubscribe();
+    }, []);
 
-  useEffect(() => {
-    const unsubscribe = subscribe(state, () => {
-      const { files, points } = snapshot();
-      onChange(files, points);
-    });
-    return () => unsubscribe();
-  }, []);
-
-  return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
-});
+    return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+  },
+);

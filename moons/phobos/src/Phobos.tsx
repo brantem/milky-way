@@ -9,13 +9,15 @@ type PhobosProps = {
   width?: React.CSSProperties['width'];
   files: File[];
   data: {
-    file: string;
+    content: {
+      file: string;
+    };
   };
   onPublish(action: string, data?: any): void;
 };
 
 const Phobos = ({ width = '100%', height = '100%', files, data, onPublish }: PhobosProps) => {
-  const text = files.find((file) => file.key === data.file)?.body || '';
+  const text = files.find((file) => file.key === data.content.file)?.body || '';
   return (
     <div id="phobos" style={{ width, height }}>
       <div className="h-full w-full overflow-auto py-2 px-3 flex justify-center font-sans">

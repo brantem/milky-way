@@ -8,7 +8,26 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Io
       width={1024}
       height={768}
+      files={[
+        {
+          key: 'io.json',
+          body: JSON.stringify({
+            lines: [
+              {
+                a: 'left-4',
+                b: 'right-4',
+              },
+            ],
+          }),
+        },
+      ]}
       data={{
+        initial: {
+          file: 'io.json',
+        },
+        output: {
+          file: 'io.json',
+        },
         left: {
           items: [
             { id: '1', text: 'Square' },

@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
+import { createContext, forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
@@ -27,7 +27,18 @@ type Test = {
 
 export type AppProviderProps = {
   files: File[];
-  data: Pick<AppState, 'model'> & { tests: { file: string } };
+  data: Pick<AppState, 'model'> & {
+    initial: {
+      file: string;
+    };
+    tests: {
+      file: string;
+    };
+    output: {
+      file: string;
+      deimos: string;
+    };
+  };
   onChange(files: File[], points: number): void;
   debug?: boolean;
   children: React.ReactNode;
@@ -35,7 +46,10 @@ export type AppProviderProps = {
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
   ({ children, files, onChange, ...props }, ref) => {
-    const tests = (JSON.parse(files.find((file) => file.key === props.data.tests.file)?.body || '[]') || []) as Test[];
+    const tests = useMemo(() => {
+      const file = files.find((file) => file.key === props.data.tests.file);
+      return (JSON.parse(file?.body || '[]') || []) as Test[];
+    }, []);
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
@@ -60,7 +74,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
       return {
         files: [
           {
-            key: 'ganymede.json',
+            key: props.data.output.file,
             body: JSON.stringify({
               color: state.color,
               paths: state.paths,
@@ -68,7 +82,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
             }),
           },
           {
-            key: 'deimos.json',
+            key: props.data.output.deimos,
             body: JSON.stringify(items),
           },
         ],
@@ -94,6 +108,14 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     }));
 
     useEffect(() => {
+      const file = files.find((file) => file.key === props.data.initial.file);
+      if (file) {
+        const { color, paths, n } = (JSON.parse(file?.body || '{}') || {}) as Pick<AppState, 'color' | 'paths' | 'n'>;
+        value.color = color;
+        value.paths = paths;
+        value.n = n;
+      }
+
       value.model = props.data.model || null;
       value.debug = Boolean(props.debug);
     }, []);
