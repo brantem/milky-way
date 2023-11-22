@@ -356,7 +356,7 @@ importers:
         specifier: ^3.3.0
         version: 3.3.0(vite@4.5.0)
 
-  planet:
+  planets:
     dependencies:
       '@astrojs/node':
         specifier: ^6.0.3
@@ -5055,6 +5055,7 @@ packages:
 
   /react-resizable-panels@0.0.57(react-dom@18.2.0)(react@18.2.0):
     resolution: {integrity: sha512-JXdepIfa28d8cyU2xRVw3ZIIUTkkgvPuGQgC4Y+znVbQlPS/mNttGJzukSI5Xkw8i55i2TdB2uvCCNsBvFhqMg==}
+    deprecated: Critical bug fixed in v0.0.61
     peerDependencies:
       react: ^16.14.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.14.0 || ^17.0.0 || ^18.0.0

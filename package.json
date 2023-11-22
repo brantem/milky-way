@@ -1,5 +1,5 @@
 {
-  "name": "planet",
+  "name": "milky-way",
   "version": "0.0.0",
   "scripts": {
     "build": "pnpm --parallel --filter \"./**\" build"
