@@ -34,7 +34,6 @@ export type MoonHandle = {
 };
 
 type MoonProps = {
-  basePath: string;
   moon: _Moon;
   onPublish?: (action: string, data?: any) => void;
 };
@@ -46,13 +45,13 @@ const useMoonFiles = (keys: File['key'][]) => {
   return filesRef.current;
 };
 
-const Moon = forwardRef<MoonHandle, MoonProps>(({ basePath, moon: { url, ...moon }, ...props }, ref) => {
+const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
   const files = useMoonFiles(moon.files);
   const saveFile = useFiles((state) => state.save);
   const savePoints = usePoints((state) => state.save);
 
   const handleChange = useCallback((files: File[], points: number) => {
-    for (let file of files) saveFile(basePath + 'outputs/' + file.key, file.body);
+    for (let file of files) saveFile(file.key, file.body);
     savePoints(moon.id, points);
   }, []);
 

@@ -12,7 +12,6 @@ import type { File as _File } from '../lib/types';
 import { useEditor, useFiles } from '../lib/store';
 import { cn, sleep } from '../lib/helpers';
 
-const ROOT = 'planets/';
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
 type AddFileProps = {
@@ -31,10 +30,8 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       className="relative flex items-center w-full mt-[4px]"
       onSubmit={(e) => {
         e.preventDefault();
-        const file = { key: ROOT + key.trim().replace(new RegExp(`^${ROOT.replace('/', '/')}`), ''), body: '' };
-        if (!file.key || !SUPPORTED_EXTENSIONS.some((ext) => file.key.endsWith(ext))) return;
-        saveFile(file.key, '');
-        onFileCreated(file);
+        if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
+        onFileCreated(saveFile(key, ''));
         setIsInputVisible(false);
         setKey('');
       }}
@@ -155,11 +152,13 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
   const { folders, files } = useFiles((state) => {
     let folders = new Set<string>();
     let files = [];
-    for (let file of state.get(path)) {
-      if (file.key.includes('/')) {
-        folders.add(file.key.split('/')[0]);
+    for (let file of state.files) {
+      if (!file.key.startsWith(path)) continue;
+      const key = file.key.replace(path, '');
+      if (key.includes('/')) {
+        folders.add(key.split('/')[0]);
       } else {
-        files.push(file);
+        files.push({ ...file, key });
       }
     }
     return {
@@ -217,7 +216,7 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
           )}
         >
           <Folder
-            path={ROOT}
+            path="planets/"
             level={0}
             activeFileKey={activeFileKey}
             onFileClick={onFileClick}

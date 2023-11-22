@@ -14,13 +14,11 @@ type Planet = _Planet & {
   version: number;
 };
 
-const ROOT = 'planets/jupiter/';
-
 const usePlanet = () => {
   const version = useFiles((state) => state.version);
-  const find = (file: File) => file.key === '_planet.json';
-  const ref = useRef(useFiles.getState().get(ROOT).find(find));
-  useEffect(() => useFiles.subscribe((state) => (ref.current = state.get(ROOT).find(find))), []);
+  const find = (file: File) => file.key === 'planets/jupiter/_planet.json';
+  const ref = useRef(useFiles.getState().files.find(find));
+  useEffect(() => useFiles.subscribe((state) => (ref.current = state.files.find(find))), []);
   return { version, ...JSON.parse(ref.current?.body || '{}') } as Planet;
 };
 
@@ -34,7 +32,7 @@ const Jupiter = () => {
   const largeRef = useRef<MoonHandle>(null);
 
   const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of files) saveFile(ROOT + 'outputs/' + file.key, file.body);
+    for (let file of files) saveFile(file.key, file.body);
     savePoints(id, points);
   };
 
@@ -56,7 +54,6 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
-                        basePath={ROOT}
                         moon={planet.medium}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
@@ -78,7 +75,6 @@ const Jupiter = () => {
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
-                        basePath={ROOT}
                         moon={planet.small}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
@@ -109,7 +105,6 @@ const Jupiter = () => {
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
                 <Moon
                   ref={largeRef}
-                  basePath={ROOT}
                   moon={moon}
                   onPublish={(action: string, data: any) => {
                     smallRef.current?.execute?.(action, data);
