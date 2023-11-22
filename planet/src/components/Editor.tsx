@@ -10,7 +10,7 @@ import Button from './Button';
 
 import type { File as _File } from '../lib/types';
 import { useEditor, useFiles } from '../lib/store';
-import { cn } from '../lib/helpers';
+import { cn, sleep } from '../lib/helpers';
 
 const ROOT = 'planets/';
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
@@ -270,6 +270,12 @@ const Editor = () => {
           <div className="p-2 pl-1 h-full">
             <form
               className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1 border border-neutral-200/50"
+              onReset={async () => {
+                toggle();
+                await sleep(500);
+                setActiveFileKey(files[0].key);
+                setValues({});
+              }}
               onSubmit={(e) => {
                 e.preventDefault();
                 Object.keys(values).forEach((key) => saveFile(key, values[key]));
@@ -294,7 +300,10 @@ const Editor = () => {
                 />
               </div>
 
-              <div className="flex justify-end p-2">
+              <div className="flex justify-end p-2 gap-2">
+                <Button shadowClassName="bg-rose-600" contentClassName="bg-rose-500 text-white px-4 py-2" type="reset">
+                  Cancel
+                </Button>
                 <Button
                   shadowClassName="bg-violet-600"
                   contentClassName="bg-violet-500 text-white px-4 py-2"
