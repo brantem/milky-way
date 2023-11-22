@@ -6,24 +6,20 @@ import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 
-import type { File, Moon as _Moon, Planet as _Planet } from '../../lib/types';
+import type { File, Moon as _Moon, Jupiter } from '../../lib/types';
 import { cn } from '../../lib/helpers';
 import { useFiles, usePoints } from '../../lib/store';
 
-type Planet = _Planet & {
-  version: number;
-};
-
-const usePlanet = () => {
+const useJupiter = () => {
   const version = useFiles((state) => state.version);
   const find = (file: File) => file.key === 'planets/jupiter/_planet.json';
   const ref = useRef(useFiles.getState().files.find(find));
   useEffect(() => useFiles.subscribe((state) => (ref.current = state.files.find(find))), []);
-  return { version, ...JSON.parse(ref.current?.body || '{}') } as Planet;
+  return { version, ...JSON.parse(ref.current?.body || '{}') } as Jupiter & { version: number };
 };
 
 const Jupiter = () => {
-  const planet = usePlanet();
+  const jupiter = useJupiter();
   const saveFile = useFiles((state) => state.save);
   const savePoints = usePoints((state) => state.save);
 
@@ -37,29 +33,29 @@ const Jupiter = () => {
   };
 
   const handleSubmit = () => {
-    if (smallRef.current?.snapshot) handleSnapshot(planet.small.id, smallRef.current.snapshot());
-    if (mediumRef.current?.snapshot) handleSnapshot(planet.medium.id, mediumRef.current.snapshot());
-    if (largeRef.current?.snapshot) handleSnapshot(planet.large.id, largeRef.current.snapshot());
+    if (smallRef.current?.snapshot) handleSnapshot(jupiter.small.id, smallRef.current.snapshot());
+    if (mediumRef.current?.snapshot) handleSnapshot(jupiter.medium.id, mediumRef.current.snapshot());
+    if (largeRef.current?.snapshot) handleSnapshot(jupiter.large.id, largeRef.current.snapshot());
   };
 
   const parent = {
-    id: planet.id,
+    id: jupiter.id,
   };
 
   return (
-    <PanelGroup key={planet.version} id="planet" direction="horizontal">
-      {(planet.small.active || planet.medium.active) && (
+    <PanelGroup key={jupiter.version} id="jupiter" direction="horizontal">
+      {(jupiter.small.active || jupiter.medium.active) && (
         <>
-          <Panel id="planet-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
-            <PanelGroup id="planet-side-inner" direction="vertical" className="pl-1">
-              {planet.medium.active && (
-                <Panel id="planet-moons-medium" order={1} collapsible minSizePixels={100}>
+          <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
+            <PanelGroup id="jupiter-side-inner" direction="vertical" className="pl-1">
+              {jupiter.medium.active && (
+                <Panel id="jupiter-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={mediumRef}
                         parent={parent}
-                        moon={planet.medium}
+                        moon={jupiter.medium}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -69,19 +65,19 @@ const Jupiter = () => {
                   </div>
                 </Panel>
               )}
-              {planet.small.active && planet.medium.active && (
+              {jupiter.small.active && jupiter.medium.active && (
                 <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:calc(100%-theme(spacing.2))] relative before:content-[''] before:absolute before:-top-3 before:left-1 before:h-7 before:w-[calc(100%-theme(spacing.2))] before:z-10">
                   <div className="w-[var(--size,theme(spacing.12))] h-1 rounded-full bg-neutral-300 transition-all" />
                 </PanelResizeHandle>
               )}
-              {planet.small.active && (
-                <Panel id="planet-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
+              {jupiter.small.active && (
+                <Panel id="jupiter-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon
                         ref={smallRef}
                         parent={parent}
-                        moon={planet.small}
+                        moon={jupiter.small}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -98,13 +94,13 @@ const Jupiter = () => {
           </PanelResizeHandle>
         </>
       )}
-      <Panel id="planet-moons-large" order={2} collapsible minSizePixels={100}>
+      <Panel id="jupiter-moons-large" order={2} collapsible minSizePixels={100}>
         <div className="p-2 pl-1 h-full w-full">
           {(({ actions, ...moon }) => (
             <div
               className={cn(
                 'h-full w-full',
-                planet.large.actions?.active &&
+                jupiter.large.actions?.active &&
                   'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm border border-neutral-200/50',
               )}
             >
@@ -137,7 +133,7 @@ const Jupiter = () => {
                 </div>
               )}
             </div>
-          ))(planet.large)}
+          ))(jupiter.large)}
         </div>
       </Panel>
     </PanelGroup>

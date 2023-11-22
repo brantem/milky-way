@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { nanoid } from 'nanoid';
 
-import type { File, Moon, Planet } from '../types';
+import type { File, Moon, Jupiter } from '../types';
 
 const ROOT = 'planets/';
 
@@ -92,7 +92,7 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
                 },
                 debug: true,
               },
-            } satisfies Planet,
+            } satisfies Jupiter,
             null,
             2,
           ),

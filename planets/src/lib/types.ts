@@ -15,6 +15,9 @@ export type Moon = {
 
 export type Planet = {
   id: string;
+};
+
+export type Jupiter = Planet & {
   small: Moon & { active: boolean };
   medium: Moon & { active: boolean };
   large: Moon & {
