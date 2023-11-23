@@ -2,15 +2,10 @@ import { createContext, forwardRef, useEffect, useImperativeHandle, useMemo, use
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
-import type { File } from '../types';
+import { Action, Resource, type File } from '../types';
 
 // @ts-expect-error because i want to sleep
 export const AppContext = createContext<AppState>({});
-
-enum Action {
-  Reset = 'reset',
-  SetColor = 'color:set',
-}
 
 export type AppProviderHandle = {
   snapshot(): { files: File[]; points: number };
@@ -26,7 +21,10 @@ type Test = {
 };
 
 export type AppProviderProps = {
-  files: File[];
+  parent: {
+    id: string;
+    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+  };
   data: Pick<AppState, 'model'> & {
     initial: {
       file: string;
@@ -45,9 +43,9 @@ export type AppProviderProps = {
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ children, files, onChange, ...props }, ref) => {
+  ({ parent, onChange, children, ...props }, ref) => {
     const tests = useMemo(() => {
-      const file = files.find((file) => file.key === props.data.tests.file);
+      const [file] = parent.request(Resource.Files, [props.data.tests.file]);
       return (JSON.parse(file?.body || '[]') || []) as Test[];
     }, []);
     const value = useRef(state).current;
@@ -108,7 +106,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     }));
 
     useEffect(() => {
-      const file = files.find((file) => file.key === props.data.initial.file);
+      const [file] = parent.request(Resource.Files, [props.data.initial.file]);
       if (file) {
         const { color, paths, n } = (JSON.parse(file?.body || '{}') || {}) as Pick<AppState, 'color' | 'paths' | 'n'>;
         value.color = color;

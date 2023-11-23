@@ -2,26 +2,22 @@ import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } fro
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
-import type { File, Choice, Answer } from '../types';
+import { Action, Resource, type File, type Choice, type Answer } from '../types';
 import { shuffle } from '../helpers';
 
 // @ts-expect-error because i still don't know how to make ts happy
 export const AppContext = createContext<AppState>({});
 
-enum Action {
-  Reset = 'reset',
-}
-
 export type AppProviderHandle = {
   snapshot(): { files: File[]; points: number };
-  execute(action: Action, data: any): boolean;
+  execute(action: Action.Reset): boolean;
 };
 
 export type AppProviderProps = {
   parent: {
     id: string;
+    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
   };
-  files: File[];
   data: {
     initial: {
       file: string;
@@ -40,7 +36,7 @@ export type AppProviderProps = {
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ parent, files, data, children, onChange }, ref) => {
+  ({ parent, data, children, onChange }, ref) => {
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
@@ -72,7 +68,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
       choices.forEach((choice) => m.set(choice.id, choice));
       value.m = m;
 
-      const file = files.find((file) => file.key === data.initial.file);
+      const [file] = parent.request(Resource.Files, [data.initial.file]);
       const answers = (JSON.parse(file?.body || '{}')?.answers || []) as Answer[];
       if (answers.length) {
         const choiceIds = answers.map((answer) => answer.choiceId);

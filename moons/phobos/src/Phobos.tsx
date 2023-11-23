@@ -1,13 +1,17 @@
+import { memo } from 'react';
 import Markdown, { defaultUrlTransform } from 'react-markdown';
 
-import type { File } from './lib/types.ts';
+import { Resource, type File } from './lib/types';
 
 import './index.css';
 
 type PhobosProps = {
   height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
-  files: File[];
+  parent: {
+    id: string;
+    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+  };
   data: {
     content: {
       file: string;
@@ -16,8 +20,9 @@ type PhobosProps = {
   onPublish(action: string, data?: any): void;
 };
 
-const Phobos = ({ width = '100%', height = '100%', files, data, onPublish }: PhobosProps) => {
-  const text = files.find((file) => file.key === data.content.file)?.body || '';
+const Phobos = memo(({ width = '100%', height = '100%', parent, data, onPublish }: PhobosProps) => {
+  const [file] = parent.request(Resource.Files, [data.content.file]);
+
   return (
     <div id="phobos" style={{ width, height }}>
       <div className="h-full w-full overflow-auto py-2 px-3 flex justify-center font-sans">
@@ -48,11 +53,11 @@ const Phobos = ({ width = '100%', height = '100%', files, data, onPublish }: Pho
             },
           }}
         >
-          {text}
+          {file?.body || ''}
         </Markdown>
       </div>
     </div>
   );
-};
+});
 
 export default Phobos;

@@ -11,13 +11,14 @@ interface State {
   incrementVersion(): void;
 
   files: File[];
+  get(keys: string[]): (File | undefined)[];
   save(key: File['key'], body: File['body']): File;
   delete(key: File['key']): void;
 }
 
 export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]]>(
   persist(
-    (set) => ({
+    (set, get) => ({
       version: 0,
       incrementVersion() {
         set((state) => ({ version: state.version + 1 }));
@@ -33,7 +34,6 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
                 id: 'deimos',
                 active: true,
                 url: 'https://moons.brantem.com/deimos/bundle.js',
-                files: ['planets/jupiter/tests.json', 'planets/jupiter/outputs/deimos.json'],
                 data: {
                   tasks: {
                     file: 'planets/jupiter/tests.json',
@@ -45,7 +45,6 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
                 id: 'phobos',
                 active: true,
                 url: 'https://moons.brantem.com/phobos/bundle.js',
-                files: ['planets/jupiter/content.md'],
                 data: {
                   content: {
                     file: 'planets/jupiter/content.md',
@@ -55,7 +54,6 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
               large: {
                 id: 'io',
                 url: 'https://moons.brantem.com/io/bundle.js',
-                files: ['planets/jupiter/outputs/io.json'],
                 data: {
                   initial: {
                     file: 'planets/jupiter/outputs/io.json',
@@ -124,12 +122,46 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
           ),
         },
         {
+          key: 'planets/jupiter/examples/deimos.json',
+          body: JSON.stringify(
+            {
+              id: 'deimos',
+              active: true,
+              url: 'https://moons.brantem.com/deimos/bundle.js',
+              data: {
+                tasks: {
+                  file: 'planets/jupiter/tests.json',
+                  output: 'planets/jupiter/outputs/deimos.json',
+                },
+              },
+            } satisfies Moon & { active: boolean },
+            null,
+            2,
+          ),
+        },
+        {
+          key: 'planets/jupiter/examples/phobos.json',
+          body: JSON.stringify(
+            {
+              id: 'phobos',
+              active: true,
+              url: 'https://moons.brantem.com/phobos/bundle.js',
+              data: {
+                content: {
+                  file: 'planets/jupiter/content.md',
+                },
+              },
+            } satisfies Moon & { active: boolean },
+            null,
+            2,
+          ),
+        },
+        {
           key: 'planets/jupiter/examples/callisto.json',
           body: JSON.stringify(
             {
               id: 'callisto',
               url: 'https://moons.brantem.com/callisto/bundle.js',
-              files: ['planets/jupiter/outputs/callisto.json'],
               data: {
                 initial: {
                   file: 'planets/jupiter/outputs/callisto.json',
@@ -161,11 +193,6 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
             {
               id: 'ganymede',
               url: 'https://moons.brantem.com/ganymede/bundle.js',
-              files: [
-                'planets/jupiter/tests.json',
-                'planets/jupiter/outputs/ganymede.json',
-                'planets/jupiter/outputs/deimos.json',
-              ],
               data: {
                 initial: {
                   file: 'planets/jupiter/outputs/ganymede.json',
@@ -193,7 +220,7 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
                   },
                 },
               },
-            },
+            } satisfies Moon,
             null,
             2,
           ),
@@ -204,7 +231,6 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
             {
               id: 'io',
               url: 'https://moons.brantem.com/io/bundle.js',
-              files: ['planets/jupiter/outputs/io.json'],
               data: {
                 initial: {
                   file: 'planets/jupiter/outputs/io.json',
@@ -233,12 +259,15 @@ export const useFiles = create<State, [['zustand/persist', Pick<State, 'files'>]
                   shuffle: true,
                 },
               },
-            },
+            } satisfies Moon,
             null,
             2,
           ),
         },
       ],
+      get(keys) {
+        return get().files.filter((file) => keys.includes(file.key));
+      },
       save(key, body) {
         const file = { key: ROOT + key.trim().replace(new RegExp(`^${ROOT.replace('/', '/')}`), ''), body };
         set((state) => {

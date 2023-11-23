@@ -10,20 +10,22 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={768}
       parent={{
         id: 'aXjyt3QFH51MWJ4c7WSmS',
-      }}
-      files={[
-        {
-          key: 'callisto.json',
-          body: JSON.stringify({
-            answers: [
-              {
-                blankId: '__4__',
-                choiceId: '6',
-              },
-            ],
-          }),
+        request() {
+          return [
+            {
+              key: 'callisto.json',
+              body: JSON.stringify({
+                answers: [
+                  {
+                    blankId: '__4__',
+                    choiceId: '6',
+                  },
+                ],
+              }),
+            },
+          ];
         },
-      ]}
+      }}
       data={{
         initial: {
           file: 'callisto.json',

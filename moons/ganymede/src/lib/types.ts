@@ -1,3 +1,12 @@
+export enum Action {
+  Reset = 'reset',
+  SetColor = 'color:set',
+}
+
+export enum Resource {
+  Files = 'files',
+}
+
 export type File = {
   key: string;
   body: string;

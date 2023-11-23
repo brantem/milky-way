@@ -1,7 +1,7 @@
 import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { subscribeKey } from 'valtio/utils';
 
-import type { File, Item } from '../types';
+import { Action, Resource, type File, type Item } from '../types';
 import { type AppState, state } from './shared';
 
 // @ts-expect-error because i still don't know how to make ts happy
@@ -18,17 +18,16 @@ const shuffle = <T,>(a: T[]): T[] => {
   return b;
 };
 
-enum Action {
-  Reset = 'reset',
-}
-
 export type AppProviderHandle = {
   snapshot(): { files: File[]; points: number };
-  execute(action: Action, data: any): boolean;
+  execute(action: Action.Reset): boolean;
 };
 
 export type AppProviderProps = {
-  files: File[];
+  parent: {
+    id: string;
+    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+  };
   data: {
     initial: {
       file: string;
@@ -50,7 +49,7 @@ export type AppProviderProps = {
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ files, data, children, onChange }, ref) => {
+  ({ parent, data, children, onChange }, ref) => {
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
@@ -82,7 +81,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     }));
 
     useEffect(() => {
-      const file = files.find((file) => file.key === data.initial.file);
+      const [file] = parent.request(Resource.Files, [data.initial.file]);
       if (file) {
         type Body = Pick<AppState, 'leftIds' | 'rightIds' | 'lines'>;
         const { leftIds, rightIds, lines } = (JSON.parse(file?.body || '{}') || {}) as Body;

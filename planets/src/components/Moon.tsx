@@ -1,7 +1,7 @@
-import { Suspense, forwardRef, lazy, useRef, useEffect, useCallback } from 'react';
+import { Suspense, forwardRef, lazy, useCallback } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import type { File, Moon as _Moon } from '../lib/types';
+import type { File, Moon as _Moon, Parent } from '../lib/types';
 import { useFiles, usePoints } from '../lib/store';
 
 const Loading = () => {
@@ -34,22 +34,12 @@ export type MoonHandle = {
 };
 
 type MoonProps = {
-  parent: {
-    id: string;
-  };
+  parent: Parent;
   moon: _Moon;
   onPublish?: (action: string, data?: any) => void;
 };
 
-const useMoonFiles = (keys: File['key'][]) => {
-  const filter = (file: File) => keys.includes(file.key);
-  const filesRef = useRef(useFiles.getState().files.filter(filter));
-  useEffect(() => useFiles.subscribe((state) => (filesRef.current = state.files.filter(filter))), []);
-  return filesRef.current;
-};
-
 const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
-  const files = useMoonFiles(moon.files);
   const saveFile = useFiles((state) => state.save);
   const savePoints = usePoints((state) => state.save);
 
@@ -62,13 +52,7 @@ const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...pro
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component
-          ref={ref}
-          {...moon}
-          files={files}
-          {...{ width: '100%', height: '100%', ...props }}
-          onChange={handleChange}
-        />
+        <Component ref={ref} {...moon} {...{ width: '100%', height: '100%', ...props }} onChange={handleChange} />
       </Suspense>
     </ErrorBoundary>
   );

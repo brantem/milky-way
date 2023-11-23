@@ -1,20 +1,29 @@
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+
 import Markdown from './components/Markdown';
 
-import type { File } from './lib/types';
+import { Action, Resource, type File } from './lib/types';
 
 import './index.css';
+
+export type DeimosHandle = {
+  execute(action: Action): boolean;
+};
 
 type DeimosProps = {
   height?: React.CSSProperties['height'];
   width?: React.CSSProperties['width'];
-  files: File[];
+  parent: {
+    id: string;
+    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+  };
   data: {
     tasks: {
       file: string;
       output: string;
     };
   };
-  onPublish(action: string, data?: any): void;
+  onPublish(action: Action.SetColor, color: string): void;
 };
 
 type Item = {
@@ -24,68 +33,79 @@ type Item = {
 
 type Item2 = Record<string, any>;
 
-const Deimos = ({ width = '100%', height = '100%', files, data, onPublish }: DeimosProps) => {
-  const getFile = (key: string, exact?: boolean) => {
-    const file = files.find((file) => {
-      if (exact) {
-        return file.key === key;
-      } else {
-        return file.key.endsWith(key);
-      }
-    });
-    return JSON.parse(file?.body || '[]') || [];
-  };
+const Deimos = forwardRef<DeimosHandle, DeimosProps>(
+  ({ width = '100%', height = '100%', parent, data, onPublish }, ref) => {
+    const [items, setItems] = useState<Item[]>([]);
+    const [values, setValues] = useState<(boolean | null)[]>([]);
 
-  const items = getFile(data.tasks.file, true) as Item[];
-  const items2 = getFile(data.tasks.output) as Item2[];
+    const refresh = (items2: Item2[]) => {
+      if (!items2.length) return;
+      const values = items.map((item, i) => {
+        const item2 = items2[i];
+        if (!item2) return null;
+        return Object.keys(item.data).every((key) => item.data[key] === item2[key]);
+      });
+      setValues(values);
+    };
 
-  const check = (index: number): [isCompleted: boolean, isFailed: boolean] => {
-    const item = items[index];
-    const item2 = items2[index];
-    if (!item2) return [false, false];
-    if (Object.keys(item.data).every((key) => item.data[key] === item2[key])) return [true, false];
-    return [false, true];
-  };
+    useImperativeHandle(ref, () => ({
+      execute(action) {
+        switch (action) {
+          case Action.Refresh: {
+            const [file] = parent.request(Resource.Files, [data.tasks.output]);
+            refresh(JSON.parse(file?.body || '[]') || []);
+            return true;
+          }
+          default:
+            return false;
+        }
+      },
+    }));
 
-  return (
-    <div id="deimos" style={{ width, height }}>
-      <div className="h-full w-full overflow-y-auto bg-yellow-50/50 font-sans">
-        <ol className="list-none overflow-hidden m-0 p-0">
-          {items.map((item, i) => {
-            const [isCompleted, isFailed] = check(i);
-            return (
-              <li
-                key={i}
-                className={[
-                  'relative py-2 px-3 min-h-[theme(spacing.16)] overflow-hidden border-0 border-b border-solid',
-                  isCompleted
-                    ? 'border-b-lime-900/10 bg-lime-50/50'
-                    : isFailed
-                    ? 'border-b-rose-900/10 bg-rose-50/50'
-                    : 'border-b-yellow-900/10',
-                ].join(' ')}
-              >
-                <span
+    useEffect(() => {
+      const [file, output] = parent.request(Resource.Files, [data.tasks.file, data.tasks.output]);
+      setItems(JSON.parse(file?.body || '[]') || []);
+      refresh(JSON.parse(output?.body || '[]') || []);
+    }, []);
+
+    return (
+      <div id="deimos" style={{ width, height }}>
+        <div className="h-full w-full overflow-y-auto bg-yellow-50/50 font-sans">
+          <ol className="list-none overflow-hidden m-0 p-0">
+            {items.map((item, i) => {
+              return (
+                <li
+                  key={i}
                   className={[
-                    'text-[6.25rem] font-extrabold absolute -top-5 -left-2 leading-none italic select-none',
-                    isCompleted ? 'text-lime-200/75' : isFailed ? 'text-rose-200/75' : 'text-yellow-200/75',
+                    'relative py-2 px-3 min-h-[theme(spacing.16)] overflow-hidden border-0 border-b border-solid',
+                    values[i] === true
+                      ? 'border-b-lime-900/10 bg-lime-50/50 text-lime-900'
+                      : values[i] === false
+                      ? 'border-b-rose-900/10 bg-rose-50/50 text-rose-900'
+                      : 'border-b-yellow-900/10 text-yellow-900',
                   ].join(' ')}
                 >
-                  {i + 1}
-                </span>
-                <Markdown
-                  className={isCompleted ? 'text-lime-900' : isFailed ? 'text-rose-900' : 'text-yellow-900'}
-                  onPublish={onPublish}
-                >
-                  {item.text}
-                </Markdown>
-              </li>
-            );
-          })}
-        </ol>
+                  <span
+                    className={[
+                      'text-[6.25rem] font-extrabold absolute -top-5 -left-2 leading-none italic select-none',
+                      values[i] === true
+                        ? 'text-lime-200/75'
+                        : values[i] === false
+                        ? 'text-rose-200/75'
+                        : 'text-yellow-200/75',
+                    ].join(' ')}
+                  >
+                    {i + 1}
+                  </span>
+                  <Markdown onPublish={onPublish}>{item.text}</Markdown>
+                </li>
+              );
+            })}
+          </ol>
+        </div>
       </div>
-    </div>
-  );
-};
+    );
+  },
+);
 
 export default Deimos;

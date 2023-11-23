@@ -6,7 +6,6 @@ export type File = {
 export type Moon = {
   id: string;
   url: string;
-  files: File['key'][];
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
   data: Record<string, any>;
@@ -27,4 +26,13 @@ export type Jupiter = Planet & {
       submit: boolean;
     };
   };
+};
+
+export enum Resource {
+  Files = 'files',
+}
+
+export type Parent = {
+  id: string;
+  request(resource: Resource, data?: any): any;
 };

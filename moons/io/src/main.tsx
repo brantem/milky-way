@@ -8,21 +8,26 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Io
       width={1024}
       height={768}
-      files={[
-        {
-          key: 'io.json',
-          body: JSON.stringify({
-            leftIds: ['3', '4', '2', '1', '5'],
-            rightIds: ['2', '5', '3', '1', '4'],
-            lines: [
-              {
-                a: 'left-3',
-                b: 'right-3',
-              },
-            ],
-          }),
+      parent={{
+        id: 'parent-1',
+        request() {
+          return [
+            {
+              key: 'io.json',
+              body: JSON.stringify({
+                leftIds: ['3', '4', '2', '1', '5'],
+                rightIds: ['2', '5', '3', '1', '4'],
+                lines: [
+                  {
+                    a: 'left-3',
+                    b: 'right-3',
+                  },
+                ],
+              }),
+            },
+          ];
         },
-      ]}
+      }}
       data={{
         initial: {
           file: 'io.json',

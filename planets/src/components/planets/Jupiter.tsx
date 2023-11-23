@@ -1,4 +1,4 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useMemo } from 'react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
 import Moon, { type MoonHandle } from '../Moon';
@@ -6,21 +6,19 @@ import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 
-import type { File, Moon as _Moon, Jupiter } from '../../lib/types';
+import { type Moon as _Moon, type Jupiter, Resource, type Parent } from '../../lib/types';
 import { cn } from '../../lib/helpers';
 import { useFiles, usePoints } from '../../lib/store';
 
 const useJupiter = () => {
   const version = useFiles((state) => state.version);
-  const find = (file: File) => file.key === 'planets/jupiter/_planet.json';
-  const ref = useRef(useFiles.getState().files.find(find));
-  useEffect(() => useFiles.subscribe((state) => (ref.current = state.files.find(find))), []);
+  const ref = useRef(useFiles.getState().files.find((file) => file.key === 'planets/jupiter/_planet.json'));
   return { version, ...JSON.parse(ref.current?.body || '{}') } as Jupiter & { version: number };
 };
 
 const Jupiter = () => {
   const jupiter = useJupiter();
-  const saveFile = useFiles((state) => state.save);
+  const { getFiles, saveFile } = useFiles((state) => ({ getFiles: state.get, saveFile: state.save }));
   const savePoints = usePoints((state) => state.save);
 
   const smallRef = useRef<MoonHandle>(null);
@@ -38,9 +36,17 @@ const Jupiter = () => {
     if (largeRef.current?.snapshot) handleSnapshot(jupiter.large.id, largeRef.current.snapshot());
   };
 
-  const parent = {
-    id: jupiter.id,
-  };
+  const parent: Parent = useMemo(() => {
+    return {
+      id: jupiter.id,
+      request(resource, data) {
+        switch (resource) {
+          case Resource.Files:
+            return getFiles(data);
+        }
+      },
+    };
+  }, []);
 
   return (
     <PanelGroup key={jupiter.version} id="jupiter" direction="horizontal">
