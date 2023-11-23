@@ -1,10 +1,10 @@
 import Button from '../Button';
 
-import { useEditor } from '../../lib/store';
 import { sleep } from '../../lib/helpers';
+import { useAppState } from '../../lib/state';
 
 const EditorButton = () => {
-  const toggle = useEditor((state) => state.toggle);
+  const [, set] = useAppState();
 
   return (
     <Button
@@ -12,7 +12,7 @@ const EditorButton = () => {
       shadowClassName="bg-violet-600"
       contentClassName="bg-violet-500 text-white"
       onClick={async () => {
-        toggle();
+        set.isEditorVisible = true;
         await sleep(0);
         document.getElementById('editor')?.scrollIntoView({ behavior: 'smooth' });
       }}

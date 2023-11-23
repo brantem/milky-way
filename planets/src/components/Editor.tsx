@@ -9,7 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useEditor, usePlanets } from '../lib/store';
+import { useAppState } from '../lib/state';
 import { cn, sleep } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
@@ -20,7 +20,7 @@ type AddFileProps = {
 
 const AddFile = ({ onFileCreated }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [, set] = usePlanets();
+  const [, set] = useAppState();
 
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [key, setKey] = useState('');
@@ -31,7 +31,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreated(set.save(key, ''));
+        onFileCreated(set.saveFile(key, ''));
         setIsInputVisible(false);
         setKey('');
       }}
@@ -110,7 +110,7 @@ type FileProps = {
 };
 
 const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
-  const [, set] = usePlanets();
+  const [, set] = useAppState();
 
   return (
     <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
@@ -125,7 +125,7 @@ const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
-              set.delete(path + file.key);
+              set.deleteFile(path + file.key);
               onDeleteClick();
             }}
           >
@@ -149,7 +149,7 @@ type FolderProps = SidebarProps & {
 };
 
 const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const [state] = usePlanets();
+  const [state] = useAppState();
   const { folders, files } = (() => {
     let folders = new Set<string>();
     let files = [];
@@ -230,8 +230,7 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 };
 
 const Editor = () => {
-  const { isOpen, toggle } = useEditor();
-  const [state, set] = usePlanets();
+  const [state, set] = useAppState();
 
   const [activeFileKey, setActiveFileKey] = useState(state.files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});
@@ -243,7 +242,7 @@ const Editor = () => {
       id="editor"
       className={cn(
         'fixed h-full w-full p-1 inset-0 transition-transform duration-500 bg-neutral-100 z-[20] flex gap-2',
-        isOpen ? 'translate-y-0' : 'translate-y-full',
+        state.isEditorVisible ? 'translate-y-0' : 'translate-y-full',
       )}
     >
       <PanelGroup direction="horizontal">
@@ -267,16 +266,16 @@ const Editor = () => {
             <form
               className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1 border border-neutral-200/50"
               onReset={async () => {
-                toggle();
+                set.isEditorVisible = false;
                 await sleep(500);
                 setActiveFileKey(state.files[0].key);
                 setValues({});
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                Object.keys(values).forEach((key) => set.save(key, values[key]));
+                Object.keys(values).forEach((key) => set.saveFile(key, values[key]));
                 ++set.version;
-                toggle();
+                set.isEditorVisible = false;
               }}
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">

@@ -8,15 +8,14 @@ import SubmitButton from '../buttons/SubmitButton';
 
 import { Resource, type File, type Moon as _Moon, type Parent, type Jupiter } from '../../lib/types';
 import { cn } from '../../lib/helpers';
-import { usePlanets, usePoints } from '../../lib/store';
+import { useAppState } from '../../lib/state';
 
 const Jupiter = () => {
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
-  const [state, set] = usePlanets();
-  const savePoints = usePoints((state) => state.save);
+  const [state, set] = useAppState();
 
   const jupiter = (() => {
     const file = state.files.find((file) => file.key === 'planets/jupiter/_planet.json');
@@ -36,13 +35,13 @@ const Jupiter = () => {
   }, []);
 
   const handleChange = (id: _Moon['id']) => (files: File[], points: number) => {
-    for (let file of files) set.save(file.key, file.body);
-    savePoints(id, points);
+    for (let file of files) set.saveFile(file.key, file.body);
+    set.savePoints(id, points);
   };
 
   const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of files) set.save(file.key, file.body);
-    savePoints(id, points);
+    for (let file of files) set.saveFile(file.key, file.body);
+    set.savePoints(id, points);
   };
 
   const handleSubmit = () => {
