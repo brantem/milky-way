@@ -91,6 +91,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         },
       }}
       onChange={(files, points) => console.log(files, points)}
+      onPublish={(action, data) => console.log(action, data)}
       debug
     />
   </React.StrictMode>,

@@ -38,12 +38,13 @@ export type AppProviderProps = {
     };
   };
   onChange(files: File[], points: number): void;
+  onPublish(action: string, data?: any): void;
   debug?: boolean;
   children: React.ReactNode;
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ parent, onChange, children, ...props }, ref) => {
+  ({ parent, onChange, onPublish, children, ...props }, ref) => {
     const tests = useMemo(() => {
       const [file] = parent.request(Resource.Files, [props.data.tests.file]);
       return (JSON.parse(file?.body || '[]') || []) as Test[];
@@ -51,22 +52,22 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
+      const items = Array.from({ length: tests.length }).fill(null);
       let points = 0;
-      const items = tests.map((test) => {
-        const path = state.visiblePaths.find((path) => {
+
+      state.visiblePaths.forEach((path) => {
+        tests.forEach((test, i) => {
           if (!path.prediction) return;
           if (path.prediction.label !== test.data.label) return;
           const probability = path.prediction.probability * 100;
           if (!(probability >= state.model!.probability.min && probability <= state.model!.probability.max)) return;
-          if (test.data.color && path.color !== test.data.color) return path;
+          if (test.data.color && path.color !== test.data.color) {
+            items[i] = { color: path.color, label: path.prediction.label };
+            return;
+          }
           points += 1;
-          return path;
+          items[i] = { color: path.color, label: path.prediction.label };
         });
-        if (!path) return null;
-        return {
-          color: path.color,
-          label: path.prediction?.label,
-        };
       });
 
       return {
@@ -122,6 +123,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
       const unsubscribe = subscribe(state, () => {
         const { files, points } = snapshot();
         onChange(files, points);
+        onPublish('refresh');
       });
       return () => unsubscribe();
     }, []);
