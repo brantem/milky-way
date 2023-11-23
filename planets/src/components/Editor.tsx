@@ -9,7 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useEditor, useFiles } from '../lib/store';
+import { useEditor, usePlanets } from '../lib/store';
 import { cn, sleep } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
@@ -20,7 +20,7 @@ type AddFileProps = {
 
 const AddFile = ({ onFileCreated }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const saveFile = useFiles((state) => state.save);
+  const [, set] = usePlanets();
 
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [key, setKey] = useState('');
@@ -31,7 +31,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreated(saveFile(key, ''));
+        onFileCreated(set.save(key, ''));
         setIsInputVisible(false);
         setKey('');
       }}
@@ -110,7 +110,7 @@ type FileProps = {
 };
 
 const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
-  const deleteFile = useFiles((state) => state.delete);
+  const [, set] = usePlanets();
 
   return (
     <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
@@ -125,7 +125,7 @@ const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
-              deleteFile(path + file.key);
+              set.delete(path + file.key);
               onDeleteClick();
             }}
           >
@@ -149,7 +149,8 @@ type FolderProps = SidebarProps & {
 };
 
 const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const { folders, files } = useFiles((state) => {
+  const [state] = usePlanets();
+  const { folders, files } = (() => {
     let folders = new Set<string>();
     let files = [];
     for (let file of state.files) {
@@ -165,7 +166,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
       folders: [...folders].sort((a, b) => a.localeCompare(b)),
       files: files.sort((a, b) => a.key.localeCompare(b.key)),
     };
-  });
+  })();
 
   const s = path.split('/');
 
@@ -230,16 +231,12 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 
 const Editor = () => {
   const { isOpen, toggle } = useEditor();
-  const { files, saveFile, incrementVersion } = useFiles((state) => ({
-    files: state.files,
-    saveFile: state.save,
-    incrementVersion: state.incrementVersion,
-  }));
+  const [state, set] = usePlanets();
 
-  const [activeFileKey, setActiveFileKey] = useState(files[0].key);
+  const [activeFileKey, setActiveFileKey] = useState(state.files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const file = files.find((file) => file.key === activeFileKey)!;
+  const file = state.files.find((file) => file.key === activeFileKey)!;
 
   return (
     <div
@@ -255,7 +252,7 @@ const Editor = () => {
             <Sidebar
               activeFileKey={activeFileKey}
               onFileClick={(key) => setActiveFileKey(key)}
-              onFileDeleted={() => setActiveFileKey(files[0].key)}
+              onFileDeleted={() => setActiveFileKey(state.files[0].key)}
             />
             <AddFile onFileCreated={(file) => setActiveFileKey(file.key)} />
           </div>
@@ -272,13 +269,13 @@ const Editor = () => {
               onReset={async () => {
                 toggle();
                 await sleep(500);
-                setActiveFileKey(files[0].key);
+                setActiveFileKey(state.files[0].key);
                 setValues({});
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                Object.keys(values).forEach((key) => saveFile(key, values[key]));
-                incrementVersion();
+                Object.keys(values).forEach((key) => set.save(key, values[key]));
+                ++set.version;
                 toggle();
               }}
             >

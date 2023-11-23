@@ -415,6 +415,9 @@ importers:
       tailwindcss:
         specifier: ^3.3.3
         version: 3.3.3
+      valtio:
+        specifier: ^1.11.3
+        version: 1.11.3(@types/react@18.2.31)(react@18.2.0)
       zustand:
         specifier: ^4.4.6
         version: 4.4.6(@types/react@18.2.31)(react@18.2.0)

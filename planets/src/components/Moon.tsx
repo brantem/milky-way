@@ -1,8 +1,7 @@
-import { Suspense, forwardRef, lazy, useCallback } from 'react';
+import { Suspense, forwardRef, lazy } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import type { File, Moon as _Moon, Parent } from '../lib/types';
-import { useFiles, usePoints } from '../lib/store';
 
 const Loading = () => {
   return (
@@ -36,23 +35,16 @@ export type MoonHandle = {
 type MoonProps = {
   parent: Parent;
   moon: _Moon;
+  onChange(files: File[], points: number): void;
   onPublish?: (action: string, data?: any) => void;
 };
 
 const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
-  const saveFile = useFiles((state) => state.save);
-  const savePoints = usePoints((state) => state.save);
-
-  const handleChange = useCallback((files: File[], points: number) => {
-    for (let file of files) saveFile(file.key, file.body);
-    savePoints(moon.id, points);
-  }, []);
-
   const Component = lazy(() => import(/* @vite-ignore */ url));
   return (
     <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
       <Suspense fallback={<Loading />}>
-        <Component ref={ref} {...moon} {...{ width: '100%', height: '100%', ...props }} onChange={handleChange} />
+        <Component ref={ref} {...moon} {...{ width: '100%', height: '100%', ...props }} />
       </Suspense>
     </ErrorBoundary>
   );

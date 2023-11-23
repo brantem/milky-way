@@ -6,27 +6,42 @@ import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 
-import { type Moon as _Moon, type Jupiter, Resource, type Parent } from '../../lib/types';
+import { Resource, type File, type Moon as _Moon, type Parent, type Jupiter } from '../../lib/types';
 import { cn } from '../../lib/helpers';
-import { useFiles, usePoints } from '../../lib/store';
-
-const useJupiter = () => {
-  const version = useFiles((state) => state.version);
-  const ref = useRef(useFiles.getState().files.find((file) => file.key === 'planets/jupiter/_planet.json'));
-  return { version, ...JSON.parse(ref.current?.body || '{}') } as Jupiter & { version: number };
-};
+import { usePlanets, usePoints } from '../../lib/store';
 
 const Jupiter = () => {
-  const jupiter = useJupiter();
-  const { getFiles, saveFile } = useFiles((state) => ({ getFiles: state.get, saveFile: state.save }));
-  const savePoints = usePoints((state) => state.save);
-
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
+  const [state, set] = usePlanets();
+  const savePoints = usePoints((state) => state.save);
+
+  const jupiter = (() => {
+    const file = state.files.find((file) => file.key === 'planets/jupiter/_planet.json');
+    return (JSON.parse(file?.body || '{}') || {}) as Jupiter;
+  })();
+
+  const parent: Parent = useMemo(() => {
+    return {
+      id: jupiter.id,
+      request(resource, data) {
+        switch (resource) {
+          case Resource.Files:
+            return set.files.filter((file) => data.includes(file.key));
+        }
+      },
+    };
+  }, []);
+
+  const handleChange = (id: _Moon['id']) => (files: File[], points: number) => {
+    for (let file of files) set.save(file.key, file.body);
+    savePoints(id, points);
+  };
+
   const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of files) saveFile(file.key, file.body);
+    for (let file of files) set.save(file.key, file.body);
     savePoints(id, points);
   };
 
@@ -36,20 +51,8 @@ const Jupiter = () => {
     if (largeRef.current?.snapshot) handleSnapshot(jupiter.large.id, largeRef.current.snapshot());
   };
 
-  const parent: Parent = useMemo(() => {
-    return {
-      id: jupiter.id,
-      request(resource, data) {
-        switch (resource) {
-          case Resource.Files:
-            return getFiles(data);
-        }
-      },
-    };
-  }, []);
-
   return (
-    <PanelGroup key={jupiter.version} id="jupiter" direction="horizontal">
+    <PanelGroup key={state.version} id="jupiter" direction="horizontal">
       {(jupiter.small.active || jupiter.medium.active) && (
         <>
           <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
@@ -62,6 +65,7 @@ const Jupiter = () => {
                         ref={mediumRef}
                         parent={parent}
                         moon={jupiter.medium}
+                        onChange={handleChange(jupiter.medium.id)}
                         onPublish={(action: string, data: any) => {
                           smallRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -84,6 +88,7 @@ const Jupiter = () => {
                         ref={smallRef}
                         parent={parent}
                         moon={jupiter.small}
+                        onChange={handleChange(jupiter.small.id)}
                         onPublish={(action: string, data: any) => {
                           mediumRef.current?.execute?.(action, data);
                           largeRef.current?.execute?.(action, data);
@@ -115,6 +120,7 @@ const Jupiter = () => {
                   ref={largeRef}
                   parent={parent}
                   moon={moon}
+                  onChange={handleChange(moon.id)}
                   onPublish={(action: string, data: any) => {
                     smallRef.current?.execute?.(action, data);
                     mediumRef.current?.execute?.(action, data);

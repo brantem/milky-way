@@ -1,3 +1,3 @@
 export * from './editor';
-export * from './files';
+export * from './planets';
 export * from './points';

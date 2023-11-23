@@ -1,3 +1,7 @@
+export enum Resource {
+  Files = 'files',
+}
+
 export type File = {
   key: string;
   body: string;
@@ -28,11 +32,7 @@ export type Jupiter = Planet & {
   };
 };
 
-export enum Resource {
-  Files = 'files',
-}
-
 export type Parent = {
   id: string;
-  request(resource: Resource, data?: any): any;
+  request(resource: Resource.Files, keys: string[]): (File | undefined)[];
 };
