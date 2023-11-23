@@ -52,7 +52,7 @@ const state = proxy<State>({
           },
           large: {
             id: 'ganymede',
-            url: 'http://localhost:7001/bundle.js',
+            url: 'https://moons.brantem.com/ganymede/bundle.js',
             data: {
               initial: {
                 file: 'planets/jupiter/outputs/ganymede.json',
