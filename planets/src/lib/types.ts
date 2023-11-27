@@ -32,6 +32,10 @@ export type Jupiter = Planet & {
   };
 };
 
+export type Neptune = Planet & {
+  moons: (string | (Moon & { points: { min: number } }))[];
+};
+
 export type Parent = {
   id: string;
   request(resource: Resource.Files, keys: string[]): (File | undefined)[];

@@ -3,9 +3,42 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import type { File, Moon as _Moon, Parent } from '../lib/types';
 
-const Loading = () => {
+const Error = ({
+  width = '100%',
+  height = '100%',
+}: {
+  width: React.CSSProperties['width'];
+  height: React.CSSProperties['height'];
+}) => {
   return (
-    <div className="h-full w-full flex items-center justify-center">
+    <div className="p-3 flex items-center justify-center gap-2" style={{ width, height }}>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="w-6 h-6 text-orange-500"
+      >
+        <path
+          fillRule="evenodd"
+          d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
+          clipRule="evenodd"
+        />
+      </svg>
+
+      <p>Something went wrong</p>
+    </div>
+  );
+};
+
+const Loading = ({
+  width = '100%',
+  height = '100%',
+}: {
+  width: React.CSSProperties['width'];
+  height: React.CSSProperties['height'];
+}) => {
+  return (
+    <div className="flex items-center justify-center" style={{ width, height }}>
       <svg
         aria-hidden="true"
         role="status"
@@ -42,9 +75,9 @@ type MoonProps = {
 const Moon = forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
   const Component = lazy(() => import(/* @vite-ignore */ url));
   return (
-    <ErrorBoundary fallback={<p className="m-3">Something went wrong</p>}>
-      <Suspense fallback={<Loading />}>
-        <Component ref={ref} {...moon} {...{ width: '100%', height: '100%', ...props }} />
+    <ErrorBoundary fallback={<Error width={moon.width} height={moon.height} />}>
+      <Suspense fallback={<Loading width={moon.width} height={moon.height} />}>
+        <Component ref={ref} {...moon} {...props} />
       </Suspense>
     </ErrorBoundary>
   );

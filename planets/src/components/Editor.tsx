@@ -9,7 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useAppState } from '../lib/state';
+import { useFiles } from '../lib/state';
 import { cn, sleep } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
@@ -20,7 +20,7 @@ type AddFileProps = {
 
 const AddFile = ({ onFileCreated }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [, set] = useAppState();
+  const [, set] = useFiles();
 
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [key, setKey] = useState('');
@@ -110,7 +110,7 @@ type FileProps = {
 };
 
 const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
-  const [, set] = useAppState();
+  const [, set] = useFiles();
 
   return (
     <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
@@ -149,7 +149,7 @@ type FolderProps = SidebarProps & {
 };
 
 const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const [state] = useAppState();
+  const [state] = useFiles();
   const { folders, files } = (() => {
     let folders = new Set<string>();
     let files = [];
@@ -230,7 +230,7 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 };
 
 const Editor = () => {
-  const [state, set] = useAppState();
+  const [state, set] = useFiles();
 
   const [activeFileKey, setActiveFileKey] = useState(state.files[0].key);
   const [values, setValues] = useState<Record<string, string>>({});

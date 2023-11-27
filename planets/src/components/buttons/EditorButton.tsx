@@ -1,14 +1,18 @@
 import Button from '../Button';
 
-import { sleep } from '../../lib/helpers';
-import { useAppState } from '../../lib/state';
+import { cn, sleep } from '../../lib/helpers';
+import { useFiles } from '../../lib/state';
 
-const EditorButton = () => {
-  const [, set] = useAppState();
+type EditorButtonProps = {
+  className?: string;
+};
+
+const EditorButton = ({ className }: EditorButtonProps) => {
+  const [, set] = useFiles();
 
   return (
     <Button
-      className="aspect-square"
+      className={cn('aspect-square', className)}
       shadowClassName="bg-violet-600"
       contentClassName="bg-violet-500 text-white"
       onClick={async () => {
