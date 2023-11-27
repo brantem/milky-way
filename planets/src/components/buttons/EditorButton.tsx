@@ -1,22 +1,20 @@
 import Button from '../Button';
 
 import { cn, sleep } from '../../lib/helpers';
-import { useFiles } from '../../lib/state';
+import { editor } from '../../lib/state';
 
 type EditorButtonProps = {
   className?: string;
 };
 
 const EditorButton = ({ className }: EditorButtonProps) => {
-  const [, set] = useFiles();
-
   return (
     <Button
       className={cn('aspect-square', className)}
       shadowClassName="bg-violet-600"
       contentClassName="bg-violet-500 text-white"
       onClick={async () => {
-        set.isEditorVisible = true;
+        editor.isVisible = true;
         await sleep(0);
         document.getElementById('editor')?.scrollIntoView({ behavior: 'smooth' });
       }}

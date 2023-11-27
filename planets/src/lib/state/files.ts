@@ -6,21 +6,13 @@ import type { File, Moon, Jupiter, Neptune } from '../types';
 const ROOT = 'planets/';
 
 interface State {
-  version: number;
-
-  isEditorVisible: boolean;
-
-  files: File[];
-  saveFile(key: File['key'], body: File['body']): File;
-  deleteFile(key: File['key']): void;
+  value: File[];
+  save(key: File['key'], body: File['body']): File;
+  delete(key: File['key']): void;
 }
 
-const state = proxy<State>({
-  version: 0,
-
-  isEditorVisible: false,
-
-  files: [
+export const files = proxy<State>({
+  value: [
     {
       key: 'planets/jupiter/_planet.json',
       body: JSON.stringify(
@@ -48,34 +40,33 @@ const state = proxy<State>({
             },
           },
           large: {
-            id: 'io',
-            url: 'https://moons.brantem.com/io/bundle.js',
+            id: 'ganymede',
+            url: 'https://moons.brantem.com/ganymede/bundle.js',
             data: {
               initial: {
-                file: 'planets/jupiter/outputs/io.json',
+                file: 'planets/jupiter/outputs/ganymede.json',
+              },
+              tests: {
+                file: 'planets/jupiter/tests.json',
               },
               output: {
-                file: 'planets/jupiter/outputs/io.json',
+                file: 'planets/jupiter/outputs/ganymede.json',
+                deimos: 'planets/jupiter/outputs/deimos.json',
               },
-              left: {
-                items: [
-                  { id: '1', text: 'Square' },
-                  { id: '2', text: 'Japan' },
-                  { id: '3', text: 'Mars' },
-                  { id: '4', text: 'Leonardo da Vinci' },
-                  { id: '5', text: 'Broccoli' },
-                ],
-                shuffle: true,
-              },
-              right: {
-                items: [
-                  { id: '1', text: 'Four equal sides' },
-                  { id: '2', text: 'Tokyo' },
-                  { id: '3', text: 'Phobos' },
-                  { id: '4', text: 'Mona Lisa' },
-                  { id: '5', text: 'Vegetable' },
-                ],
-                shuffle: true,
+              model: {
+                type: 'teachable_machine',
+                urls: {
+                  baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+                },
+                input: {
+                  width: 96,
+                  height: 96,
+                  background: '#fff',
+                },
+                probability: {
+                  min: 90,
+                  max: 100,
+                },
               },
             },
 
@@ -328,30 +319,30 @@ const state = proxy<State>({
       ),
     },
   ],
-  saveFile(key, body) {
+  save(key, body) {
     const file = { key: ROOT + key.trim().replace(new RegExp(`^${ROOT.replace('/', '/')}`), ''), body };
-    const index = state.files.findIndex((file) => file.key === key);
+    const index = files.value.findIndex((file) => file.key === key);
     if (index === -1) {
-      state.files.push(file);
+      files.value.push(file);
     } else {
-      state.files[index].body = body;
+      files.value[index].body = body;
     }
     return file;
   },
-  deleteFile(key) {
-    state.files = state.files.filter((file) => file.key !== key);
+  delete(key) {
+    files.value = files.value.filter((file) => file.key !== key);
   },
 
   ...((value) => {
     if (!value) return {};
     const files: File[] = JSON.parse(value) || [];
     if (!files.length) return {};
-    return { files };
+    return { value: files };
   })(localStorage.getItem('files')),
 });
 
-subscribe(state, () => localStorage.setItem('files', JSON.stringify(state.files)));
+subscribe(files, () => localStorage.setItem('files', JSON.stringify(files.value)));
 
 export const useFiles = () => {
-  return [useSnapshot(state), state] as const;
+  return [useSnapshot(files), files] as const;
 };

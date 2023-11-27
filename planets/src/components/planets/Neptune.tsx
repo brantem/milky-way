@@ -6,10 +6,9 @@ import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 
 import type { Neptune, Parent } from '../../lib/types';
-import { usePoints } from '../../lib/state';
+import { points } from '../../lib/state';
 
 const Neptune = () => {
-  const [state] = usePoints();
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
 
   const [stopAt, setStopAt] = useState<number>();
@@ -21,7 +20,7 @@ const Neptune = () => {
     for (let i = 0; i < planet.moons.length; i++) {
       const moon = planet.moons[i];
       if (typeof moon === 'string') continue;
-      if ((state.points[moon.id] || 0) >= moon.points.min) continue;
+      if ((points.value[moon.id] || 0) >= moon.points.min) continue;
       setStopAt(i);
       return;
     }

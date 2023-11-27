@@ -9,25 +9,25 @@ import SubmitButton from '../buttons/SubmitButton';
 
 import { type Moon as _Moon, type Jupiter, type Parent } from '../../lib/types';
 import { cn } from '../../lib/helpers';
-import { useFiles, usePoints } from '../../lib/state';
+import { useEditor, files, points } from '../../lib/state';
 
 const Jupiter = () => {
   const smallRef = useRef<MoonHandle>(null);
   const mediumRef = useRef<MoonHandle>(null);
   const largeRef = useRef<MoonHandle>(null);
 
-  const [state, set] = useFiles();
-  const [, set2] = usePoints();
+  const [editor] = useEditor();
+
   const { planet, onRequest, onChange } = usePlanet<Jupiter>('planets/jupiter/_planet.json');
   const parent: Parent = useMemo(() => ({ id: planet.id, request: onRequest }), []);
 
-  const handleSnapshot = (id: _Moon['id'], { files, points }: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of files) set.saveFile(file.key, file.body);
-    set2.savePoints(id, points);
+  const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
+    for (let file of data.files) files.save(file.key, file.body);
+    points.save(id, data.points);
   };
 
   return (
-    <PanelGroup key={state.version} id="jupiter" direction="horizontal" className="p-1">
+    <PanelGroup key={editor.saved} id="jupiter" direction="horizontal" className="p-1">
       {(planet.small.active || planet.medium.active) && (
         <>
           <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>

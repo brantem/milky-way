@@ -3,19 +3,15 @@ import { proxy, subscribe, useSnapshot } from 'valtio';
 import type { Moon } from '../types';
 
 interface State {
-  points: Record<string, number>;
-  savePoints(id: Moon['id'], value: number): void;
+  value: Record<string, number>;
+  save(id: Moon['id'], value: number): void;
 }
 
-const state = proxy<State>({
-  points: ((value) => (value ? JSON.parse(value) || {} : {}))(localStorage.getItem('points')),
-  savePoints(id, value) {
-    state.points[id] = value;
+export const points = proxy<State>({
+  value: ((value) => (value ? JSON.parse(value) || {} : {}))(localStorage.getItem('points')),
+  save(id, value) {
+    points.value[id] = value;
   },
 });
 
-subscribe(state, () => localStorage.setItem('points', JSON.stringify(state.points)));
-
-export const usePoints = () => {
-  return [useSnapshot(state), state] as const;
-};
+subscribe(points, () => localStorage.setItem('points', JSON.stringify(points.value)));

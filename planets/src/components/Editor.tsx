@@ -9,7 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useFiles } from '../lib/state';
+import { useEditor, files, useFiles } from '../lib/state';
 import { cn, sleep } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
@@ -20,7 +20,6 @@ type AddFileProps = {
 
 const AddFile = ({ onFileCreated }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [, set] = useFiles();
 
   const [isInputVisible, setIsInputVisible] = useState(false);
   const [key, setKey] = useState('');
@@ -31,7 +30,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreated(set.saveFile(key, ''));
+        onFileCreated(files.save(key, ''));
         setIsInputVisible(false);
         setKey('');
       }}
@@ -110,8 +109,6 @@ type FileProps = {
 };
 
 const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
-  const [, set] = useFiles();
-
   return (
     <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
       <span
@@ -125,7 +122,7 @@ const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
-              set.deleteFile(path + file.key);
+              files.delete(path + file.key);
               onDeleteClick();
             }}
           >
@@ -149,22 +146,22 @@ type FolderProps = SidebarProps & {
 };
 
 const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const [state] = useFiles();
-  const { folders, files } = (() => {
+  const [files] = useFiles();
+  const data = (() => {
     let folders = new Set<string>();
-    let files = [];
-    for (let file of state.files) {
+    let _files = [];
+    for (let file of files.value) {
       if (!file.key.startsWith(path)) continue;
       const key = file.key.replace(path, '');
       if (key.includes('/')) {
         folders.add(key.split('/')[0]);
       } else {
-        files.push({ ...file, key });
+        _files.push({ ...file, key });
       }
     }
     return {
       folders: [...folders].sort((a, b) => a.localeCompare(b)),
-      files: files.sort((a, b) => a.key.localeCompare(b.key)),
+      files: _files.sort((a, b) => a.key.localeCompare(b.key)),
     };
   })();
 
@@ -181,7 +178,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
         )}
         <div className="relative pl-[calc(theme(spacing.4)*var(--level))]">{s[s.length - 2]}</div>
       </div>
-      {folders.map((folder) => (
+      {data.folders.map((folder) => (
         <Folder
           key={folder}
           path={path + folder + '/'}
@@ -191,7 +188,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
           onFileDeleted={onFileDeleted}
         />
       ))}
-      {files.map((file) => (
+      {data.files.map((file) => (
         <File
           path={path}
           key={file.key}
@@ -230,19 +227,20 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
 };
 
 const Editor = () => {
-  const [state, set] = useFiles();
+  const [editor, setEditor] = useEditor();
+  const [files, setFiles] = useFiles();
 
-  const [activeFileKey, setActiveFileKey] = useState(state.files[0].key);
+  const [activeFileKey, setActiveFileKey] = useState(files.value[0].key);
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const file = state.files.find((file) => file.key === activeFileKey)!;
+  const file = files.value.find((file) => file.key === activeFileKey)!;
 
   return (
     <div
       id="editor"
       className={cn(
         'fixed h-full w-full p-1 inset-0 transition-transform duration-500 bg-neutral-100 z-[20] flex gap-2',
-        state.isEditorVisible ? 'translate-y-0' : 'translate-y-full',
+        editor.isVisible ? 'translate-y-0' : 'translate-y-full',
       )}
     >
       <PanelGroup direction="horizontal">
@@ -251,7 +249,7 @@ const Editor = () => {
             <Sidebar
               activeFileKey={activeFileKey}
               onFileClick={(key) => setActiveFileKey(key)}
-              onFileDeleted={() => setActiveFileKey(state.files[0].key)}
+              onFileDeleted={() => setActiveFileKey(files.value[0].key)}
             />
             <AddFile onFileCreated={(file) => setActiveFileKey(file.key)} />
           </div>
@@ -266,16 +264,16 @@ const Editor = () => {
             <form
               className="h-full w-full bg-neutral-50 rounded-lg flex flex-col overflow-hidden shadow-sm flex-1 border border-neutral-200/50"
               onReset={async () => {
-                set.isEditorVisible = false;
+                setEditor.isVisible = false;
                 await sleep(500);
-                setActiveFileKey(state.files[0].key);
+                setActiveFileKey(files.value[0].key);
                 setValues({});
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                Object.keys(values).forEach((key) => set.saveFile(key, values[key]));
-                ++set.version;
-                set.isEditorVisible = false;
+                Object.keys(values).forEach((key) => setFiles.save(key, values[key]));
+                ++setEditor.saved;
+                setEditor.isVisible = false;
               }}
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
