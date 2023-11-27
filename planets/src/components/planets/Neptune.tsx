@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { subscribe } from 'valtio';
 
 import { usePlanet } from './shared';
 import Markdown from '../Markdown';
@@ -10,32 +11,40 @@ import { points } from '../../lib/state';
 
 const Neptune = () => {
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
+  const parent: Parent = { id: planet.id, request: onRequest };
 
   const [stopAt, setStopAt] = useState<number>();
 
-  const parent: Parent = useMemo(() => ({ id: planet.id, request: onRequest }), []);
-
-  useEffect(() => {
-    if (stopAt !== undefined) return;
+  const getStopAt = () => {
     for (let i = 0; i < planet.moons.length; i++) {
       const moon = planet.moons[i];
       if (typeof moon === 'string') continue;
       if ((points.value[moon.id] || 0) >= moon.points.min) continue;
-      setStopAt(i);
-      return;
+      return i;
     }
-    setStopAt(-1);
+    return -1;
+  };
+
+  useEffect(() => {
+    if (stopAt !== undefined) return;
+    setStopAt(getStopAt());
   }, []);
 
-  // TODO: watch points, if the points has reached the min, continue rendering
+  useEffect(() => {
+    return subscribe(points, () => {
+      setStopAt(getStopAt());
+    });
+  }, []);
 
   return (
     <>
       <div className="max-w-5xl mx-auto flex flex-col items-center gap-5 py-5">
-        {stopAt !== undefined
-          ? (stopAt !== -1 ? planet.moons.slice(0, stopAt + 1) : planet.moons).map((moon) => {
-              if (typeof moon === 'string') return <Markdown className="px-3">{moon}</Markdown>;
-              return (
+        {planet.moons.map((moon, i) => {
+          return (
+            <div style={stopAt === undefined || (stopAt !== -1 && i > stopAt) ? { display: 'none' } : {}}>
+              {typeof moon === 'string' ? (
+                <Markdown className="px-3">{moon}</Markdown>
+              ) : (
                 <Moon
                   key={moon.id}
                   parent={parent}
@@ -43,9 +52,10 @@ const Neptune = () => {
                   onChange={onChange(moon.id)}
                   onPublish={(action, data) => console.log(action, data)}
                 />
-              );
-            })
-          : null}
+              )}
+            </div>
+          );
+        })}
       </div>
 
       <EditorButton className="fixed bottom-4 left-4" />

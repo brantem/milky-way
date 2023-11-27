@@ -19,7 +19,7 @@ const Jupiter = () => {
   const [editor] = useEditor();
 
   const { planet, onRequest, onChange } = usePlanet<Jupiter>('planets/jupiter/_planet.json');
-  const parent: Parent = useMemo(() => ({ id: planet.id, request: onRequest }), []);
+  const parent: Parent = { id: planet.id, request: onRequest };
 
   const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
     for (let file of data.files) files.save(file.key, file.body);

@@ -268,19 +268,19 @@ export const files = proxy<State>({
                 output: {
                   file: 'planets/neptune/outputs/callisto-1.json',
                 },
-                text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__.',
+                text: 'Cooking is a fun __1__ that lets you be creative in the kitchen. Using different __2__ like pots, pans, and utensils, you can whip up delicious __3__ for yourself and others.',
                 choices: {
                   items: [
-                    { id: '1', text: 'chihuahua' },
-                    { id: '2', text: 'backyard' },
-                    { id: '3', text: 'ball' },
-                    { id: '4', text: 'spring' },
+                    { id: '1', text: 'activity' },
+                    { id: '2', text: 'tools' },
+                    { id: '3', text: 'dishes' },
+                    { id: '4', text: 'airplane' },
                   ],
                   shuffle: true,
                 },
               },
               points: {
-                min: 1,
+                min: 3,
               },
             },
             'Sint ipsum anim irure ex. Adipisicing ex est do labore ipsum in et quis. Duis proident labore duis id id tempor aute et esse. Fugiat ea ea eiusmod. Enim Lorem eiusmod culpa ullamco elit anim in magna. Elit laboris pariatur tempor enim voluptate. Et fugiat et anim aliquip fugiat voluptate sunt.\n\nIncididunt commodo excepteur excepteur adipisicing Lorem laboris irure veniam deserunt elit culpa mollit eu. Pariatur mollit non ea non culpa ex Lorem proident officia id incididunt commodo. Nisi sit proident consectetur commodo commodo nostrud excepteur culpa ut mollit cillum. Nulla est in ipsum ullamco mollit. Laboris cupidatat non cillum exercitation Lorem do id sit nulla nisi.',
@@ -295,14 +295,15 @@ export const files = proxy<State>({
                 output: {
                   file: 'planets/neptune/outputs/callisto-2.json',
                 },
-                text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet.',
+                text: "Cooking is a fun __1__ that lets you be creative in the kitchen. Using different __2__ like pots, pans, and utensils, you can whip up delicious __3__ for yourself and others. However, it's crucial not to let technology __4__ the joy of making meals. We should aim to embrace traditional cooking methods and not __5__ the pleasure of preparing food by hand.",
                 choices: {
                   items: [
-                    { id: '1', text: 'chihuahua' },
-                    { id: '2', text: 'backyard' },
-                    { id: '3', text: 'ball' },
-                    { id: '4', text: 'spring' },
-                    { id: '5', text: 'walk' },
+                    { id: '1', text: 'activity' },
+                    { id: '2', text: 'tools' },
+                    { id: '3', text: 'dishes' },
+                    { id: '4', text: 'replace' },
+                    { id: '5', text: 'lose' },
+                    { id: '6', text: 'ignore' },
                   ],
                   shuffle: true,
                 },
