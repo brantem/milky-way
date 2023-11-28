@@ -309,7 +309,7 @@ export const files = proxy<State>({
                 },
               },
               points: {
-                min: 1,
+                min: 5,
               },
             },
             'Eu amet eu ut ullamco est proident officia consectetur ad incididunt irure. Et aute tempor et amet veniam incididunt veniam pariatur et anim velit nulla cupidatat eiusmod nostrud. Minim labore et officia cupidatat esse ullamco qui sunt voluptate cupidatat anim commodo mollit nostrud. Cupidatat et excepteur qui duis magna nostrud proident duis in ut. Incididunt pariatur sit cupidatat aute laboris aliquip ullamco deserunt tempor Lorem mollit. Nulla cupidatat nisi ea proident ex enim aliqua in tempor. Duis anim non in velit ut non.\n\nConsectetur in excepteur esse. Culpa nostrud qui sit ea ex in officia labore minim consectetur incididunt. Qui laboris veniam commodo dolore et voluptate id dolor amet eiusmod eiusmod eiusmod. Consequat culpa sunt occaecat pariatur et commodo mollit voluptate aute excepteur laborum. Culpa cillum eu est amet amet est. Non exercitation velit commodo aliquip excepteur sint pariatur mollit do proident in aliquip. Lorem exercitation irure laborum occaecat id non reprehenderit magna nulla adipisicing. Ad ipsum ipsum non est do cupidatat laborum nostrud.',

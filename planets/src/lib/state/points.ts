@@ -15,3 +15,7 @@ export const points = proxy<State>({
 });
 
 subscribe(points, () => localStorage.setItem('points', JSON.stringify(points.value)));
+
+export const usePoints = () => {
+  return [useSnapshot(points), points] as const;
+};
