@@ -93,9 +93,6 @@ importers:
       react-markdown:
         specifier: ^9.0.1
         version: 9.0.1(@types/react@18.2.31)(react@18.2.0)
-      valtio:
-        specifier: ^1.11.3
-        version: 1.11.3(@types/react@18.2.31)(react@18.2.0)
     devDependencies:
       '@tailwindcss/typography':
         specifier: ^0.5.10
@@ -233,9 +230,6 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.2.0(react@18.2.0)
-      valtio:
-        specifier: ^1.11.3
-        version: 1.11.3(@types/react@18.2.31)(react@18.2.0)
     devDependencies:
       '@types/node':
         specifier: ^20.8.7
@@ -297,9 +291,6 @@ importers:
       react-markdown:
         specifier: ^9.0.1
         version: 9.0.1(@types/react@18.2.31)(react@18.2.0)
-      valtio:
-        specifier: ^1.11.3
-        version: 1.11.3(@types/react@18.2.31)(react@18.2.0)
     devDependencies:
       '@tailwindcss/typography':
         specifier: ^0.5.10

@@ -4,47 +4,29 @@ import Wrapper from './components/Wrapper';
 import Items from './components/Items';
 import Lines from './components/Lines';
 
-import { AppProvider, type AppProviderHandle, type AppProviderProps } from './lib/state';
-import { type Item, Side } from './lib/types';
+import { Provider, type ProviderHandle, type ProviderProps } from './lib/state';
+import { Side } from './lib/types';
 
 import './index.css';
 
-type AppProps = {
+type IoProps = Omit<ProviderProps, 'children'> & {
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
-  data: {
-    left: {
-      items: Item[];
-      shuffle?: boolean;
-    };
-    right: {
-      items: Item[];
-      shuffle?: boolean;
-    };
-  };
 };
 
-const App = ({ width = '100%', height = '100%', data }: IoProps) => {
+const Io = forwardRef<ProviderHandle, IoProps>(({ width = '100%', height = '100%', ...props }, ref) => {
   return (
-    <div id="io" style={{ width, height }}>
-      <Wrapper>
-        <Items items={data.left.items} side={Side.Left} />
+    <Provider ref={ref} {...props}>
+      <div id={`io-${props.id}`} style={{ width, height }}>
+        <Wrapper>
+          <Items items={props.data.left.items} side={Side.Left} />
 
-        <Lines />
+          <Lines />
 
-        <Items items={data.right.items} side={Side.Right} />
-      </Wrapper>
-    </div>
-  );
-};
-
-type IoProps = AppProps & Omit<AppProviderProps, 'children'>;
-
-const Io = forwardRef<AppProviderHandle, IoProps>((props, ref) => {
-  return (
-    <AppProvider ref={ref} {...props}>
-      <App {...props} />
-    </AppProvider>
+          <Items items={props.data.right.items} side={Side.Right} />
+        </Wrapper>
+      </div>
+    </Provider>
   );
 });
 

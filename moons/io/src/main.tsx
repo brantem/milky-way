@@ -8,6 +8,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Io
       width={1024}
       height={768}
+      id="aXjyt3QFH51MWJ4c7WSmS"
       parent={{
         id: 'parent-1',
         request() {

@@ -1,6 +1,6 @@
-import { STROKE_SIZE } from '../lib/constants';
-import { useAppState } from '../lib/state';
 import type { Coordinate } from '../lib/types';
+import { STROKE_SIZE } from '../lib/constants';
+import { useIo } from '../lib/state';
 
 const getCoord = (el: HTMLElement, pageX: number, pageY: number): Coordinate => {
   const rect = el.getBoundingClientRect();
@@ -13,7 +13,7 @@ const getCoord = (el: HTMLElement, pageX: number, pageY: number): Coordinate => 
 };
 
 const Wrapper = ({ children }: { children: React.ReactNode }) => {
-  const [, set] = useAppState();
+  const { a, start, setB, addLine, isConnected } = useIo();
   return (
     <div
       className="relative w-full h-full grid grid-cols-[1fr_theme(spacing.48)_1fr] [grid-template-areas:'start_middle_end'] items-center justify-between font-sans text-4xl font-semibold touch-none z-10"
@@ -21,21 +21,18 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
         if (e.button !== 0) return;
         if (!(e.target as any).classList.contains('dot')) return;
         const el = e.target as Element;
-        set.start(el.parentElement!.id);
+        start(el.parentElement!.id);
       }}
       onPointerMove={(e) => {
-        if (!set.a) return;
+        if (!a) return;
         if ((e.target as any).classList.contains('dot')) {
           const el = e.target as Element;
           const id = el.parentElement!.id;
-          if (id.split('-')[0] !== set.a.split('-')[0] && !set.isConnected(id)) {
-            set.b = id;
-            return;
-          }
+          if (id.split('-')[1] !== a.split('-')[1] && !isConnected(id)) return setB(id);
         }
-        set.b = getCoord(e.currentTarget, e.pageX, e.pageY);
+        setB(getCoord(e.currentTarget, e.pageX, e.pageY));
       }}
-      onPointerUp={set.addLine}
+      onPointerUp={addLine}
     >
       {children}
     </div>

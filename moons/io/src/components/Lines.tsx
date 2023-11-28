@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 
-import { STROKE_SIZE } from '../lib/constants';
-import { useAppState } from '../lib/state';
 import type { Coordinate, Line } from '../lib/types';
+import { STROKE_SIZE } from '../lib/constants';
+import { useIo } from '../lib/state';
 
 const calcOffset = (a: Coordinate, b: Coordinate) => {
   const dx = a.x - b.x;
@@ -37,8 +37,8 @@ const BaseLine = ({ d }: { d: string }) => {
   );
 };
 
-const idToCoord = (id: string): Coordinate => {
-  const parent = document.getElementById('io');
+const idToCoord = (_id: string, id: string): Coordinate => {
+  const parent = document.getElementById(`io-${_id}`);
   const el = document.querySelector(`#${id} > .dot`);
   if (!parent || !el) return { x: 0, y: 0 };
   const parentRect = parent.getBoundingClientRect();
@@ -47,15 +47,17 @@ const idToCoord = (id: string): Coordinate => {
 };
 
 const useIdToCoord = (id: string | Coordinate | null): Coordinate => {
+  const { _id } = useIo();
+
   const getCoord = () => {
     if (!id) return;
     if (typeof id !== 'string') return setCoord(coord);
-    setCoord(idToCoord(id));
+    setCoord(idToCoord(_id, id));
   };
 
   const [coord, setCoord] = useState<Coordinate>(() => {
     if (!id || typeof id !== 'string') return { x: 0, y: 0 };
-    return idToCoord(id);
+    return idToCoord(_id, id);
   });
 
   useEffect(() => {
@@ -65,18 +67,18 @@ const useIdToCoord = (id: string | Coordinate | null): Coordinate => {
 
   useEffect(() => {
     getCoord();
-  }, []);
+  }, [id]);
 
   return coord;
 };
 
 const TempLine = () => {
-  const [state] = useAppState();
-  if (!state.a) return null;
-  const b = typeof state.b === 'string' ? idToCoord(state.b) : state.b;
+  const { _id, a, b } = useIo();
+  if (!a) return null;
+  const _b = typeof b === 'string' ? idToCoord(_id, b) : b;
   return (
     <svg className="absolute inset-0 h-full w-full z-[9] pointer-events-none">
-      <BaseLine d={generateLine(idToCoord(state.a), b)} />
+      <BaseLine d={generateLine(idToCoord(_id, a), _b)} />
     </svg>
   );
 };
@@ -88,13 +90,13 @@ const Line = ({ line }: { line: Line }) => {
 };
 
 const Lines = () => {
-  const [state] = useAppState();
+  const { visibleLines } = useIo();
 
   return (
     <>
       <TempLine />
       <svg className="absolute inset-0 h-full w-full z-[8] touch-none pointer-events-none">
-        {state.visibleLines.map((line, i) => (
+        {visibleLines.map((line, i) => (
           <Line key={i} line={line} />
         ))}
       </svg>

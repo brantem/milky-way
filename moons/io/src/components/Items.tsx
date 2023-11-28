@@ -1,13 +1,13 @@
+import { useMemo } from 'react';
+
 import Dot from './Dot';
 
 import { type Item, Side } from '../lib/types';
-import { useAppState } from '../lib/state';
-import { useMemo } from 'react';
+import { useIo } from '../lib/state';
 
 type ItemsProps = {
   items: Item[];
   side: Side;
-  shuffle?: boolean;
 };
 
 const Items = ({ items, side }: ItemsProps) => {
@@ -17,7 +17,7 @@ const Items = ({ items, side }: ItemsProps) => {
     return m;
   }, []);
 
-  const [state] = useAppState();
+  const { _id, leftIds, rightIds } = useIo();
 
   return (
     <ol
@@ -26,12 +26,12 @@ const Items = ({ items, side }: ItemsProps) => {
         side === Side.Left ? '[grid-area:start]' : '[grid-area:end]',
       ].join(' ')}
     >
-      {(side === Side.Left ? state.leftIds : state.rightIds).map((id) => {
+      {(side === Side.Left ? leftIds : rightIds).map((id) => {
         const item = m.get(id);
         return (
           <li
             key={item.id}
-            id={`${side}-${item.id}`}
+            id={`${_id}-${side}-${item.id}`}
             className={[
               'grid items-center gap-3',
               side === Side.Left
