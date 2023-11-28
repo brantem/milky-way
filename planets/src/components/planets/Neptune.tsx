@@ -4,9 +4,10 @@ import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 
 import type { Neptune, Parent } from '../../lib/types';
-import { usePoints } from '../../lib/state';
+import { useEditor, usePoints } from '../../lib/state';
 
 const Neptune = () => {
+  const [editor] = useEditor();
   const [points] = usePoints();
 
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
@@ -24,7 +25,7 @@ const Neptune = () => {
 
   return (
     <>
-      <div className="max-w-5xl mx-auto flex flex-col items-center gap-5 py-5">
+      <div key={editor.saved} className="max-w-5xl mx-auto flex flex-col items-center gap-5 py-5">
         {planet.moons.map((moon, i) => {
           const stopAt = getStopAt();
           if (stopAt !== -1 && i > stopAt) return null;
