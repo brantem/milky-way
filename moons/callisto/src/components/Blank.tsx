@@ -2,7 +2,7 @@ import { useDroppable } from '@dnd-kit/core';
 
 import Choice from './Choice';
 
-import { useAppState } from '../lib/state';
+import { useCallisto } from '../lib/state';
 
 type BlankProps = {
   children: string;
@@ -11,8 +11,8 @@ type BlankProps = {
 const Blank = ({ children }: BlankProps) => {
   const [, before, id, after] = children.match(/(.*)(__\w+__)(.*)/)!;
 
-  const [state] = useAppState();
-  const choiceId = state.answers.find((item) => item.blankId === id)?.choiceId;
+  const { answers } = useCallisto();
+  const choiceId = answers.find((item) => item.blankId === id)?.choiceId;
 
   const { setNodeRef } = useDroppable({
     id,

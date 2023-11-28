@@ -1,75 +1,35 @@
-import { forwardRef, useRef, useState } from 'react';
-import { type ClientRect, DndContext, DragOverlay } from '@dnd-kit/core';
-import { restrictToParentElement } from '@dnd-kit/modifiers';
+import { forwardRef, useRef } from 'react';
 
+import Wrapper from './components/Wrapper';
 import Text from './components/Text';
 import Choices from './components/Choices';
-import { BaseChoice } from './components/Choice';
 
-import { AppProvider, type AppProviderHandle, type AppProviderProps, useAppState } from './lib/state';
+import { Provider, type ProviderHandle, type ProviderProps } from './lib/state';
 
 import './index.css';
 
-type AppProps = {
+type CallistoProps = Omit<ProviderProps, 'children'> & {
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
-  data: {
-    text: string;
-  };
 };
 
-const App = ({ width = '100%', height = '100%', data }: AppProps) => {
+const Callisto = forwardRef<ProviderHandle, CallistoProps>(({ width = '100%', height = '100%', ...props }, ref) => {
   const callistoRef = useRef<HTMLDivElement>(null);
-  const [set] = useAppState();
-
-  const [activeId, setActiveId] = useState('');
 
   return (
-    <div ref={callistoRef} id="callisto" style={{ width, height }}>
-      <DndContext
-        modifiers={[
-          (args) => {
-            const containerNodeRect = callistoRef.current?.getBoundingClientRect() as ClientRect | null;
-            return restrictToParentElement({ ...args, containerNodeRect });
-          },
-        ]}
-        onDragStart={({ active }) => {
-          setActiveId(active.id as string);
-        }}
-        onDragEnd={({ active, over }) => {
-          setActiveId('');
-          if (!over) return;
-          if (over.id === 'choices') {
-            set.putBackChoice(active.id.toString());
-          } else {
-            if (!over.data.current!.accepts.includes(active.data.current!.type)) return;
-            set.fillBlank(over.id.toString(), active.id.toString());
-          }
-        }}
-      >
+    <Provider ref={ref} {...props}>
+      <div ref={callistoRef} id={`callisto-${props.id}`} style={{ width, height }}>
         <div className="relative font-sans text-4xl font-semibold h-full w-full p-6 flex flex-col">
-          <div className="flex-1 mx-auto">
-            <Text text={data.text} />
-          </div>
+          <Wrapper containerRef={callistoRef}>
+            <div className="flex-1 mx-auto">
+              <Text text={props.data.text} />
+            </div>
 
-          <Choices />
-
-          <DragOverlay dropAnimation={null}>
-            {activeId ? <BaseChoice choiceId={activeId} className="cursor-grabbing" /> : null}
-          </DragOverlay>
+            <Choices />
+          </Wrapper>
         </div>
-      </DndContext>
-    </div>
-  );
-};
-
-type CallistoProps = AppProps & Omit<AppProviderProps, 'children'>;
-
-const Callisto = forwardRef<AppProviderHandle, CallistoProps>((props, ref) => {
-  return (
-    <AppProvider ref={ref} {...props}>
-      <App {...props} />
-    </AppProvider>
+      </div>
+    </Provider>
   );
 });
 

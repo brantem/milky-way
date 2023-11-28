@@ -1,15 +1,15 @@
 import { forwardRef } from 'react';
 import { useDraggable } from '@dnd-kit/core';
 
-import { useAppState } from '../lib/state';
+import { useCallisto } from '../lib/state';
 
 type ChoiceProps = React.ComponentPropsWithoutRef<'span'> & {
   choiceId: string;
 };
 
 export const BaseChoice = forwardRef<HTMLSpanElement, ChoiceProps>(({ className, choiceId, ...props }, ref) => {
-  const [state] = useAppState();
-  const choice = state.m.get(choiceId);
+  const { m } = useCallisto();
+  const choice = m.get(choiceId);
   if (!choice) return null;
   return (
     <span

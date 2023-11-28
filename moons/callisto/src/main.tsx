@@ -10,7 +10,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={768}
       parent={{
         id: 'aXjyt3QFH51MWJ4c7WSmS',
-        request() {
+        request(resource, data) {
+          console.log(resource, data);
           return [
             {
               key: 'callisto.json',
@@ -26,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           ];
         },
       }}
+      id="aXjyt3QFH51MWJ4c7WSmS"
       data={{
         initial: {
           file: 'callisto.json',

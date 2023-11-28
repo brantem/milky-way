@@ -2,10 +2,10 @@ import { useDroppable } from '@dnd-kit/core';
 
 import Choice from './Choice';
 
-import { useAppState } from '../lib/state';
+import { useCallisto } from '../lib/state';
 
 const Choices = () => {
-  const [state] = useAppState();
+  const { choiceIds } = useCallisto();
 
   const { setNodeRef, isOver } = useDroppable({
     id: 'choices',
@@ -22,7 +22,7 @@ const Choices = () => {
         isOver ? 'bg-neutral-100' : 'bg-transparent',
       ].join(' ')}
     >
-      {state.choiceIds.map((choiceId, i) => (
+      {choiceIds.map((choiceId, i) => (
         <Choice key={i} choiceId={choiceId} />
       ))}
     </div>
