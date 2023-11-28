@@ -7,7 +7,7 @@ const ROOT = 'planets/';
 
 interface State {
   value: File[];
-  save(key: File['key'], body: File['body']): File;
+  save(key: File['key'], body: File['body'], upsert?: boolean): File;
   delete(key: File['key']): void;
 }
 
@@ -320,13 +320,13 @@ export const files = proxy<State>({
       ),
     },
   ],
-  save(key, body) {
+  save(key, body, upsert = true) {
     const file = { key: ROOT + key.trim().replace(new RegExp(`^${ROOT.replace('/', '/')}`), ''), body };
-    const index = files.value.findIndex((file) => file.key === key);
+    const index = files.value.findIndex((f) => f.key === file.key);
     if (index === -1) {
       files.value.push(file);
     } else {
-      files.value[index].body = body;
+      if (upsert) files.value[index].body = body;
     }
     return file;
   },

@@ -30,7 +30,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreated(files.save(key, ''));
+        onFileCreated(files.save(key, '', false));
         setIsInputVisible(false);
         setKey('');
       }}
@@ -102,20 +102,16 @@ type SidebarProps = {
 type FileProps = {
   path: string;
   file: _File;
-  level: number;
   isActive: boolean;
   onClick(): void;
   onDeleteClick(): void;
 };
 
-const File = ({ path, file, level, isActive, onClick, onDeleteClick }: FileProps) => {
+const File = ({ path, file, isActive, onClick, onDeleteClick }: FileProps) => {
   return (
-    <button type="button" className="flex items-center py-1 cursor-pointer" onClick={onClick}>
-      <span
-        className="w-[calc(theme(spacing.4)*var(--level))] h-[1px] bg-neutral-300 mx-1"
-        style={{ '--level': level } as React.CSSProperties}
-      />
-      <span className={cn('group flex-1 flex items-center justify-between gap-2', isActive && 'font-bold')}>
+    <button type="button" className="flex items-start py-1 cursor-pointer w-full" onClick={onClick}>
+      <span className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
+      <span className={cn('group flex-1 flex items-center justify-between gap-2', isActive && 'font-semibold')}>
         <span>{file.key}</span>
         {!file.key.endsWith('_planet.json') && (
           <span
@@ -168,15 +164,21 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
   const s = path.split('/');
 
   return (
-    <>
-      <div className="flex items-center py-1">
-        {level >= 1 && (
-          <div
-            className="w-[calc(theme(spacing.4)*var(--level))] h-[1px] bg-neutral-300 mx-1"
-            style={{ '--level': level } as React.CSSProperties}
-          />
-        )}
-        <div className="relative pl-[calc(theme(spacing.4)*var(--level))]">{s[s.length - 2]}</div>
+    <div className={cn('relative', level === 1 ? 'ml-1' : level > 1 ? 'ml-5' : '')}>
+      {level === 0 || data.files.length ? (
+        <div
+          className={cn(
+            'absolute w-px bg-neutral-200 top-6',
+            level === 0 ? '-bottom-1' : 'bottom-5',
+            level >= 1 ? 'left-5' : 'left-1',
+          )}
+        />
+      ) : (
+        <div className={cn('absolute w-px bg-neutral-200 top-6 h-2', level >= 1 ? 'left-5' : 'left-1')} />
+      )}
+      <div className="flex items-start py-1 relative">
+        {level >= 1 && <div className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />}
+        <span className="text-violet-500 font-medium">{s[s.length - 2]}</span>
       </div>
       {data.folders.map((folder) => (
         <Folder
@@ -188,31 +190,29 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
           onFileDeleted={onFileDeleted}
         />
       ))}
-      {data.files.map((file) => (
-        <File
-          path={path}
-          key={file.key}
-          file={file}
-          level={level + 1}
-          onClick={() => onFileClick(path + file.key)}
-          onDeleteClick={onFileDeleted}
-          isActive={path + file.key === activeFileKey}
-        />
-      ))}
-    </>
+      {data.files.length ? (
+        <div className="ml-5 flex-1">
+          {data.files.map((file) => (
+            <File
+              path={path}
+              key={file.key}
+              file={file}
+              onClick={() => onFileClick(path + file.key)}
+              onDeleteClick={onFileDeleted}
+              isActive={path + file.key === activeFileKey}
+            />
+          ))}
+        </div>
+      ) : null}
+    </div>
   );
 };
 
 const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) => {
   return (
-    <div className="text-sm font-mono overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
-      <div className="overflow-y-auto h-full p-2 pt-1">
-        <div
-          className={cn(
-            'relative flex flex-col',
-            "before:content-[''] before:absolute before:top-[28px] before:bottom-[13.5px] before:left-1 before:w-[1px] before:bg-neutral-300",
-          )}
-        >
+    <div className="text-sm overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
+      <div className="overflow-y-auto h-full px-2 py-1">
+        <div className="flex flex-col">
           <Folder
             path="planets/"
             level={0}
