@@ -51,11 +51,11 @@ export type ProviderProps = {
   };
   id: string;
   data: {
-    initial: {
-      file: string;
+    initial?: {
+      file?: string;
     };
-    output: {
-      file: string;
+    output?: {
+      file?: string;
     };
     left: {
       items: Item[];
@@ -72,21 +72,27 @@ export type ProviderProps = {
 
 export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id, data, children, onChange }, ref) => {
   const { leftIds, rightIds, initialLines } = useMemo(() => {
-    const [file] = parent.request(Resource.Files, [data.initial.file]);
-    if (file) {
-      type Body = Pick<State, 'leftIds' | 'rightIds' | 'lines'>;
-      const { leftIds, rightIds, lines } = (JSON.parse(file?.body || '{}') || {}) as Body;
-      return { leftIds, rightIds, initialLines: lines.map((line) => ({ a: `${id}-${line.a}`, b: `${id}-${line.b}` })) };
-    } else {
-      let leftIds = data.left.items.map((item) => item.id);
-      if (data.left.shuffle) leftIds = shuffle(leftIds);
-
-      let rightIds = data.right.items.map((item) => item.id);
-      if (data.right.shuffle) rightIds = shuffle(rightIds);
-
-      return { leftIds, rightIds, initialLines: [] };
+    if (data.initial?.file) {
+      const [file] = parent.request(Resource.Files, [data.initial.file]);
+      if (file) {
+        type Body = Pick<State, 'leftIds' | 'rightIds' | 'lines'>;
+        const { leftIds, rightIds, lines } = (JSON.parse(file?.body || '{}') || {}) as Body;
+        return {
+          leftIds,
+          rightIds,
+          initialLines: lines.map((line) => ({ a: `${id}-${line.a}`, b: `${id}-${line.b}` })),
+        };
+      }
     }
-  }, [data.initial.file, data.left, data.right]);
+
+    let leftIds = data.left.items.map((item) => item.id);
+    if (data.left.shuffle) leftIds = shuffle(leftIds);
+
+    let rightIds = data.right.items.map((item) => item.id);
+    if (data.right.shuffle) rightIds = shuffle(rightIds);
+
+    return { leftIds, rightIds, initialLines: [] };
+  }, [data.initial?.file, data.left, data.right]);
 
   const [lines, setLines] = useState(() => initialLines);
   const [a, setA] = useState<State['a']>(null);
@@ -97,19 +103,21 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
       return line.a.split('-')[1] === line.b.split('-')[1] ? ++points : points;
     }, 0);
     return {
-      files: [
-        {
-          key: data.output.file,
-          body: JSON.stringify({
-            leftIds,
-            rightIds,
-            lines: lines.map((line) => ({
-              a: line.a.replace(`${id}-`, ''),
-              b: line.b.replace(`${id}-`, ''),
-            })),
-          }),
-        },
-      ],
+      files: data.output?.file
+        ? [
+            {
+              key: data.output.file,
+              body: JSON.stringify({
+                leftIds,
+                rightIds,
+                lines: lines.map((line) => ({
+                  a: line.a.replace(`${id}-`, ''),
+                  b: line.b.replace(`${id}-`, ''),
+                })),
+              }),
+            },
+          ]
+        : [],
       points,
     };
   };

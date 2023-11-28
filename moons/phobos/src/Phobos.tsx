@@ -21,7 +21,7 @@ type PhobosProps = {
 };
 
 const Phobos = memo(({ width = '100%', height = '100%', parent, data, onPublish }: PhobosProps) => {
-  const [file] = parent.request(Resource.Files, [data.content.file]);
+  const text = parent.request(Resource.Files, [data.content.file])[0]?.body || '';
 
   return (
     <div id="phobos" style={{ width, height }}>
@@ -53,7 +53,7 @@ const Phobos = memo(({ width = '100%', height = '100%', parent, data, onPublish 
             },
           }}
         >
-          {file?.body || ''}
+          {text}
         </Markdown>
       </div>
     </div>

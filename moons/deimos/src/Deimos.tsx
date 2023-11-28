@@ -20,7 +20,7 @@ type DeimosProps = {
   data: {
     tasks: {
       file: string;
-      output: string;
+      output?: string;
     };
   };
   onPublish(action: Action.SetColor, color: string): void;
@@ -52,6 +52,7 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
       execute(action) {
         switch (action) {
           case Action.Refresh: {
+            if (!data.tasks?.output) return true;
             const [file] = parent.request(Resource.Files, [data.tasks.output]);
             refresh(JSON.parse(file?.body || '[]') || []);
             return true;
@@ -63,10 +64,12 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
     }));
 
     useEffect(() => {
-      const [file, output] = parent.request(Resource.Files, [data.tasks.file, data.tasks.output]);
-      setItems(JSON.parse(file?.body || '[]') || []);
-      refresh(JSON.parse(output?.body || '[]') || []);
-    }, []);
+      const keys = [data.tasks.file];
+      if (data.tasks?.output) keys.push(data.tasks.output);
+      const [file, output] = parent.request(Resource.Files, keys);
+      if (file) setItems(JSON.parse(file.body || '[]') || []);
+      if (output) refresh(JSON.parse(output.body || '[]') || []);
+    }, [data.tasks]);
 
     return (
       <div id="deimos" style={{ width, height }}>

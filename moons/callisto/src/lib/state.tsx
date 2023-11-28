@@ -33,11 +33,11 @@ export type ProviderProps = {
   };
   id: string;
   data: {
-    initial: {
-      file: string;
+    initial?: {
+      file?: string;
     };
-    output: {
-      file: string;
+    output?: {
+      file?: string;
     };
     text: string;
     choices: {
@@ -66,7 +66,10 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     const points = answers.reduce((points, answer) => {
       return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
     }, 0);
-    return { files: [{ key: data.output.file, body: JSON.stringify({ answers: answers }) }], points };
+    return {
+      files: data.output?.file ? [{ key: data.output.file, body: JSON.stringify({ answers: answers }) }] : [],
+      points,
+    };
   };
 
   useImperativeHandle(ref, () => ({
@@ -84,8 +87,11 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   }));
 
   useEffect(() => {
-    const [file] = parent.request(Resource.Files, [data.initial.file]);
-    const answers = (JSON.parse(file?.body || '{}')?.answers || []) as Answer[];
+    let answers: Answer[] = [];
+    if (data.initial?.file) {
+      const [file] = parent.request(Resource.Files, [data.initial.file]);
+      answers = JSON.parse(file?.body || '{}')?.answers || [];
+    }
     if (answers.length) {
       const choiceIds = answers.map((answer) => answer.choiceId);
       setChoiceIds(Array.from(m.keys()).filter((choiceId) => !choiceIds.includes(choiceId)));
@@ -93,7 +99,7 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     } else {
       setChoiceIds(Array.from(m.keys()));
     }
-  }, [data.initial.file]);
+  }, [data.initial?.file]);
 
   useEffect(() => {
     const { files, points } = snapshot();

@@ -31,7 +31,9 @@ const Box = ({ path }: { path: Path }) => {
   if (!path.prediction || !style) return null;
 
   const probability = path.prediction.probability * 100;
-  const isInRange = probability >= state.model!.probability.min && probability <= state.model!.probability.max;
+  const isInRange = state.model
+    ? probability >= state.model.probability.min && probability <= state.model.probability.max
+    : false;
 
   return (
     <div

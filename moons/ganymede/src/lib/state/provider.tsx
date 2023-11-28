@@ -25,16 +25,16 @@ export type AppProviderProps = {
     id: string;
     request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
   };
-  data: Pick<AppState, 'model'> & {
-    initial: {
-      file: string;
+  data: Partial<Pick<AppState, 'model'>> & {
+    initial?: {
+      file?: string;
     };
-    tests: {
-      file: string;
+    tests?: {
+      file?: string;
     };
-    output: {
-      file: string;
-      deimos: string;
+    output?: {
+      file?: string;
+      deimos?: string;
     };
   };
   onChange(files: File[], points: number): void;
@@ -46,47 +46,48 @@ export type AppProviderProps = {
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
   ({ parent, onChange, onPublish, children, ...props }, ref) => {
     const tests = useMemo(() => {
+      if (!props.data.tests?.file) return [];
       const [file] = parent.request(Resource.Files, [props.data.tests.file]);
       return (JSON.parse(file?.body || '[]') || []) as Test[];
     }, []);
     const value = useRef(state).current;
 
     const snapshot: AppProviderHandle['snapshot'] = () => {
-      const items = Array.from({ length: tests.length }).fill(null);
+      const files = [];
       let points = 0;
 
-      state.visiblePaths.forEach((path) => {
-        tests.forEach((test, i) => {
-          if (!path.prediction) return;
-          if (path.prediction.label !== test.data.label) return;
-          const probability = path.prediction.probability * 100;
-          if (!(probability >= state.model!.probability.min && probability <= state.model!.probability.max)) return;
-          if (test.data.color && path.color !== test.data.color) {
-            items[i] = { color: path.color, label: path.prediction.label };
-            return;
-          }
-          points += 1;
-          items[i] = { color: path.color, label: path.prediction.label };
+      if (props.data.output?.file) {
+        files.push({
+          key: props.data.output.file,
+          body: JSON.stringify({
+            color: state.color,
+            paths: state.paths,
+            n: state.n,
+          }),
         });
-      });
+      }
 
-      return {
-        files: [
-          {
-            key: props.data.output.file,
-            body: JSON.stringify({
-              color: state.color,
-              paths: state.paths,
-              n: state.n,
-            }),
-          },
-          {
-            key: props.data.output.deimos,
-            body: JSON.stringify(items),
-          },
-        ],
-        points,
-      };
+      if (state.model && tests.length) {
+        const { min, max } = state.model.probability;
+        const items = Array.from({ length: tests.length }).fill(null);
+        state.visiblePaths.forEach((path) => {
+          tests.forEach((test, i) => {
+            if (!path.prediction) return;
+            if (path.prediction.label !== test.data.label) return;
+            const probability = path.prediction.probability * 100;
+            if (!(probability >= min && probability <= max)) return;
+            if (test.data.color && path.color !== test.data.color) {
+              items[i] = { color: path.color, label: path.prediction.label };
+              return;
+            }
+            points += 1;
+            items[i] = { color: path.color, label: path.prediction.label };
+          });
+        });
+        if (props.data.output?.deimos) files.push({ key: props.data.output.deimos, body: JSON.stringify(items) });
+      }
+
+      return { files, points };
     };
 
     useImperativeHandle(ref, () => ({
@@ -107,12 +108,15 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     }));
 
     useEffect(() => {
-      const [file] = parent.request(Resource.Files, [props.data.initial.file]);
-      if (file) {
-        const { color, paths, n } = (JSON.parse(file?.body || '{}') || {}) as Pick<AppState, 'color' | 'paths' | 'n'>;
-        value.color = color;
-        value.paths = paths;
-        value.n = n;
+      if (props.data.initial?.file) {
+        const [file] = parent.request(Resource.Files, [props.data.initial.file]);
+        if (file) {
+          type Body = Pick<AppState, 'color' | 'paths' | 'n'>;
+          const { color, paths, n } = (JSON.parse(file?.body || '{}') || {}) as Body;
+          value.color = color;
+          value.paths = paths;
+          value.n = n;
+        }
       }
 
       value.model = props.data.model || null;
