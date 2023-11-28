@@ -230,10 +230,10 @@ const Editor = () => {
   const [editor, setEditor] = useEditor();
   const [files, setFiles] = useFiles();
 
-  const [activeFileKey, setActiveFileKey] = useState(files.value[0].key);
+  const [activeFileKey, setActiveFileKey] = useState('');
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const file = files.value.find((file) => file.key === activeFileKey)!;
+  const file = files.value.find((file) => file.key === activeFileKey);
 
   return (
     <div
@@ -266,7 +266,6 @@ const Editor = () => {
               onReset={async () => {
                 setEditor.isVisible = false;
                 await sleep(500);
-                setActiveFileKey(files.value[0].key);
                 setValues({});
               }}
               onSubmit={(e) => {
@@ -278,14 +277,14 @@ const Editor = () => {
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
                 <CodeMirror
-                  value={values[activeFileKey] || file.body}
+                  value={values[activeFileKey] || file?.body || ''}
                   width="100%"
                   height="100%"
                   theme={githubLight}
                   extensions={(() => {
                     const extensions = [EditorView.lineWrapping];
-                    if (file.key.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
-                    if (file.key.endsWith('.json')) extensions.push(json());
+                    if (file?.key.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
+                    if (file?.key.endsWith('.json')) extensions.push(json());
                     return extensions;
                   })()}
                   onChange={(value) => setValues((prev) => ({ ...prev, [activeFileKey]: value }))}
