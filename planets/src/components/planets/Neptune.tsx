@@ -1,34 +1,45 @@
+import { useEffect, useRef, useState } from 'react';
+import { subscribe } from 'valtio';
+
 import { usePlanet } from './shared';
 import Markdown from '../Markdown';
-import Moon from '../Moon';
+import Moon, { type MoonHandle } from '../Moon';
 import EditorButton from '../buttons/EditorButton';
+import ResetButton from '../buttons/ResetButton';
 import Button from '../Button';
 
 import type { Neptune, Parent } from '../../lib/types';
-import { useEditor, usePoints } from '../../lib/state';
+import { useEditor, points } from '../../lib/state';
 
 const Neptune = () => {
+  const refs = useRef<(MoonHandle | null)[]>([]);
+
   const [editor] = useEditor();
-  const [points] = usePoints();
 
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
   const parent: Parent = { id: planet.id, request: onRequest };
 
-  const getStopAt = () => {
-    for (let i = 0; i < planet.moons.length; i++) {
-      const moon = planet.moons[i];
-      if (typeof moon === 'string') continue;
-      if ((points.value[moon.id] || 0) >= moon.points.min) continue;
-      return i;
-    }
-    return -1;
-  };
+  const [stopAt, setStopAt] = useState(-1);
+
+  useEffect(() => {
+    const cb = () => {
+      for (let i = 0; i < planet.moons.length; i++) {
+        const moon = planet.moons[i];
+        if (typeof moon === 'string') continue;
+        if ((points.value[moon.id] || 0) >= moon.points.min) continue;
+        setStopAt(i);
+        return;
+      }
+    };
+
+    cb();
+    return subscribe(points, cb);
+  }, []);
 
   return (
     <>
       <div key={editor.saved} className="max-w-5xl mx-auto flex flex-col items-center gap-5 py-5">
         {planet.moons.map((moon, i) => {
-          const stopAt = getStopAt();
           if (stopAt !== -1 && i > stopAt) return null;
           return typeof moon === 'string' ? (
             <Markdown key={i} className="px-3">
@@ -36,6 +47,7 @@ const Neptune = () => {
             </Markdown>
           ) : (
             <Moon
+              ref={(el) => (refs.current[i] = el)}
               key={i}
               parent={parent}
               moon={moon}
@@ -46,7 +58,16 @@ const Neptune = () => {
         })}
       </div>
 
-      <EditorButton className="fixed bottom-[21px] left-[21px]" />
+      <div className="fixed bottom-[21px] left-[21px] flex gap-2">
+        <EditorButton />
+        <ResetButton
+          onClick={() => {
+            for (let i = refs.current.length - 1; i >= 0; i--) {
+              refs.current[i]?.execute?.('reset');
+            }
+          }}
+        />
+      </div>
 
       <a href="/jupiter">
         <Button
