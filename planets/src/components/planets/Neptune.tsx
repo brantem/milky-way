@@ -52,7 +52,11 @@ const Neptune = () => {
               parent={parent}
               moon={moon}
               onChange={onChange(moon.id)}
-              onPublish={(action, data) => console.log(action, data)}
+              onPublish={(action, data) => {
+                for (let i = refs.current.length - 1; i >= 0; i--) {
+                  refs.current[i]?.execute?.(action, data);
+                }
+              }}
             />
           );
         })}
