@@ -50,17 +50,36 @@ export type ProviderProps = {
 };
 
 export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id, data, children, onChange }, ref) => {
-  const m = useMemo(() => {
+  const initial = useMemo(() => {
+    const obj: Pick<State, 'm' | 'choiceIds' | 'answers'> = {
+      m: new Map<Choice['id'], Choice>(),
+      choiceIds: [],
+      answers: [],
+    };
+
     let choices = data.choices.items || [];
     if (data.choices.shuffle) choices = shuffle(choices, id);
+    choices.forEach((choice) => obj.m.set(choice.id, choice));
+    obj.choiceIds = Array.from(obj.m.keys());
 
-    const m = new Map<Choice['id'], Choice>();
-    choices.forEach((choice) => m.set(choice.id, choice));
-    return m;
-  }, [id, data.choices]);
+    const keys = [];
+    if (data.initial?.file) keys.push(data.initial.file);
+    if (data.output?.file) keys.push(data.output?.file);
+    if (!keys.length) return obj;
 
-  const [choiceIds, setChoiceIds] = useState<string[]>([]);
-  const [answers, setAnswers] = useState<Answer[]>([]);
+    const [initial, output] = parent.request(Resource.Files, keys);
+    const answers: Answer[] = JSON.parse((output || initial)?.body || '{}').answers || [];
+    if (!answers.length) return obj;
+
+    const choiceIds = answers.map((answer) => answer.choiceId);
+    obj.choiceIds = obj.choiceIds.filter((choiceId) => !choiceIds.includes(choiceId));
+    obj.answers = answers;
+
+    return obj;
+  }, [id, data.initial?.file, data.output?.file, data.choices]);
+
+  const [choiceIds, setChoiceIds] = useState(() => initial.choiceIds);
+  const [answers, setAnswers] = useState(() => initial.answers);
 
   const snapshot: ProviderHandle['snapshot'] = () => {
     const points = answers.reduce((points, answer) => {
@@ -87,23 +106,6 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   }));
 
   useEffect(() => {
-    const keys = [];
-    if (data.initial?.file) keys.push(data.initial.file);
-    if (data.output?.file) keys.push(data.output?.file);
-    if (keys.length) {
-      const [initial, output] = parent.request(Resource.Files, keys);
-      const answers: Answer[] = JSON.parse((output || initial)?.body || '{}').answers || [];
-      if (answers.length) {
-        const choiceIds = answers.map((answer) => answer.choiceId);
-        setChoiceIds(Array.from(m.keys()).filter((choiceId) => !choiceIds.includes(choiceId)));
-        setAnswers(answers);
-        return;
-      }
-    }
-    setChoiceIds(Array.from(m.keys()));
-  }, [data.initial?.file, data.output?.file]);
-
-  useEffect(() => {
     const { files, points } = snapshot();
     onChange(files, points);
   }, [answers]);
@@ -111,7 +113,7 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   return (
     <CallistoContext.Provider
       value={{
-        m,
+        m: initial.m,
         choiceIds,
         answers,
 

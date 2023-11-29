@@ -1,26 +1,26 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import Io from './Io';
 
-const files: Record<string, any> = {
-  'io.json': {
-    key: 'io.json',
-    body: JSON.stringify({
-      leftIds: ['3', '4', '2', '1', '5'],
-      rightIds: ['2', '5', '3', '1', '4'],
-      lines: [
-        {
-          a: 'left-3',
-          b: 'right-3',
-        },
-      ],
-    }),
-  },
-};
+const App = () => {
+  const [files, setFiles] = useState<Record<string, any>>({
+    'io-1.json': {
+      key: 'io-1.json',
+      body: JSON.stringify({
+        leftIds: ['3', '4', '2', '1', '5'],
+        rightIds: ['2', '5', '3', '1', '4'],
+        lines: [
+          {
+            a: 'left-3',
+            b: 'right-3',
+          },
+        ],
+      }),
+    },
+  });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  return (
     <Io
       width={1024}
       height={768}
@@ -33,10 +33,10 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       }}
       data={{
         initial: {
-          file: 'io.json',
+          file: 'io-1.json',
         },
         output: {
-          file: 'io.json',
+          file: 'io-2.json',
         },
         left: {
           items: [
@@ -59,7 +59,19 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           shuffle: true,
         },
       }}
-      onChange={(files, points) => console.log(files, points)}
+      onChange={(files, points) => {
+        console.log(files, points);
+        setFiles((prev) => ({
+          ...prev,
+          ...files.reduce((obj, file) => ({ ...obj, [file.key]: file }), {} as Record<string, any>),
+        }));
+      }}
     />
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>,
 );

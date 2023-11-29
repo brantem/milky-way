@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useImperativeHandle, useMemo, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
 
 import { Action, Resource, type File, type Item, type Coordinate, type Line } from './types';
 import { shuffle } from './helpers';
@@ -84,6 +84,7 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     if (data.initial?.file) keys.push(data.initial.file);
     if (data.output?.file) keys.push(data.output.file);
     if (!keys.length) return obj;
+
     const [initial, output] = parent.request(Resource.Files, keys);
     const body = JSON.parse((output || initial)?.body || '{}') || {};
     if ('leftIds' in body) obj.leftIds = body.leftIds;
@@ -134,6 +135,11 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     },
   }));
 
+  useEffect(() => {
+    const { files, points } = snapshot();
+    onChange(files, points);
+  }, [lines]);
+
   const visibleLines = (() => {
     if (!a) return lines;
     return lines.filter((line) => line.a !== a && line.b !== a);
@@ -176,8 +182,6 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
           }
           setA(null);
           setB(null);
-          const { files, points } = snapshot();
-          onChange(files, points);
         },
 
         isConnected,

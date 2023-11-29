@@ -1,23 +1,34 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactDOM from 'react-dom/client';
 
 import Callisto from './Callisto';
 
-const files: Record<string, any> = {
-  'callisto-1.json': {
-    key: 'callisto-1.json',
-    body: JSON.stringify({
-      answers: [
-        { blankId: '__1__', choiceId: '1' },
-        { blankId: '__2__', choiceId: '2' },
-        { blankId: '__3__', choiceId: '3' },
-      ],
-    }),
-  },
-};
+const App = () => {
+  const [files, setFiles] = useState<Record<string, any>>({
+    'callisto-1.json': {
+      key: 'callisto-1.json',
+      body: JSON.stringify({
+        answers: [
+          { blankId: '__1__', choiceId: '1' },
+          { blankId: '__2__', choiceId: '2' },
+          { blankId: '__3__', choiceId: '3' },
+        ],
+      }),
+    },
+    'callisto-2.json': {
+      key: 'callisto-2.json',
+      body: JSON.stringify({
+        answers: [
+          { blankId: '__1__', choiceId: '1' },
+          { blankId: '__2__', choiceId: '2' },
+          { blankId: '__3__', choiceId: '3' },
+          { blankId: '__4__', choiceId: '4' },
+        ],
+      }),
+    },
+  });
 
-ReactDOM.createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
+  return (
     <Callisto
       width={1024}
       height={768}
@@ -48,7 +59,19 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           shuffle: true,
         },
       }}
-      onChange={(files, points) => console.log(files, points)}
+      onChange={(files, points) => {
+        console.log(files, points);
+        setFiles((prev) => ({
+          ...prev,
+          ...files.reduce((obj, file) => ({ ...obj, [file.key]: file }), {} as Record<string, any>),
+        }));
+      }}
     />
+  );
+};
+
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <App />
   </React.StrictMode>,
 );
