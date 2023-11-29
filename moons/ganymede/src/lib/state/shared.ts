@@ -9,6 +9,7 @@ declare module 'valtio' {
 }
 
 export type AppState = {
+  id: string;
   color: string;
 
   paths: Path[];
@@ -26,6 +27,7 @@ export type AppState = {
 };
 
 export const state = proxy<AppState>({
+  id: '',
   color: '#000',
 
   paths: [],
@@ -36,7 +38,7 @@ export const state = proxy<AppState>({
   },
   createPath(points) {
     if (!points.length) return null;
-    const path: Path = { id: nanoid(), color: state.color, d: getPath(points) };
+    const path: Path = { id: `${state.id}-${nanoid()}`, color: state.color, d: getPath(points) };
     state.paths = [...state.visiblePaths, path];
     state.n = 0;
     return path;

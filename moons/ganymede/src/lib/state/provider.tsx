@@ -25,6 +25,7 @@ export type AppProviderProps = {
     id: string;
     request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
   };
+  id: string;
   data: Partial<Pick<AppState, 'model'>> & {
     initial?: {
       file?: string;
@@ -44,7 +45,7 @@ export type AppProviderProps = {
 };
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
-  ({ parent, onChange, onPublish, children, ...props }, ref) => {
+  ({ parent, id, onChange, onPublish, children, ...props }, ref) => {
     const tests = useMemo(() => {
       if (!props.data.tests?.file) return [];
       const [file] = parent.request(Resource.Files, [props.data.tests.file]);
@@ -119,6 +120,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
         }
       }
 
+      value.id = id;
       value.model = props.data.model || null;
       value.debug = Boolean(props.debug);
     }, []);

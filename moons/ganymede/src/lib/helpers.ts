@@ -1,6 +1,7 @@
 import { getStroke } from 'perfect-freehand';
 
 import { STROKE_SIZE } from './constants';
+import { state } from './state';
 
 const average = (a: number, b: number) => (a + b) / 2;
 
@@ -51,7 +52,7 @@ export const getPath = (points: readonly (readonly number[])[]) => {
 };
 
 export const getBoundingClientRectById = (id: string) => {
-  const parent = document.getElementById('ganymede')!;
+  const parent = document.getElementById(`ganymede-${state.id}`)!;
   const el = document.getElementById(id);
   if (!el) return;
   const parentRect = parent.getBoundingClientRect();
