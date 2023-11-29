@@ -8,7 +8,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <Phobos
       width={400}
       parent={{
-        id: 'parent-1',
+        id: 'aXjyt3QFH51MWJ4c7WSmS',
         request() {
           return [
             {
@@ -18,6 +18,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           ];
         },
       }}
+      id="aXjyt3QFH51MWJ4c7WSmS"
       data={{
         content: {
           file: 'text.md',

@@ -12,6 +12,7 @@ type PhobosProps = {
     id: string;
     request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
   };
+  id: string;
   data: {
     content: {
       file: string;
@@ -20,11 +21,11 @@ type PhobosProps = {
   onPublish(action: string, data?: any): void;
 };
 
-const Phobos = memo(({ width = '100%', height = '100%', parent, data, onPublish }: PhobosProps) => {
+const Phobos = memo(({ width = '100%', height = '100%', parent, id, data, onPublish }: PhobosProps) => {
   const text = parent.request(Resource.Files, [data.content.file])[0]?.body || '';
 
   return (
-    <div id="phobos" style={{ width, height }}>
+    <div id={`phobos-${id}`} style={{ width, height }}>
       <div className="h-full w-full overflow-auto py-2 px-3 flex justify-center font-sans">
         <Markdown
           className="markdown markdown-neutral w-full"

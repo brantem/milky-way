@@ -17,7 +17,7 @@ const App = () => {
         width={400}
         height={400}
         parent={{
-          id: 'parent-1',
+          id: 'aXjyt3QFH51MWJ4c7WSmS',
           request(_, keys) {
             switch (keys[0]) {
               case 'tasks.json':
@@ -72,6 +72,7 @@ const App = () => {
             return [];
           },
         }}
+        id="aXjyt3QFH51MWJ4c7WSmS"
         data={{
           tasks: {
             file: 'tasks.json',

@@ -10,7 +10,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={768}
       id="aXjyt3QFH51MWJ4c7WSmS"
       parent={{
-        id: 'parent-1',
+        id: 'aXjyt3QFH51MWJ4c7WSmS',
         request() {
           return [
             {

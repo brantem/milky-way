@@ -17,6 +17,7 @@ type DeimosProps = {
     id: string;
     request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
   };
+  id: string;
   data: {
     tasks: {
       file: string;
@@ -34,7 +35,7 @@ type Item = {
 type Item2 = Record<string, any>;
 
 const Deimos = forwardRef<DeimosHandle, DeimosProps>(
-  ({ width = '100%', height = '100%', parent, data, onPublish }, ref) => {
+  ({ width = '100%', height = '100%', parent, id, data, onPublish }, ref) => {
     const [items, setItems] = useState<Item[]>([]);
     const [values, setValues] = useState<(boolean | null)[]>([]);
 
@@ -72,7 +73,7 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
     }, [data.tasks]);
 
     return (
-      <div id="deimos" style={{ width, height }}>
+      <div id={`deimos-${id}`} style={{ width, height }}>
         <div className="h-full w-full overflow-y-auto bg-yellow-50/50 font-sans">
           <ol className="list-none overflow-hidden m-0 p-0">
             {items.map((item, i) => {

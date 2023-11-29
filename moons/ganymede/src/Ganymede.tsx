@@ -12,11 +12,12 @@ import './index.css';
 type AppProps = {
   width?: React.CSSProperties['width'];
   height?: React.CSSProperties['height'];
+  id: string;
 };
 
-const App = ({ width = '100%', height = '100%' }: AppProps) => {
+const App = ({ width = '100%', height = '100%', id }: AppProps) => {
   return (
-    <div id="ganymede" style={{ width, height }}>
+    <div id={`ganymede-${id}`} style={{ width, height }}>
       <div className="relative h-full w-full bg-white overflow-hidden">
         <Canvas />
         <Renderer />
