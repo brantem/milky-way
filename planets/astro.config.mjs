@@ -4,9 +4,6 @@ import react from '@astrojs/react';
 
 // https://astro.build/config
 export default defineConfig({
-  redirects: {
-    '/': '/jupiter',
-  },
   integrations: [
     tailwind(),
     react(),
