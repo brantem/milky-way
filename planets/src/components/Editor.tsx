@@ -9,16 +9,16 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { useEditor, files, useFiles } from '../lib/state';
+import { useEditor, files, useFiles, points } from '../lib/state';
 import { cn, sleep } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
 type AddFileProps = {
-  onFileCreated(file: _File): void;
+  onFileCreate(key: string): void;
 };
 
-const AddFile = ({ onFileCreated }: AddFileProps) => {
+const AddFile = ({ onFileCreate }: AddFileProps) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const [isInputVisible, setIsInputVisible] = useState(false);
@@ -30,7 +30,7 @@ const AddFile = ({ onFileCreated }: AddFileProps) => {
       onSubmit={(e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreated(files.save(key, '', false));
+        onFileCreate(key);
         setIsInputVisible(false);
         setKey('');
       }}
@@ -180,6 +180,12 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
         {level >= 1 && <div className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />}
         <span className="text-violet-500 font-medium">{s[s.length - 2]}</span>
       </div>
+      {level === 0 && (
+        <button type="button" className="flex items-start py-1 relative" onClick={() => onFileClick('points')}>
+          <span className="w-3 mx-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
+          <span className="text-amber-500 font-medium">points</span>
+        </button>
+      )}
       {data.folders.map((folder) => (
         <Folder
           key={folder}
@@ -191,7 +197,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
         />
       ))}
       {data.files.length ? (
-        <div className="ml-5 flex-1">
+        <div className={cn('flex-1', level > 0 ? 'ml-5' : 'ml-1')}>
           {data.files.map((file) => (
             <File
               path={path}
@@ -230,7 +236,7 @@ const Editor = () => {
   const [editor, setEditor] = useEditor();
   const [files, setFiles] = useFiles();
 
-  const [activeFileKey, setActiveFileKey] = useState('');
+  const [activeFileKey, setActiveFileKey] = useState('_temp');
   const [values, setValues] = useState<Record<string, string>>({});
 
   const file = files.value.find((file) => file.key === activeFileKey);
@@ -244,14 +250,20 @@ const Editor = () => {
       )}
     >
       <PanelGroup direction="horizontal">
-        <Panel defaultSizePixels={300} collapsible minSizePixels={100}>
+        <Panel defaultSizePixels={400} collapsible minSizePixels={100}>
           <div className="flex flex-col gap-2 h-full p-2 pr-1">
             <Sidebar
               activeFileKey={activeFileKey}
               onFileClick={(key) => setActiveFileKey(key)}
               onFileDeleted={() => setActiveFileKey(files.value[0].key)}
             />
-            <AddFile onFileCreated={(file) => setActiveFileKey(file.key)} />
+            <AddFile
+              onFileCreate={(key) => {
+                const file = setFiles.save(key, values['_temp'], false);
+                setValues(({ _temp, ...prev }) => prev);
+                setActiveFileKey(file.key);
+              }}
+            />
           </div>
         </Panel>
 
@@ -270,14 +282,21 @@ const Editor = () => {
               }}
               onSubmit={(e) => {
                 e.preventDefault();
-                Object.keys(values).forEach((key) => setFiles.save(key, values[key]));
+                Object.keys(values).forEach((key) => {
+                  if (key === '_temp') return;
+                  setFiles.save(key, values[key]);
+                });
                 ++setEditor.saved;
                 setEditor.isVisible = false;
               }}
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
                 <CodeMirror
-                  value={values[activeFileKey] || file?.body || ''}
+                  value={
+                    activeFileKey === 'points'
+                      ? JSON.stringify(points.value, null, 2)
+                      : values[activeFileKey] || file?.body || ''
+                  }
                   width="100%"
                   height="100%"
                   theme={githubLight}
@@ -289,6 +308,7 @@ const Editor = () => {
                   })()}
                   onChange={(value) => setValues((prev) => ({ ...prev, [activeFileKey]: value }))}
                   className="w-full h-full"
+                  readOnly={activeFileKey === 'points'}
                 />
               </div>
 
