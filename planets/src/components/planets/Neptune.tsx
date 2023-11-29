@@ -2,6 +2,7 @@ import { usePlanet } from './shared';
 import Markdown from '../Markdown';
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
+import Button from '../Button';
 
 import type { Neptune, Parent } from '../../lib/types';
 import { useEditor, usePoints } from '../../lib/state';
@@ -45,7 +46,17 @@ const Neptune = () => {
         })}
       </div>
 
-      <EditorButton className="fixed bottom-4 left-4" />
+      <EditorButton className="fixed bottom-[21px] left-[21px]" />
+
+      <a href="/jupiter">
+        <Button
+          className="fixed right-[21px] bottom-[21px]"
+          shadowClassName="bg-sky-600"
+          contentClassName="bg-sky-500 px-4 py-2 text-white"
+        >
+          Jupiter
+        </Button>
+      </a>
     </>
   );
 };

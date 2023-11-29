@@ -8,7 +8,7 @@ type ButtonProps = React.ComponentPropsWithoutRef<'button'> & {
 
 const Button = ({ className, shadowClassName, contentClassName, children, ...props }: ButtonProps) => {
   return (
-    <button type="reset" className={cn('group h-9 relative', className)} {...props}>
+    <button className={cn('group h-9 relative', className)} {...props}>
       <span className={cn('absolute right-0 left-0 h-full w-full rounded-lg transition-all', shadowClassName)} />
       <span
         className={cn(

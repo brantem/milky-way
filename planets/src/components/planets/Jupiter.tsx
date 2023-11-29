@@ -1,4 +1,4 @@
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
 import { usePlanet } from './shared';
@@ -6,6 +6,7 @@ import Moon, { type MoonHandle } from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
+import Button from '../Button';
 
 import { type Moon as _Moon, type Jupiter, type Parent } from '../../lib/types';
 import { cn } from '../../lib/helpers';
@@ -127,6 +128,11 @@ const Jupiter = () => {
                         }}
                       />
                     )}
+                    <a href="/neptune">
+                      <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
+                        Neptune
+                      </Button>
+                    </a>
                   </div>
                 </div>
               )}
