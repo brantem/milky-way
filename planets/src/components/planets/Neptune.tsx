@@ -30,6 +30,7 @@ const Neptune = () => {
         setStopAt(i);
         return;
       }
+      setStopAt(-1);
     };
 
     cb();
