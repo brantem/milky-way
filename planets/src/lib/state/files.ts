@@ -19,7 +19,7 @@ export const files = proxy<State>({
         {
           id: nanoid(),
           small: {
-            id: 'deimos',
+            id: nanoid(),
             active: true,
             url: 'https://moons.brantem.com/deimos/bundle.js',
             data: {
@@ -30,7 +30,7 @@ export const files = proxy<State>({
             },
           },
           medium: {
-            id: 'phobos',
+            id: nanoid(),
             active: true,
             url: 'https://moons.brantem.com/phobos/bundle.js',
             data: {
@@ -40,7 +40,7 @@ export const files = proxy<State>({
             },
           },
           large: {
-            id: 'ganymede',
+            id: nanoid(),
             url: 'https://moons.brantem.com/ganymede/bundle.js',
             data: {
               initial: {
@@ -111,7 +111,7 @@ export const files = proxy<State>({
       key: 'planets/jupiter/examples/deimos.json',
       body: JSON.stringify(
         {
-          id: 'deimos',
+          id: nanoid(),
           active: true,
           url: 'https://moons.brantem.com/deimos/bundle.js',
           data: {
@@ -129,7 +129,7 @@ export const files = proxy<State>({
       key: 'planets/jupiter/examples/phobos.json',
       body: JSON.stringify(
         {
-          id: 'phobos',
+          id: nanoid(),
           active: true,
           url: 'https://moons.brantem.com/phobos/bundle.js',
           data: {
@@ -146,7 +146,7 @@ export const files = proxy<State>({
       key: 'planets/jupiter/examples/callisto.json',
       body: JSON.stringify(
         {
-          id: 'callisto',
+          id: nanoid(),
           url: 'https://moons.brantem.com/callisto/bundle.js',
           data: {
             initial: {
@@ -177,7 +177,7 @@ export const files = proxy<State>({
       key: 'planets/jupiter/examples/ganymede.json',
       body: JSON.stringify(
         {
-          id: 'ganymede',
+          id: nanoid(),
           url: 'https://moons.brantem.com/ganymede/bundle.js',
           data: {
             initial: {
@@ -215,7 +215,7 @@ export const files = proxy<State>({
       key: 'planets/jupiter/examples/io.json',
       body: JSON.stringify(
         {
-          id: 'io',
+          id: nanoid(),
           url: 'https://moons.brantem.com/io/bundle.js',
           data: {
             initial: {
