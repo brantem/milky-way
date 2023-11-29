@@ -109,20 +109,19 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     }));
 
     useEffect(() => {
-      if (props.data.initial?.file) {
-        const [file] = parent.request(Resource.Files, [props.data.initial.file]);
-        if (file) {
-          type Body = Pick<AppState, 'color' | 'paths' | 'n'>;
-          const { color, paths, n } = (JSON.parse(file?.body || '{}') || {}) as Body;
-          value.color = color;
-          value.paths = paths;
-          value.n = n;
-        }
-      }
-
       value.id = id;
       value.model = props.data.model || null;
       value.debug = Boolean(props.debug);
+
+      const keys = [];
+      if (props.data.initial?.file) keys.push(props.data.initial.file);
+      if (props.data.output?.file) keys.push(props.data.output.file);
+      if (!keys.length) return;
+      const [initial, output] = parent.request(Resource.Files, keys);
+      const body = JSON.parse((output || initial)?.body || '{}') || {};
+      if ('color' in body) value.color = body.color;
+      if ('paths' in body) value.paths = body.paths;
+      if ('n' in body) value.n = body.n;
     }, []);
 
     useEffect(() => {

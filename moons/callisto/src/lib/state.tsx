@@ -87,19 +87,21 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   }));
 
   useEffect(() => {
-    let answers: Answer[] = [];
-    if (data.initial?.file) {
-      const [file] = parent.request(Resource.Files, [data.initial.file]);
-      answers = JSON.parse(file?.body || '{}')?.answers || [];
+    const keys = [];
+    if (data.initial?.file) keys.push(data.initial.file);
+    if (data.output?.file) keys.push(data.output?.file);
+    if (keys.length) {
+      const [initial, output] = parent.request(Resource.Files, keys);
+      const answers: Answer[] = JSON.parse((output || initial)?.body || '{}').answers || [];
+      if (answers.length) {
+        const choiceIds = answers.map((answer) => answer.choiceId);
+        setChoiceIds(Array.from(m.keys()).filter((choiceId) => !choiceIds.includes(choiceId)));
+        setAnswers(answers);
+        return;
+      }
     }
-    if (answers.length) {
-      const choiceIds = answers.map((answer) => answer.choiceId);
-      setChoiceIds(Array.from(m.keys()).filter((choiceId) => !choiceIds.includes(choiceId)));
-      setAnswers(answers);
-    } else {
-      setChoiceIds(Array.from(m.keys()));
-    }
-  }, [data.initial?.file]);
+    setChoiceIds(Array.from(m.keys()));
+  }, [data.initial?.file, data.output?.file]);
 
   useEffect(() => {
     const { files, points } = snapshot();

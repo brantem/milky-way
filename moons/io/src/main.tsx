@@ -3,6 +3,22 @@ import ReactDOM from 'react-dom/client';
 
 import Io from './Io';
 
+const files: Record<string, any> = {
+  'io.json': {
+    key: 'io.json',
+    body: JSON.stringify({
+      leftIds: ['3', '4', '2', '1', '5'],
+      rightIds: ['2', '5', '3', '1', '4'],
+      lines: [
+        {
+          a: 'left-3',
+          b: 'right-3',
+        },
+      ],
+    }),
+  },
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Io
@@ -11,22 +27,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       id="aXjyt3QFH51MWJ4c7WSmS"
       parent={{
         id: 'aXjyt3QFH51MWJ4c7WSmS',
-        request() {
-          return [
-            {
-              key: 'io.json',
-              body: JSON.stringify({
-                leftIds: ['3', '4', '2', '1', '5'],
-                rightIds: ['2', '5', '3', '1', '4'],
-                lines: [
-                  {
-                    a: 'left-3',
-                    b: 'right-3',
-                  },
-                ],
-              }),
-            },
-          ];
+        request(_, keys) {
+          return keys.map((key) => files[key]);
         },
       }}
       data={{

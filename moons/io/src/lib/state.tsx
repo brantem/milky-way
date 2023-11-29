@@ -71,30 +71,29 @@ export type ProviderProps = {
 };
 
 export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id, data, children, onChange }, ref) => {
-  const { leftIds, rightIds, initialLines } = useMemo(() => {
-    if (data.initial?.file) {
-      const [file] = parent.request(Resource.Files, [data.initial.file]);
-      if (file) {
-        type Body = Pick<State, 'leftIds' | 'rightIds' | 'lines'>;
-        const { leftIds, rightIds, lines } = (JSON.parse(file?.body || '{}') || {}) as Body;
-        return {
-          leftIds,
-          rightIds,
-          initialLines: lines.map((line) => ({ a: `${id}-${line.a}`, b: `${id}-${line.b}` })),
-        };
-      }
-    }
+  const initial = useMemo(() => {
+    const obj = {
+      leftIds: data.left.items.map((item) => item.id),
+      rightIds: data.right.items.map((item) => item.id),
+      lines: [],
+    };
+    if (data.left.shuffle) obj.leftIds = shuffle(obj.leftIds);
+    if (data.right.shuffle) obj.rightIds = shuffle(obj.rightIds);
 
-    let leftIds = data.left.items.map((item) => item.id);
-    if (data.left.shuffle) leftIds = shuffle(leftIds);
+    const keys = [];
+    if (data.initial?.file) keys.push(data.initial.file);
+    if (data.output?.file) keys.push(data.output.file);
+    if (!keys.length) return obj;
+    const [initial, output] = parent.request(Resource.Files, keys);
+    const body = JSON.parse((output || initial)?.body || '{}') || {};
+    if ('leftIds' in body) obj.leftIds = body.leftIds;
+    if ('rightIds' in body) obj.rightIds = body.rightIds;
+    if ('lines' in body) obj.lines = body.lines.map((line: Line) => ({ a: `${id}-${line.a}`, b: `${id}-${line.b}` }));
 
-    let rightIds = data.right.items.map((item) => item.id);
-    if (data.right.shuffle) rightIds = shuffle(rightIds);
+    return obj;
+  }, [data.initial?.file, data.output?.file, data.left, data.right]);
 
-    return { leftIds, rightIds, initialLines: [] };
-  }, [data.initial?.file, data.left, data.right]);
-
-  const [lines, setLines] = useState(() => initialLines);
+  const [lines, setLines] = useState<State['lines']>(() => initial.lines);
   const [a, setA] = useState<State['a']>(null);
   const [b, setB] = useState<State['b']>(null);
 
@@ -108,8 +107,8 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
             {
               key: data.output.file,
               body: JSON.stringify({
-                leftIds,
-                rightIds,
+                leftIds: initial.leftIds,
+                rightIds: initial.rightIds,
                 lines: lines.map((line) => ({
                   a: line.a.replace(`${id}-`, ''),
                   b: line.b.replace(`${id}-`, ''),
@@ -148,8 +147,8 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     <IoContext.Provider
       value={{
         _id: id,
-        leftIds,
-        rightIds,
+        leftIds: initial.leftIds,
+        rightIds: initial.rightIds,
 
         a,
         start(id) {

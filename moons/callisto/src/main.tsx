@@ -3,6 +3,19 @@ import ReactDOM from 'react-dom/client';
 
 import Callisto from './Callisto';
 
+const files: Record<string, any> = {
+  'callisto-1.json': {
+    key: 'callisto-1.json',
+    body: JSON.stringify({
+      answers: [
+        { blankId: '__1__', choiceId: '1' },
+        { blankId: '__2__', choiceId: '2' },
+        { blankId: '__3__', choiceId: '3' },
+      ],
+    }),
+  },
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <Callisto
@@ -10,30 +23,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       height={768}
       parent={{
         id: 'aXjyt3QFH51MWJ4c7WSmS',
-        request(resource, data) {
-          console.log(resource, data);
-          return [
-            {
-              key: 'callisto.json',
-              body: JSON.stringify({
-                answers: [
-                  {
-                    blankId: '__4__',
-                    choiceId: '6',
-                  },
-                ],
-              }),
-            },
-          ];
+        request(_, keys) {
+          return keys.map((key) => files[key] || null);
         },
       }}
       id="aXjyt3QFH51MWJ4c7WSmS"
       data={{
         initial: {
-          file: 'callisto.json',
+          file: 'callisto-1.json',
         },
         output: {
-          file: 'callisto.json',
+          file: 'callisto-2.json',
         },
         text: 'The __1__ dog quickly dashed across the __2__, chasing its bouncing __3__. Its owner, laughing, picked up their pace to keep an eye on the lively pet. Enjoying a sunny __4__ afternoon, they continued their enjoyable __5__ in the park.',
         choices: {
