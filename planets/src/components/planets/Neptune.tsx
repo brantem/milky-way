@@ -1,19 +1,16 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { subscribe } from 'valtio';
 
 import { usePlanet } from './shared';
 import Markdown from '../Markdown';
-import Moon, { type MoonHandle } from '../Moon';
+import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
-import ResetButton from '../buttons/ResetButton';
 import Button from '../Button';
 
 import type { Neptune, Parent } from '../../lib/types';
 import { useEditor, points } from '../../lib/state';
 
 const Neptune = () => {
-  const refs = useRef<(MoonHandle | null)[]>([]);
-
   const [editor] = useEditor();
 
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
@@ -39,39 +36,26 @@ const Neptune = () => {
 
   return (
     <>
-      <div key={editor.saved} className="max-w-5xl mx-auto flex flex-col items-center gap-5 py-5">
-        {planet.moons.map((moon, i) => {
-          if (stopAt !== -1 && i > stopAt) return null;
-          return typeof moon === 'string' ? (
-            <Markdown key={i} className="px-3">
-              {moon}
-            </Markdown>
-          ) : (
-            <Moon
-              ref={(el) => (refs.current[i] = el)}
-              key={i}
-              parent={parent}
-              moon={moon}
-              onChange={onChange(moon.id)}
-              onPublish={(action, data) => {
-                for (let i = refs.current.length - 1; i >= 0; i--) {
-                  refs.current[i]?.execute?.(action, data);
-                }
-              }}
-            />
-          );
-        })}
+      <div key={editor.saved} className="py-5 overflow-y-auto [scrollbar-gutter:stable] h-full">
+        <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
+          {planet.moons.map((moon, i) => {
+            if (stopAt !== -1 && i > stopAt) return null;
+            return (
+              <Fragment key={i}>
+                {typeof moon === 'string' ? (
+                  <Markdown className="px-3">{moon}</Markdown>
+                ) : (
+                  <Moon parent={parent} moon={moon} onChange={onChange(moon.id)} />
+                )}
+              </Fragment>
+            );
+          })}
+        </div>
       </div>
 
       <div className="fixed bottom-[21px] left-[21px] flex gap-2">
         <EditorButton />
-        <ResetButton
-          onClick={() => {
-            for (let i = refs.current.length - 1; i >= 0; i--) {
-              refs.current[i]?.execute?.('reset');
-            }
-          }}
-        />
+        {/* TODO: reset */}
       </div>
 
       <a href="/jupiter">
