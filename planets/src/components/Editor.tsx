@@ -163,6 +163,8 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
 
   const s = path.split('/');
 
+  const isActive = activeFileKey.includes(path);
+
   return (
     <div className={cn('relative', level === 1 ? 'ml-1' : level > 1 ? 'ml-5' : '')}>
       {level === 0 || data.files.length ? (
@@ -178,7 +180,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
       )}
       <div className="flex items-start py-1 relative">
         {level >= 1 && <div className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />}
-        <span className="text-violet-500 font-medium">{s[s.length - 2]}</span>
+        <span className={cn('text-violet-500', isActive ? 'font-semibold' : 'font-medium')}>{s[s.length - 2]}</span>
       </div>
       {level === 0 && (
         <button type="button" className="flex items-start py-1 relative" onClick={() => onFileClick('points')}>
