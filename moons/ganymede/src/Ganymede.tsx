@@ -4,6 +4,7 @@ import Canvas from './components/Canvas';
 import Renderer from './components/Renderer';
 import ColorPicker from './components/ColorPicker';
 import Tools from './components/Tools';
+import Status from './components/Status';
 
 import { AppProvider, type AppProviderHandle, type AppProviderProps } from './lib/state';
 
@@ -25,6 +26,7 @@ const App = ({ width = '100%', height = '100%', id }: AppProps) => {
           <ColorPicker />
           <Tools />
         </div>
+        <Status />
       </div>
     </div>
   );

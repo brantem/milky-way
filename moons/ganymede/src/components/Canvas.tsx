@@ -4,6 +4,7 @@ import { getBoundingClientRectById, getPath } from '../lib/helpers';
 import { Onnx, TeachableMachine, type Model } from '../lib/model';
 import { useAppState } from '../lib/state';
 import { STROKE_SIZE } from '../lib/constants';
+import { Path } from '../lib/types';
 
 type TempPathProps = {
   points: number[][];
@@ -32,6 +33,52 @@ const Canvas = () => {
 
   const [points, setPoints] = useState<number[][]>([]);
 
+  const predict = (path: Path) => {
+    const rect = getBoundingClientRectById(path.id);
+    if (!rect) return;
+
+    const canvas = document.createElement('canvas');
+    canvas.width = set.model!.input.width;
+    canvas.height = set.model!.input.height;
+
+    const ctx = canvas.getContext('2d')!;
+    if (set.model!.input.background) {
+      ctx.fillStyle = set.model!.input.background;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    ctx.translate(canvas.width / 2, canvas.height / 2);
+
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const scale = Math.min(scaleX, scaleY);
+    ctx.scale(scale, scale);
+
+    const paddingX = (canvas.width - rect.width * scale) / 2;
+    const paddingY = (canvas.height - rect.height * scale) / 2;
+    ctx.translate(
+      -(rect.x - window.scrollX) - rect.width / 2 + paddingX,
+      -(rect.y - window.scrollY) - rect.height / 2 + paddingY,
+    );
+
+    ctx.fillStyle = '#000';
+    ctx.fill(new Path2D(path.d));
+
+    let res;
+    switch (set.model!.type) {
+      case 'onnx':
+        res = model.current!.predict(ctx.getImageData(0, 0, canvas.width, canvas.height).data);
+        break;
+      case 'teachable_machine':
+        res = model.current!.predict(canvas);
+        break;
+    }
+    res.then((prediction) => {
+      if (!prediction) return;
+      set.addPrediction(path.id, prediction);
+    });
+  };
+
   useEffect(() => {
     (async () => {
       if (!state.model) {
@@ -48,11 +95,16 @@ const Canvas = () => {
           model.current = new TeachableMachine(urls['baseUrl']);
           break;
       }
+      set.isModelStarting = true;
       await model.current.start();
+      set.isModelStarting = false;
+
+      for (const path of state.paths) {
+        if ('prediction' in path) continue;
+        predict(path);
+      }
     })();
   }, [state.model]);
-
-  // TODO: loading
 
   return (
     <svg
@@ -75,54 +127,9 @@ const Canvas = () => {
       onPointerUp={async () => {
         const path = set.createPath(points);
         setPoints([]);
-        if (!path || !state.model || !model.current) return;
+        if (!path || !set.model || !model.current) return;
         await new Promise((resolve) => setTimeout(resolve, 50)); // next tick
-
-        const { type, input } = state.model;
-
-        const rect = getBoundingClientRectById(path.id);
-        if (!rect) return;
-
-        const canvas = document.createElement('canvas');
-        canvas.width = input.width;
-        canvas.height = input.height;
-
-        const ctx = canvas.getContext('2d')!;
-        if (input.background) {
-          ctx.fillStyle = input.background;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-        }
-
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-
-        const scaleX = canvas.width / rect.width;
-        const scaleY = canvas.height / rect.height;
-        const scale = Math.min(scaleX, scaleY);
-        ctx.scale(scale, scale);
-
-        const paddingX = (canvas.width - rect.width * scale) / 2;
-        const paddingY = (canvas.height - rect.height * scale) / 2;
-        ctx.translate(
-          -(rect.x - window.scrollX) - rect.width / 2 + paddingX,
-          -(rect.y - window.scrollY) - rect.height / 2 + paddingY,
-        );
-
-        ctx.fillStyle = '#000';
-        ctx.fill(new Path2D(path.d));
-
-        let res;
-        switch (type) {
-          case 'onnx':
-            res = model.current.predict(ctx.getImageData(0, 0, canvas.width, canvas.height).data);
-            break;
-          case 'teachable_machine':
-            res = model.current.predict(canvas);
-            break;
-        }
-        res.then((prediction) => {
-          if (!prediction) return;
-          set.addPrediction(path.id, prediction);
-        });
+        predict(path);
       }}
     >
       <TempPath points={points} />

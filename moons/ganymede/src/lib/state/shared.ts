@@ -17,6 +17,7 @@ export type AppState = {
   createPath(points: number[][]): Path | null;
 
   model: ModelOpts | null;
+  isModelStarting: boolean;
   addPrediction(id: Path['id'], prediction: Prediction): void;
 
   n: number;
@@ -45,6 +46,7 @@ export const state = proxy<AppState>({
   },
 
   model: null,
+  isModelStarting: false,
   addPrediction(id, prediction) {
     const index = state.paths.findIndex((path) => path.id === id);
     if (index === -1) return;
