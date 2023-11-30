@@ -28,7 +28,7 @@ const Jupiter = () => {
   };
 
   return (
-    <PanelGroup key={editor.saved} id="jupiter" direction="horizontal" className="p-1">
+    <PanelGroup key={editor.saved} id="jupiter" direction="horizontal" className="p-1 bg-neutral-100">
       {(planet.small.active || planet.medium.active) && (
         <>
           <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
