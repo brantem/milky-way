@@ -1,4 +1,4 @@
-import { proxy, useSnapshot } from 'valtio';
+import { proxy } from 'valtio';
 import { proxyMap } from 'valtio/utils';
 
 import type { MoonHandle } from '../../components/Moon';
@@ -27,7 +27,3 @@ export const moons = proxy<State>({
     }
   },
 });
-
-export const useMoons = () => {
-  return [useSnapshot(moons), moons] as const;
-};
