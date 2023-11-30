@@ -10,7 +10,7 @@ import Button from './Button';
 
 import type { File as _File } from '../lib/types';
 import { useEditor, files, useFiles, points } from '../lib/state';
-import { cn, sleep } from '../lib/helpers';
+import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
@@ -94,7 +94,7 @@ const AddFile = ({ onFileCreate }: AddFileProps) => {
 };
 
 type SidebarProps = {
-  activeFileKey: string;
+  activeKey: string;
   onFileClick(key: _File['key']): void;
   onFileDeleted(): void;
 };
@@ -141,7 +141,7 @@ type FolderProps = SidebarProps & {
   level: number;
 };
 
-const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: FolderProps) => {
+const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderProps) => {
   const [files] = useFiles();
   const data = (() => {
     let folders = new Set<string>();
@@ -163,8 +163,8 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
 
   const s = path.split('/');
 
-  const isActive = activeFileKey.includes(path);
-  const isPointsActive = level === 0 && activeFileKey === 'points';
+  const isActive = activeKey.includes(path);
+  const isPointsActive = level === 0 && activeKey === 'points';
 
   return (
     <div className={cn('relative', level === 1 ? 'ml-1' : level > 1 ? 'ml-5' : '')}>
@@ -196,7 +196,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
           key={folder}
           path={path + folder + '/'}
           level={level + 1}
-          activeFileKey={activeFileKey}
+          activeKey={activeKey}
           onFileClick={onFileClick}
           onFileDeleted={onFileDeleted}
         />
@@ -210,7 +210,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
               file={file}
               onClick={() => onFileClick(path + file.key)}
               onDeleteClick={onFileDeleted}
-              isActive={path + file.key === activeFileKey}
+              isActive={path + file.key === activeKey}
             />
           ))}
         </div>
@@ -219,7 +219,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
   );
 };
 
-const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) => {
+const Sidebar = ({ activeKey, onFileClick, onFileDeleted }: SidebarProps) => {
   return (
     <div className="text-sm overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
       <div className="overflow-y-auto h-full px-2 py-1">
@@ -227,7 +227,7 @@ const Sidebar = ({ activeFileKey, onFileClick, onFileDeleted }: SidebarProps) =>
           <Folder
             path="planets/"
             level={0}
-            activeFileKey={activeFileKey}
+            activeKey={activeKey}
             onFileClick={onFileClick}
             onFileDeleted={onFileDeleted}
           />
@@ -241,13 +241,16 @@ const Editor = () => {
   const [editor, setEditor] = useEditor();
   const [files, setFiles] = useFiles();
 
-  const [activeFileKey, setActiveFileKey] = useState('_temp');
+  const [activeKey, setActiveKey] = useState('_temp');
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const isPointsActive = activeFileKey === 'points';
+  const isPointsActive = activeKey === 'points';
   const file = isPointsActive
     ? { key: 'points.json', body: JSON.stringify(points.value, null, 2) }
-    : files.value.find((file) => file.key === activeFileKey);
+    : files.value.find((file) => file.key === activeKey);
+  const isJSON = file?.key.endsWith('.json');
+  let value = values[activeKey] || file?.body || '';
+  if (isJSON) value = prettifyJSON(value);
 
   return (
     <div
@@ -261,15 +264,15 @@ const Editor = () => {
         <Panel defaultSizePixels={400} collapsible minSizePixels={100}>
           <div className="flex flex-col gap-2 h-full p-2 pr-1">
             <Sidebar
-              activeFileKey={activeFileKey}
-              onFileClick={(key) => setActiveFileKey(key)}
-              onFileDeleted={() => setActiveFileKey(files.value[0].key)}
+              activeKey={activeKey}
+              onFileClick={(key) => setActiveKey(key)}
+              onFileDeleted={() => setActiveKey(files.value[0].key)}
             />
             <AddFile
               onFileCreate={(key) => {
                 const file = setFiles.save(key, values['_temp'], false);
                 setValues(({ _temp, ...prev }) => prev);
-                setActiveFileKey(file.key);
+                setActiveKey(file.key);
               }}
             />
           </div>
@@ -304,17 +307,17 @@ const Editor = () => {
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
                 <CodeMirror
-                  value={values[activeFileKey] || file?.body || ''}
+                  value={value}
                   width="100%"
                   height="100%"
                   theme={githubLight}
                   extensions={(() => {
                     const extensions = [EditorView.lineWrapping];
                     if (file?.key.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
-                    if (file?.key.endsWith('.json')) extensions.push(json());
+                    if (isJSON) extensions.push(json());
                     return extensions;
                   })()}
-                  onChange={(value) => setValues((prev) => ({ ...prev, [activeFileKey]: value }))}
+                  onChange={(v) => setValues((prev) => ({ ...prev, [activeKey]: isJSON ? uglifyJSON(v) : v }))}
                   className="w-full h-full"
                 />
               </div>
