@@ -164,6 +164,7 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
   const s = path.split('/');
 
   const isActive = activeFileKey.includes(path);
+  const isPointsActive = level === 0 && activeFileKey === 'points';
 
   return (
     <div className={cn('relative', level === 1 ? 'ml-1' : level > 1 ? 'ml-5' : '')}>
@@ -180,12 +181,14 @@ const Folder = ({ path, level, activeFileKey, onFileClick, onFileDeleted }: Fold
       )}
       <div className="flex items-start py-1 relative">
         {level >= 1 && <div className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />}
-        <span className={cn('text-violet-500', isActive ? 'font-semibold' : 'font-medium')}>{s[s.length - 2]}</span>
+        <span className={cn('text-violet-500', isActive || isPointsActive ? 'font-semibold' : 'font-medium')}>
+          {s[s.length - 2]}
+        </span>
       </div>
       {level === 0 && (
-        <button type="button" className="flex items-start py-1 relative" onClick={() => onFileClick('points')}>
+        <button type="button" className="flex items-start py-1 relative w-full" onClick={() => onFileClick('points')}>
           <span className="w-3 mx-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
-          <span className="text-amber-500 font-medium">points</span>
+          <span className={cn('text-amber-500 ', isPointsActive ? 'font-semibold' : 'font-medium')}>points</span>
         </button>
       )}
       {data.folders.map((folder) => (
@@ -241,7 +244,10 @@ const Editor = () => {
   const [activeFileKey, setActiveFileKey] = useState('_temp');
   const [values, setValues] = useState<Record<string, string>>({});
 
-  const file = files.value.find((file) => file.key === activeFileKey);
+  const isPointsActive = activeFileKey === 'points';
+  const file = isPointsActive
+    ? { key: 'points.json', body: JSON.stringify(points.value, null, 2) }
+    : files.value.find((file) => file.key === activeFileKey);
 
   return (
     <div
@@ -286,7 +292,11 @@ const Editor = () => {
                 e.preventDefault();
                 Object.keys(values).forEach((key) => {
                   if (key === '_temp') return;
-                  setFiles.save(key, values[key]);
+                  if (key === 'points') {
+                    points.value = JSON.parse(values[key]);
+                  } else {
+                    setFiles.save(key, values[key]);
+                  }
                 });
                 ++setEditor.saved;
                 setEditor.isVisible = false;
@@ -294,11 +304,7 @@ const Editor = () => {
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
                 <CodeMirror
-                  value={
-                    activeFileKey === 'points'
-                      ? JSON.stringify(points.value, null, 2)
-                      : values[activeFileKey] || file?.body || ''
-                  }
+                  value={values[activeFileKey] || file?.body || ''}
                   width="100%"
                   height="100%"
                   theme={githubLight}
@@ -310,7 +316,6 @@ const Editor = () => {
                   })()}
                   onChange={(value) => setValues((prev) => ({ ...prev, [activeFileKey]: value }))}
                   className="w-full h-full"
-                  readOnly={activeFileKey === 'points'}
                 />
               </div>
 
