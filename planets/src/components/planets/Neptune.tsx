@@ -5,10 +5,11 @@ import { usePlanet } from './shared';
 import Markdown from '../Markdown';
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
+import ResetButton from '../buttons/ResetButton';
 import Button from '../Button';
 
 import type { Neptune, Parent } from '../../lib/types';
-import { useEditor, points } from '../../lib/state';
+import { useEditor, points, moons } from '../../lib/state';
 
 const Neptune = () => {
   const [editor] = useEditor();
@@ -16,7 +17,7 @@ const Neptune = () => {
   const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
   const parent: Parent = { id: planet.id, request: onRequest };
 
-  const [stopAt, setStopAt] = useState(-1);
+  const [stopAt, setStopAt] = useState<number>();
 
   useEffect(() => {
     const cb = () => {
@@ -39,7 +40,7 @@ const Neptune = () => {
       <div key={editor.saved} className="py-5 overflow-y-auto [scrollbar-gutter:stable] h-full">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
           {planet.moons.map((moon, i) => {
-            if (stopAt !== -1 && i > stopAt) return null;
+            if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
             return (
               <Fragment key={i}>
                 {typeof moon === 'string' ? (
@@ -55,7 +56,17 @@ const Neptune = () => {
 
       <div className="fixed bottom-[21px] left-[21px] flex gap-2">
         <EditorButton />
-        {/* TODO: reset */}
+        <ResetButton
+          onClick={() => {
+            for (let i = planet.moons.length - 1; i >= 0; i--) {
+              const moon = planet.moons[i];
+              if (typeof moon === 'string') continue;
+              const ref = moons.refs.get(moon.id);
+              if (!ref) continue;
+              ref.execute?.('reset');
+            }
+          }}
+        />
       </div>
 
       <a href="/jupiter">
