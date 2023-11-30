@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
 import { usePlanet } from './shared';
@@ -10,13 +9,9 @@ import Button from '../Button';
 
 import { type Moon as _Moon, type Jupiter, type Parent } from '../../lib/types';
 import { cn } from '../../lib/helpers';
-import { useEditor, files, points } from '../../lib/state';
+import { useEditor, files, moons, points } from '../../lib/state';
 
 const Jupiter = () => {
-  const smallRef = useRef<MoonHandle>(null);
-  const mediumRef = useRef<MoonHandle>(null);
-  const largeRef = useRef<MoonHandle>(null);
-
   const [editor] = useEditor();
 
   const { planet, onRequest, onChange } = usePlanet<Jupiter>('planets/jupiter/_planet.json');
@@ -37,16 +32,7 @@ const Jupiter = () => {
                 <Panel id="jupiter-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon
-                        ref={mediumRef}
-                        parent={parent}
-                        moon={planet.medium}
-                        onChange={onChange(planet.medium.id)}
-                        onPublish={(action, data) => {
-                          smallRef.current?.execute?.(action, data);
-                          largeRef.current?.execute?.(action, data);
-                        }}
-                      />
+                      <Moon parent={parent} moon={planet.medium} onChange={onChange(planet.medium.id)} />
                     </div>
                   </div>
                 </Panel>
@@ -60,16 +46,7 @@ const Jupiter = () => {
                 <Panel id="jupiter-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon
-                        ref={smallRef}
-                        parent={parent}
-                        moon={planet.small}
-                        onChange={onChange(planet.small.id)}
-                        onPublish={(action, data) => {
-                          mediumRef.current?.execute?.(action, data);
-                          largeRef.current?.execute?.(action, data);
-                        }}
-                      />
+                      <Moon parent={parent} moon={planet.small} onChange={onChange(planet.small.id)} />
                     </div>
                   </div>
                 </Panel>
@@ -92,39 +69,23 @@ const Jupiter = () => {
               )}
             >
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
-                <Moon
-                  ref={largeRef}
-                  parent={parent}
-                  moon={moon}
-                  onChange={onChange(moon.id)}
-                  onPublish={(action, data) => {
-                    smallRef.current?.execute?.(action, data);
-                    mediumRef.current?.execute?.(action, data);
-                  }}
-                />
+                <Moon parent={parent} moon={moon} onChange={onChange(moon.id)} />
               </div>
               {actions?.active && (
                 <div className="flex justify-between gap-2 p-2">
                   <div className="flex gap-2">
                     <EditorButton />
-                    {actions.reset && (
-                      <ResetButton
-                        onClick={() => {
-                          smallRef.current?.execute?.('reset');
-                          mediumRef.current?.execute?.('reset');
-                          largeRef.current?.execute?.('reset');
-                        }}
-                      />
-                    )}
+                    {actions.reset && <ResetButton onClick={() => moons.publish('reset')} />}
                   </div>
                   <div className="flex gap-2">
                     {actions.submit && (
                       <SubmitButton
                         onClick={() => {
-                          if (smallRef.current?.snapshot) handleSnapshot(planet.small.id, smallRef.current.snapshot());
-                          if (mediumRef.current?.snapshot)
-                            handleSnapshot(planet.medium.id, mediumRef.current.snapshot());
-                          if (largeRef.current?.snapshot) handleSnapshot(planet.large.id, largeRef.current.snapshot());
+                          for (const key of moons.refs.keys()) {
+                            const ref = moons.refs.get(key);
+                            if (!ref) continue;
+                            if (ref.snapshot) handleSnapshot(key, ref.snapshot());
+                          }
                         }}
                       />
                     )}

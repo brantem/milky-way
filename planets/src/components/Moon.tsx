@@ -1,8 +1,9 @@
-import { Suspense, forwardRef, lazy, memo, useEffect, useState } from 'react';
+import { Suspense, lazy, memo, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import type { File, Moon as _Moon, Parent } from '../lib/types';
 import { cn } from '../lib/helpers';
+import { moons } from '../lib/state';
 
 const Error = ({
   width = '100%',
@@ -77,24 +78,28 @@ export type MoonHandle = {
   execute?: (action: string, data?: any) => void;
 };
 
-type MoonProps = {
+export type MoonProps = {
   parent: Parent;
   moon: _Moon;
   onChange(files: File[], points: number): void;
-  onPublish?: (action: string, data?: any) => void;
 };
 
 const Moon = memo(
-  forwardRef<MoonHandle, MoonProps>(({ moon: { url, ...moon }, ...props }, ref) => {
+  function Moon({ moon: { url, ...moon }, ...props }: MoonProps) {
     const Component = lazy(() => import(/* @vite-ignore */ url));
     return (
       <ErrorBoundary fallback={<Error width={moon.width} height={moon.height} />}>
         <Suspense fallback={<Loading width={moon.width} height={moon.height} />}>
-          <Component ref={ref} {...moon} {...props} />
+          <Component
+            ref={moons.addRef(moon.id)}
+            {...moon}
+            {...props}
+            onPublish={(action: string, data?: any) => moons.publish(action, data, moon.id)}
+          />
         </Suspense>
       </ErrorBoundary>
     );
-  }),
+  },
   () => true,
 );
 
