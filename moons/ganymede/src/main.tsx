@@ -63,7 +63,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         model: {
           // type: 'onnx',
           // urls: {
-          //   wasmPath: 'https://raw.githubusercontent.com/brantem/adudu/master/moons/ganymede/',
+          //   wasmPath: 'https://moons.brantem.com/ganymede/',
           //   modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
           // },
           // input: {

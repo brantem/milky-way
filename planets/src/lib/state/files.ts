@@ -21,7 +21,7 @@ const moons = [
         url: 'https://moons.brantem.com/deimos/bundle.js',
         data: {
           tasks: {
-            file: 'planets/tests.json',
+            file: 'planets/tests/teachable-machine.json',
             output: 'planets/outputs/deimos.json',
           },
         },
@@ -79,7 +79,7 @@ const moons = [
     ),
   },
   {
-    key: 'planets/moons/ganymede.json',
+    key: 'planets/moons/ganymede/onnx.json',
     body: JSON.stringify(
       {
         id: nanoid(),
@@ -89,7 +89,45 @@ const moons = [
             file: 'planets/outputs/ganymede.json',
           },
           tests: {
-            file: 'planets/tests.json',
+            file: 'planets/tests/onnx.json',
+          },
+          output: {
+            file: 'planets/outputs/ganymede.json',
+            deimos: 'planets/outputs/deimos.json',
+          },
+          model: {
+            type: 'onnx',
+            urls: {
+              wasmPath: 'https://moons.brantem.com/ganymede/',
+              modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
+            },
+            input: {
+              width: 28,
+              height: 28,
+            },
+            probability: {
+              min: 90,
+              max: 100,
+            },
+          },
+        },
+      } satisfies Moon,
+      null,
+      2,
+    ),
+  },
+  {
+    key: 'planets/moons/ganymede/teachable-machine.json',
+    body: JSON.stringify(
+      {
+        id: nanoid(),
+        url: 'https://moons.brantem.com/ganymede/bundle.js',
+        data: {
+          initial: {
+            file: 'planets/outputs/ganymede.json',
+          },
+          tests: {
+            file: 'planets/tests/teachable-machine.json',
           },
           output: {
             file: 'planets/outputs/ganymede.json',
@@ -168,7 +206,7 @@ const jupiter = {
         url: 'https://moons.brantem.com/deimos/bundle.js',
         data: {
           tasks: {
-            file: 'planets/tests.json',
+            file: 'planets/tests/onnx.json',
             output: 'planets/jupiter/outputs/deimos.json',
           },
         },
@@ -191,21 +229,21 @@ const jupiter = {
             file: 'planets/jupiter/outputs/ganymede.json',
           },
           tests: {
-            file: 'planets/tests.json',
+            file: 'planets/tests/onnx.json',
           },
           output: {
             file: 'planets/jupiter/outputs/ganymede.json',
             deimos: 'planets/jupiter/outputs/deimos.json',
           },
           model: {
-            type: 'teachable_machine',
+            type: 'onnx',
             urls: {
-              baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+              wasmPath: 'https://moons.brantem.com/ganymede/',
+              modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
             },
             input: {
-              width: 96,
-              height: 96,
-              background: '#fff',
+              width: 28,
+              height: 28,
             },
             probability: {
               min: 90,
@@ -306,7 +344,28 @@ export const files = proxy<State>({
       body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
     },
     {
-      key: 'planets/tests.json',
+      key: 'planets/tests/onnx.json',
+      body: JSON.stringify(
+        [
+          {
+            text: 'Draw the number 3',
+            data: {
+              label: 3,
+            },
+          },
+          {
+            text: 'Draw the number 8',
+            data: {
+              label: 8,
+            },
+          },
+        ],
+        null,
+        2,
+      ),
+    },
+    {
+      key: 'planets/tests/teachable-machine.json',
       body: JSON.stringify(
         [
           {
