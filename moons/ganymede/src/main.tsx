@@ -60,17 +60,16 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           file: 'ganymede.json',
           deimos: 'deimos.json',
         },
-        // model: {
-        //   type: 'onnx',
-        //   urls: {
-        //     modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
-        //   },
-        //   input: {
-        //     width: 28,
-        //     height: 28,
-        //   },
-        // },
         model: {
+          // type: 'onnx',
+          // urls: {
+          //   wasmPath: 'https://raw.githubusercontent.com/brantem/adudu/master/moons/ganymede/',
+          //   modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
+          // },
+          // input: {
+          //   width: 28,
+          //   height: 28,
+          // },
           type: 'teachable_machine',
           urls: {
             baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',

@@ -1,4 +1,4 @@
-import { InferenceSession, Tensor } from 'onnxruntime-web';
+import * as ort from 'onnxruntime-web';
 
 import { Model } from './shared';
 
@@ -24,10 +24,11 @@ const getResult = (output: number[]): Prediction => {
 export class Onnx extends Model {
   #modelUrl: string;
   #input: ModelOpts['input'];
-  #session: InferenceSession | null = null;
+  #session: ort.InferenceSession | null = null;
 
-  constructor(modelUrl: string, input: ModelOpts['input']) {
+  constructor(wasmPath: string, modelUrl: string, input: ModelOpts['input']) {
     super();
+    ort.env.wasm.wasmPaths = wasmPath;
     this.#modelUrl = modelUrl;
     this.#input = input;
   }
@@ -36,10 +37,10 @@ export class Onnx extends Model {
     if (!this.#modelUrl) return;
     const response = await fetch(this.#modelUrl);
     const buf = await response.arrayBuffer();
-    this.#session = await InferenceSession.create(buf);
+    this.#session = await ort.InferenceSession.create(buf);
 
     const size = this.#input.width * this.#input.height;
-    const tensor = new Tensor('float32', new Float32Array(size), [1, 1, this.#input.width, this.#input.height]);
+    const tensor = new ort.Tensor('float32', new Float32Array(size), [1, 1, this.#input.width, this.#input.height]);
     for (let i = 0; i < size; i++) tensor.data[i] = Math.random() * 2.0 - 1.0;
     try {
       await this.#session.run({ [this.#session.inputNames[0]]: tensor });
@@ -55,7 +56,7 @@ export class Onnx extends Model {
     for (let i = 0, len = data.length; i < len; i += 4) {
       input[i / 4] = data[i + 3] / 255;
     }
-    const tensor = new Tensor('float32', input, [1, 1, this.#input.width, this.#input.height]);
+    const tensor = new ort.Tensor('float32', input, [1, 1, this.#input.width, this.#input.height]);
 
     try {
       const output = (await this.#session.run({ [this.#session.inputNames[0]]: tensor }))[this.#session.outputNames[0]];

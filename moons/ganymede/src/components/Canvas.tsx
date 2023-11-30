@@ -89,7 +89,7 @@ const Canvas = () => {
       const { type, urls, input } = state.model;
       switch (type) {
         case 'onnx':
-          model.current = new Onnx(urls['modelUrl'], input);
+          model.current = new Onnx(urls['wasmPath'], urls['modelUrl'], input);
           break;
         case 'teachable_machine':
           model.current = new TeachableMachine(urls['baseUrl']);
