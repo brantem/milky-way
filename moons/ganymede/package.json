@@ -12,29 +12,29 @@
   "dependencies": {
     "@teachablemachine/image": "^0.8.5",
     "@tensorflow/tfjs": "^4.12.0",
-    "nanoid": "^5.0.2",
-    "onnxruntime-web": "^1.16.1",
+    "nanoid": "^5.0.3",
+    "onnxruntime-web": "^1.16.3",
     "perfect-freehand": "^1.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "valtio": "^1.11.3"
+    "valtio": "^1.12.1"
   },
   "devDependencies": {
-    "@types/node": "^20.8.7",
-    "@types/react": "^18.2.31",
-    "@types/react-dom": "^18.2.14",
-    "@typescript-eslint/eslint-plugin": "^6.8.0",
-    "@typescript-eslint/parser": "^6.8.0",
-    "@vitejs/plugin-react-swc": "^3.4.0",
+    "@types/node": "^20.10.1",
+    "@types/react": "^18.2.39",
+    "@types/react-dom": "^18.2.17",
+    "@typescript-eslint/eslint-plugin": "^6.13.1",
+    "@typescript-eslint/parser": "^6.13.1",
+    "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.16",
-    "eslint": "^8.51.0",
+    "eslint": "^8.54.0",
     "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.3",
+    "eslint-plugin-react-refresh": "^0.4.4",
     "postcss": "^8.4.31",
     "postcss-simple-scope": "^1.0.0",
-    "tailwindcss": "^3.3.3",
-    "typescript": "^5.2.2",
-    "vite": "^4.5.0",
+    "tailwindcss": "^3.3.5",
+    "typescript": "^5.3.2",
+    "vite": "^5.0.4",
     "vite-plugin-css-injected-by-js": "^3.3.0"
   }
 }
