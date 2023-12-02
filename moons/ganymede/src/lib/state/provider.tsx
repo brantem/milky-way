@@ -9,7 +9,7 @@ export const AppContext = createContext<AppState>({});
 
 export type AppProviderHandle = {
   snapshot(): { files: File[]; points: number };
-  execute(action: Action, data: any): boolean;
+  execute(action: Action, data: unknown): boolean;
 };
 
 type Test = {
@@ -39,7 +39,7 @@ export type AppProviderProps = {
     };
   };
   onChange(files: File[], points: number): void;
-  onPublish(action: string, data?: any): void;
+  onPublish(action: string, data?: unknown): void;
   debug?: boolean;
   children: React.ReactNode;
 };
@@ -96,7 +96,7 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
       execute(action, data) {
         switch (action) {
           case Action.SetColor:
-            value.color = data;
+            value.color = data as string;
             return true;
           case Action.Reset:
             value.color = '#000';

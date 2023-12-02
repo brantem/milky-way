@@ -1,8 +1,7 @@
-import { Fragment, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { subscribe } from 'valtio';
 
 import { usePlanet } from './shared';
-import Markdown from '../Markdown';
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
@@ -40,16 +39,9 @@ const Neptune = () => {
       <div key={editor.saved} className="py-5 overflow-y-auto [scrollbar-gutter:stable] h-full">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
           {planet.moons.map((moon, i) => {
+            if (typeof moon === 'string') return null;
             if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
-            return (
-              <Fragment key={i}>
-                {typeof moon === 'string' ? (
-                  <Markdown className="px-3">{moon}</Markdown>
-                ) : (
-                  <Moon parent={parent} moon={moon} onChange={onChange(moon.id)} />
-                )}
-              </Fragment>
-            );
+            return <Moon key={i} parent={parent} moon={moon} onChange={onChange(moon.id)} />;
           })}
         </div>
       </div>

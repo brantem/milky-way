@@ -20,7 +20,7 @@ export const usePlanet = <P extends Planet>(
       }
     },
     onChange: (id) => (_files, _points) => {
-      for (let file of _files) files.save(file.key, file.body);
+      for (const file of _files) files.save(file.key, file.body);
       points.save(id, _points);
     },
   };

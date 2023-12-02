@@ -3,8 +3,10 @@ import ReactDOM from 'react-dom/client';
 
 import Callisto from './Callisto';
 
+import { File } from './lib/types';
+
 const App = () => {
-  const [files, setFiles] = useState<Record<string, any>>({
+  const [files, setFiles] = useState<Record<string, File>>({
     'callisto-1.json': {
       key: 'callisto-1.json',
       body: JSON.stringify({
@@ -63,7 +65,7 @@ const App = () => {
         console.log(files, points);
         setFiles((prev) => ({
           ...prev,
-          ...files.reduce((obj, file) => ({ ...obj, [file.key]: file }), {} as Record<string, any>),
+          ...files.reduce((obj, file) => ({ ...obj, [file.key]: file }), {} as Record<string, File>),
         }));
       }}
     />

@@ -8,7 +8,7 @@ import type { Moon } from '../types';
 interface State {
   refs: Map<Moon['id'], MoonHandle>;
   addRef: (id: Moon['id']) => (el: MoonHandle | null) => void;
-  publish: (action: string, data?: any, except?: Moon['id']) => void;
+  publish: (action: string, data?: unknown, except?: Moon['id']) => void;
 }
 
 export const moons = proxy<State>({

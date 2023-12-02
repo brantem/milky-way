@@ -3,7 +3,9 @@ import ReactDOM from 'react-dom/client';
 
 import Ganymede from './Ganymede';
 
-const files: Record<string, any> = {
+import { File } from './lib/types';
+
+const files: Record<string, File> = {
   'tests.json': {
     key: 'tests.json',
     body: JSON.stringify([

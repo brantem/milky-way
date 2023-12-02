@@ -18,7 +18,7 @@ type PhobosProps = {
       file: string;
     };
   };
-  onPublish(action: string, data?: any): void;
+  onPublish(action: string, data?: unknown): void;
 };
 
 const Phobos = memo(({ width = '100%', height = '100%', parent, id, data, onPublish }: PhobosProps) => {

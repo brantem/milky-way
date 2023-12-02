@@ -18,7 +18,7 @@ const Jupiter = () => {
   const parent: Parent = { id: planet.id, request: onRequest };
 
   const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (let file of data.files) files.save(file.key, file.body);
+    for (const file of data.files) files.save(file.key, file.body);
     points.save(id, data.points);
   };
 

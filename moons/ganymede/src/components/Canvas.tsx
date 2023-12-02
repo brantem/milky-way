@@ -111,7 +111,7 @@ const Canvas = () => {
       className="absolute inset-0 h-[calc(100%-theme(spacing.14))] w-full z-[9] touch-none"
       onPointerDown={(e) => {
         if (e.button !== 0) return;
-        const el = e.target as any;
+        const el = e.target as HTMLElement;
         el.setPointerCapture(e.pointerId);
         initialPointRef.current = getPoint(el, e.pageX, e.pageY, e.pressure);
       }}
@@ -122,7 +122,7 @@ const Canvas = () => {
           setPoints((prev) => [...prev, initialPoint]);
           initialPointRef.current = undefined;
         }
-        setPoints((prev) => [...prev, getPoint(e.target as any, e.pageX, e.pageY, e.pressure)]);
+        setPoints((prev) => [...prev, getPoint(e.target as HTMLElement, e.pageX, e.pageY, e.pressure)]);
       }}
       onPointerUp={async () => {
         const path = set.createPath(points);

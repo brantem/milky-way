@@ -144,9 +144,9 @@ type FolderProps = SidebarProps & {
 const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderProps) => {
   const [files] = useFiles();
   const data = (() => {
-    let folders = new Set<string>();
-    let _files = [];
-    for (let file of files.value) {
+    const folders = new Set<string>();
+    const _files = [];
+    for (const file of files.value) {
       if (!file.key.startsWith(path)) continue;
       const key = file.key.replace(path, '');
       if (key.includes('/')) {
@@ -271,6 +271,7 @@ const Editor = () => {
             <AddFile
               onFileCreate={(key) => {
                 const file = setFiles.save(key, values['_temp'], false);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 setValues(({ _temp, ...prev }) => prev);
                 setActiveKey(file.key);
               }}

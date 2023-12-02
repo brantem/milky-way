@@ -29,10 +29,10 @@ type DeimosProps = {
 
 type Item = {
   text: string;
-  data: Record<string, any>;
+  data: Record<string, unknown>;
 };
 
-type Item2 = Record<string, any>;
+type Item2 = Record<string, unknown>;
 
 const Deimos = forwardRef<DeimosHandle, DeimosProps>(
   ({ width = '100%', height = '100%', parent, id, data, onPublish }, ref) => {
@@ -85,8 +85,8 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
                     values[i] === true
                       ? 'border-b-lime-900/10 bg-lime-50/50 text-lime-900'
                       : values[i] === false
-                      ? 'border-b-rose-900/10 bg-rose-50/50 text-rose-900'
-                      : 'border-b-yellow-900/10 text-yellow-900',
+                        ? 'border-b-rose-900/10 bg-rose-50/50 text-rose-900'
+                        : 'border-b-yellow-900/10 text-yellow-900',
                   ].join(' ')}
                 >
                   <span
@@ -95,8 +95,8 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
                       values[i] === true
                         ? 'text-lime-200/75'
                         : values[i] === false
-                        ? 'text-rose-200/75'
-                        : 'text-yellow-200/75',
+                          ? 'text-rose-200/75'
+                          : 'text-yellow-200/75',
                     ].join(' ')}
                   >
                     {i + 1}

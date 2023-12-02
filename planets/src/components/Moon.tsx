@@ -75,7 +75,7 @@ const Loading = ({
 
 export type MoonHandle = {
   snapshot?: () => { files: File[]; points: number };
-  execute?: (action: string, data?: any) => void;
+  execute?: (action: string, data?: unknown) => void;
 };
 
 export type MoonProps = {
@@ -94,7 +94,7 @@ const Moon = memo(
             ref={moons.addRef(moon.id)}
             {...moon}
             {...props}
-            onPublish={(action: string, data?: any) => moons.publish(action, data, moon.id)}
+            onPublish={(action: string, data?: unknown) => moons.publish(action, data, moon.id)}
           />
         </Suspense>
       </ErrorBoundary>
