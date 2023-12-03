@@ -1,20 +1,19 @@
 import { useEffect, useState } from 'react';
 import { subscribe } from 'valtio';
 
-import { usePlanet } from './shared';
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import Button from '../Button';
 
-import type { Neptune, Parent } from '../../lib/types';
+import type { Neptune } from '../../lib/types';
 import { useEditor, points, moons } from '../../lib/state';
+import { usePlanet } from '../../lib/hooks';
 
 const Neptune = () => {
   const [editor] = useEditor();
 
-  const { planet, onRequest, onChange } = usePlanet<Neptune>('planets/neptune/_planet.json');
-  const parent: Parent = { id: planet.id, request: onRequest };
+  const planet = usePlanet<Neptune>();
 
   const [stopAt, setStopAt] = useState<number>();
 
@@ -41,7 +40,7 @@ const Neptune = () => {
           {planet.moons.map((moon, i) => {
             if (typeof moon === 'string') return null;
             if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
-            return <Moon key={i} parent={parent} moon={moon} onChange={onChange(moon.id)} />;
+            return <Moon key={i} moon={moon} />;
           })}
         </div>
       </div>
