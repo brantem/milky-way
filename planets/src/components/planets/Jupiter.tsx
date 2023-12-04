@@ -1,21 +1,20 @@
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 
-import { usePlanet } from './shared';
 import Moon, { type MoonHandle } from '../Moon';
 import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 import Button from '../Button';
 
-import { type Moon as _Moon, type Jupiter, type Parent } from '../../lib/types';
+import { type Moon as _Moon, type Jupiter } from '../../lib/types';
 import { cn } from '../../lib/helpers';
 import { useEditor, files, moons, points } from '../../lib/state';
+import { usePlanet } from '../../lib/hooks';
 
 const Jupiter = () => {
   const [editor] = useEditor();
 
-  const { planet, onRequest, onChange } = usePlanet<Jupiter>('planets/jupiter/_planet.json');
-  const parent: Parent = { id: planet.id, request: onRequest };
+  const planet = usePlanet<Jupiter>();
 
   const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
     for (const file of data.files) files.save(file.key, file.body);
@@ -32,7 +31,7 @@ const Jupiter = () => {
                 <Panel id="jupiter-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon parent={parent} moon={planet.medium} onChange={onChange(planet.medium.id)} />
+                      <Moon moon={planet.medium} />
                     </div>
                   </div>
                 </Panel>
@@ -46,7 +45,7 @@ const Jupiter = () => {
                 <Panel id="jupiter-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon parent={parent} moon={planet.small} onChange={onChange(planet.small.id)} />
+                      <Moon moon={planet.small} />
                     </div>
                   </div>
                 </Panel>
@@ -69,7 +68,7 @@ const Jupiter = () => {
               )}
             >
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
-                <Moon parent={parent} moon={moon} onChange={onChange(moon.id)} />
+                <Moon moon={moon} />
               </div>
               {actions?.active && (
                 <div className="flex justify-between gap-2 p-2">
