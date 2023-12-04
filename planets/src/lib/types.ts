@@ -18,9 +18,17 @@ export type Moon = {
 
 export type Planet = {
   id: string;
+  title: string;
+  layout: 'jupiter' | 'neptune';
+};
+
+export type SolarSystem = {
+  title: string;
+  planets: { id: string; file: string }[];
 };
 
 export type Jupiter = Planet & {
+  layout: 'jupiter';
   small: Moon & { active: boolean };
   medium: Moon & { active: boolean };
   large: Moon & {
@@ -33,6 +41,7 @@ export type Jupiter = Planet & {
 };
 
 export type Neptune = Planet & {
+  layout: 'neptune';
   moons: (string | (Moon & { points: { min: number } }))[];
 };
 

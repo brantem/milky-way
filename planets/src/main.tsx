@@ -1,19 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import Jupiter from './components/planets/Jupiter';
-import Neptune from './components/planets/Neptune';
+import Start from './pages/start';
+import Planet from './pages/planet';
 import Editor from './components/Editor';
 
+import type { SolarSystem } from './lib/types';
 import { files } from './lib/state';
+import { ROOT_FOLDER, SOLAR_SYSTEM_FILE } from './lib/constants';
 
 import './index.css';
 
-const getPlanet = (key: string) => {
-  const file = files.value.find((file) => file.key === key);
-  return JSON.parse(file?.body || '{}') || {};
-};
+const getFile = (key: string) => files.value.find((file) => file.key === key);
 
 const router = createBrowserRouter([
   {
@@ -21,21 +20,18 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        loader: () => redirect('jupiter'),
+        element: <Start />,
       },
       {
-        path: 'jupiter',
-        loader() {
-          return getPlanet('planets/jupiter/_planet.json');
+        path: ':planetId',
+        loader({ params }) {
+          const file = getFile(ROOT_FOLDER + SOLAR_SYSTEM_FILE)!;
+          const solarSystem: SolarSystem = JSON.parse(file.body || '[]');
+          const planet = solarSystem.planets.find((planet) => planet.id === params.planetId);
+          if (!planet) return { solarSystem };
+          return { solarSystem, planet: JSON.parse(getFile(planet.file)?.body || '{}') || {} };
         },
-        element: <Jupiter />,
-      },
-      {
-        path: 'neptune',
-        loader() {
-          return getPlanet('planets/neptune/_planet.json');
-        },
-        element: <Neptune />,
+        element: <Planet />,
       },
     ],
   },

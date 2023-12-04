@@ -1,4 +1,5 @@
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import { Link } from 'react-router-dom';
 
 import Moon, { type MoonHandle } from '../Moon';
 import EditorButton from '../buttons/EditorButton';
@@ -88,11 +89,11 @@ const Jupiter = () => {
                         }}
                       />
                     )}
-                    <a href="/neptune">
+                    <Link to="/neptune">
                       <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
                         Neptune
                       </Button>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               )}

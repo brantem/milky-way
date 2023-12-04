@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { subscribe } from 'valtio';
+import { Link } from 'react-router-dom';
 
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
@@ -60,7 +61,7 @@ const Neptune = () => {
         />
       </div>
 
-      <a href="/jupiter">
+      <Link to="/jupiter">
         <Button
           className="fixed right-[21px] bottom-[21px]"
           shadowClassName="bg-sky-600"
@@ -68,7 +69,7 @@ const Neptune = () => {
         >
           Jupiter
         </Button>
-      </a>
+      </Link>
     </>
   );
 };

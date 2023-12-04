@@ -9,6 +9,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
+import { ROOT_FOLDER } from '../lib/constants';
 import { useEditor, files, useFiles, points } from '../lib/state';
 import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
 
@@ -113,7 +114,7 @@ const File = ({ path, file, isActive, onClick, onDeleteClick }: FileProps) => {
       <span className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
       <span className={cn('group flex-1 flex items-center justify-between gap-2', isActive && 'font-semibold')}>
         <span>{file.key}</span>
-        {!file.key.endsWith('_planet.json') && (
+        {!file.key.startsWith('_') && (
           <span
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
@@ -225,7 +226,7 @@ const Sidebar = ({ activeKey, onFileClick, onFileDeleted }: SidebarProps) => {
       <div className="overflow-y-auto h-full px-2 py-1">
         <div className="flex flex-col">
           <Folder
-            path="planets/"
+            path={ROOT_FOLDER}
             level={0}
             activeKey={activeKey}
             onFileClick={onFileClick}
