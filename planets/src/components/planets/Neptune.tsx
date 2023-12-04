@@ -4,11 +4,10 @@ import { Link } from 'react-router-dom';
 
 import Moon from '../Moon';
 import EditorButton from '../buttons/EditorButton';
-import ResetButton from '../buttons/ResetButton';
 import Button from '../Button';
 
 import type { Neptune } from '../../lib/types';
-import { useEditor, points, moons } from '../../lib/state';
+import { useEditor, points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
 
 const Neptune = () => {
@@ -46,20 +45,7 @@ const Neptune = () => {
         </div>
       </div>
 
-      <div className="fixed bottom-[21px] left-[21px] flex gap-2">
-        <EditorButton />
-        <ResetButton
-          onClick={() => {
-            for (let i = planet.moons.length - 1; i >= 0; i--) {
-              const moon = planet.moons[i];
-              if (typeof moon === 'string') continue;
-              const ref = moons.refs.get(moon.id);
-              if (!ref) continue;
-              ref.execute?.('reset');
-            }
-          }}
-        />
-      </div>
+      <EditorButton className="fixed bottom-[21px] left-[21px]" />
 
       <Link to="/jupiter">
         <Button
