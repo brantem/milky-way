@@ -12,6 +12,18 @@ export const useSolarSystem = () => {
   return JSON.parse(file.body || '[]') as SolarSystem;
 };
 
+export const useNavigation = () => {
+  const params = useParams();
+
+  const solarSystem = useSolarSystem();
+  const index = solarSystem.planets.findIndex((planet) => planet.id === params.planetId);
+
+  return {
+    prevId: solarSystem.planets[index - 1]?.id || null,
+    nextId: solarSystem.planets[index + 1]?.id || null,
+  };
+};
+
 export const usePlanet = <P extends Planet>(): P => {
   const params = useParams();
 

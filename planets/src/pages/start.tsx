@@ -20,21 +20,27 @@ const Start = () => {
 
   return (
     <>
-      <div key={editor.saved} className="h-full w-full flex flex-col items-center justify-center">
-        <h1 className="text-5xl font-bold">{solarSystem.title}</h1>
-        <Link to={firstPlanet ? `/${firstPlanet.id}` : '/'}>
-          <Button
-            className="mt-6"
-            shadowClassName="bg-sky-600"
-            contentClassName="bg-sky-500 text-white px-4"
-            disabled={!firstPlanet}
-          >
-            Start
-          </Button>
-        </Link>
-      </div>
+      <div className="p-3 h-full w-full flex">
+        <div
+          key={editor.saved}
+          className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border border-neutral-200/50"
+        >
+          <h1 className="text-5xl font-bold">{solarSystem.title}</h1>
+          <div className="flex gap-2 mt-6">
+            <EditorButton />
 
-      <EditorButton className="fixed bottom-[21px] left-[21px]" />
+            <Link to={firstPlanet ? `/${firstPlanet.id}` : '/'}>
+              <Button
+                shadowClassName="bg-sky-600"
+                contentClassName="bg-sky-500 text-white px-4"
+                disabled={!firstPlanet}
+              >
+                Start
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
     </>
   );
 };

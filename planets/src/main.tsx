@@ -7,7 +7,7 @@ import Planet from './pages/planet';
 import Editor from './components/Editor';
 
 import type { SolarSystem } from './lib/types';
-import { files } from './lib/state';
+import { editor, files } from './lib/state';
 import { ROOT_FOLDER, SOLAR_SYSTEM_FILE } from './lib/constants';
 
 import './index.css';
@@ -40,6 +40,6 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    <Editor />
+    {editor.enabled && <Editor />}
   </React.StrictMode>,
 );

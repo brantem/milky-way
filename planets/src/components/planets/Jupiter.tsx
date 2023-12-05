@@ -1,11 +1,8 @@
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-import { Link } from 'react-router-dom';
 
 import Moon, { type MoonHandle } from '../Moon';
-import EditorButton from '../buttons/EditorButton';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
-import Button from '../Button';
 
 import { type Moon as _Moon, type Jupiter } from '../../lib/types';
 import { cn } from '../../lib/helpers';
@@ -72,12 +69,9 @@ const Jupiter = () => {
                 <Moon moon={moon} />
               </div>
               {actions?.active && (
-                <div className="flex justify-between gap-2 p-2">
-                  <div className="flex gap-2">
-                    <EditorButton />
-                    {actions.reset && <ResetButton onClick={() => moons.publish('reset')} />}
-                  </div>
-                  <div className="flex gap-2">
+                <div className="grid grid-cols-2 gap-2 p-2">
+                  {actions.reset && <ResetButton onClick={() => moons.publish('reset')} />}
+                  <div className="flex justify-end">
                     {actions.submit && (
                       <SubmitButton
                         onClick={() => {
@@ -89,11 +83,6 @@ const Jupiter = () => {
                         }}
                       />
                     )}
-                    <Link to="/neptune">
-                      <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
-                        Neptune
-                      </Button>
-                    </Link>
                   </div>
                 </div>
               )}
