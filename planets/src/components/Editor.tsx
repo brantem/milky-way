@@ -227,7 +227,7 @@ const Sidebar = ({ activeKey, onFileClick, onFileDeleted }: SidebarProps) => {
       <div className="overflow-y-auto h-full px-2 py-1">
         <div className="flex flex-col">
           <Folder
-            path={params.solarSystem}
+            path={`${params.solarSystem}/`}
             level={0}
             activeKey={activeKey}
             onFileClick={onFileClick}

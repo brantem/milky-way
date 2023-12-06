@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
+import { Outlet, RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
 
 import Start from './pages/start';
 import Planet from './pages/planet';
@@ -24,6 +24,12 @@ const router = createBrowserRouter([
       },
       {
         path: ':solarSystem',
+        element: (
+          <>
+            <Outlet />
+            {editor.enabled && <Editor />}
+          </>
+        ),
         children: [
           {
             index: true,
@@ -52,6 +58,5 @@ const router = createBrowserRouter([
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <RouterProvider router={router} />
-    {editor.enabled && <Editor />}
   </React.StrictMode>,
 );
