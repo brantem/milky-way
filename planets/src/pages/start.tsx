@@ -23,7 +23,7 @@ const Start = () => {
           <div className="flex gap-2 mt-6">
             <EditorButton />
 
-            <Link to={firstPlanet ? `/${firstPlanet.id}` : '/'}>
+            <Link to={firstPlanet ? `/${solarSystem.id}/${firstPlanet.id}` : '/'}>
               <Button
                 shadowClassName="bg-sky-600"
                 contentClassName="bg-sky-500 text-white px-4"
