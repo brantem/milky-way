@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { RouterProvider, createBrowserRouter, redirect } from 'react-router-dom';
 
 import Start from './pages/start';
 import Planet from './pages/planet';
@@ -18,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: '/',
     children: [
+      {
+        index: true,
+        loader: () => redirect('milky-way'),
+      },
       {
         path: ':solarSystem',
         children: [
