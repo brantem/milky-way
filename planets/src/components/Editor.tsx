@@ -5,11 +5,11 @@ import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
+import { useParams } from 'react-router-dom';
 
 import Button from './Button';
 
 import type { File as _File } from '../lib/types';
-import { ROOT_FOLDER } from '../lib/constants';
 import { useEditor, files, useFiles, points } from '../lib/state';
 import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
 
@@ -221,12 +221,13 @@ const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderPr
 };
 
 const Sidebar = ({ activeKey, onFileClick, onFileDeleted }: SidebarProps) => {
+  const params = useParams() as { solarSystem: string };
   return (
     <div className="text-sm overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
       <div className="overflow-y-auto h-full px-2 py-1">
         <div className="flex flex-col">
           <Folder
-            path={ROOT_FOLDER}
+            path={params.solarSystem}
             level={0}
             activeKey={activeKey}
             onFileClick={onFileClick}

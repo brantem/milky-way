@@ -23,6 +23,7 @@ export type Planet = {
 };
 
 export type SolarSystem = {
+  id: string;
   title: string;
   planets: { id: string; file: string }[];
 };

@@ -3,19 +3,13 @@ import { Link } from 'react-router-dom';
 import Button from '../components/Button';
 import EditorButton from '../components/buttons/EditorButton';
 
-import { files, useEditor } from '../lib/state';
-import type { SolarSystem } from '../lib/types';
-import { ROOT_FOLDER, SOLAR_SYSTEM_FILE } from '../lib/constants';
-
-const getSolarSystem = () => {
-  const file = files.value.find((file) => file.key === ROOT_FOLDER + SOLAR_SYSTEM_FILE)!;
-  return JSON.parse(file.body) as SolarSystem;
-};
+import { useEditor } from '../lib/state';
+import { useSolarSystem } from '../lib/hooks';
 
 const Start = () => {
   const [editor] = useEditor();
 
-  const solarSystem = getSolarSystem();
+  const solarSystem = useSolarSystem();
   const firstPlanet = solarSystem.planets[0];
 
   return (

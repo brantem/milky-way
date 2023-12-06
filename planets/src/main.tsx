@@ -8,7 +8,7 @@ import Editor from './components/Editor';
 
 import type { SolarSystem } from './lib/types';
 import { editor, files } from './lib/state';
-import { ROOT_FOLDER, SOLAR_SYSTEM_FILE } from './lib/constants';
+import { SOLAR_SYSTEM_FILE } from './lib/constants';
 
 import './index.css';
 
@@ -19,19 +19,27 @@ const router = createBrowserRouter([
     path: '/',
     children: [
       {
-        index: true,
-        element: <Start />,
-      },
-      {
-        path: ':planetId',
-        loader({ params }) {
-          const file = getFile(ROOT_FOLDER + SOLAR_SYSTEM_FILE)!;
-          const solarSystem: SolarSystem = JSON.parse(file.body || '[]');
-          const planet = solarSystem.planets.find((planet) => planet.id === params.planetId);
-          if (!planet) return { solarSystem };
-          return { solarSystem, planet: JSON.parse(getFile(planet.file)?.body || '{}') || {} };
-        },
-        element: <Planet />,
+        path: ':solarSystem',
+        children: [
+          {
+            index: true,
+            element: <Start />,
+          },
+          {
+            path: ':planet',
+            loader({ params }) {
+              files.root = params.solarSystem || '';
+
+              const file = getFile(`${params.solarSystem}/${SOLAR_SYSTEM_FILE}`);
+              if (!file) return { solarSystem: null, planet: null }; // TODO: 404
+              const solarSystem: SolarSystem = JSON.parse(file.body || '[]');
+              const planet = solarSystem.planets.find((planet) => planet.id === params.planet);
+              if (!planet) return { solarSystem, planet: null }; // TODO: 404
+              return { solarSystem, planet: JSON.parse(getFile(planet.file)?.body || '{}') || {} };
+            },
+            element: <Planet />,
+          },
+        ],
       },
     ],
   },
