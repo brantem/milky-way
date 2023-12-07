@@ -1,9 +1,7 @@
 import { Link } from 'react-router-dom';
 
 import Button from './Button';
-import EditorButton from './buttons/EditorButton';
 
-import { editor } from '../lib/state';
 import { useSolarSystem, useNavigation, usePlanet } from '../lib/hooks';
 
 const Navigation = () => {
@@ -14,17 +12,11 @@ const Navigation = () => {
   return (
     <div className="grid grid-cols-4 items-center pt-0 p-3">
       <div className="flex items-center gap-3">
-        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '#'}>
-          <Button
-            shadowClassName="bg-sky-600"
-            contentClassName="bg-sky-500 px-4 py-2 text-white group-disabled:bg-neutral-200 group-disabled:text-neutral-400"
-            disabled={!navigation.prevId}
-          >
-            Prev
+        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'}>
+          <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
+            {navigation.prevId ? 'Prev' : 'Leave'}
           </Button>
         </Link>
-
-        {editor.enabled && <EditorButton />}
 
         <div className="h-[3px] flex-1 bg-neutral-200 rounded-l-full" />
       </div>

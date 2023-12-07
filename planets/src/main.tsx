@@ -7,7 +7,7 @@ import Planet from './pages/planet';
 import Editor from './components/Editor';
 
 import type { SolarSystem } from './lib/types';
-import { editor, files } from './lib/state';
+import { files } from './lib/state';
 import { SOLAR_SYSTEM_FILE } from './lib/constants';
 
 import './index.css';
@@ -27,7 +27,7 @@ const router = createBrowserRouter([
         element: (
           <>
             <Outlet />
-            {editor.enabled && <Editor />}
+            <Editor />
           </>
         ),
         children: [

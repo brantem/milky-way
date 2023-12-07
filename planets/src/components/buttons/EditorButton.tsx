@@ -1,6 +1,6 @@
 import Button from '../Button';
 
-import { cn, sleep } from '../../lib/helpers';
+import { cn } from '../../lib/helpers';
 import { editor } from '../../lib/state';
 
 type EditorButtonProps = {
@@ -13,11 +13,7 @@ const EditorButton = ({ className }: EditorButtonProps) => {
       className={cn('aspect-square', className)}
       shadowClassName="bg-violet-600"
       contentClassName="bg-violet-500 text-white"
-      onClick={async () => {
-        editor.isVisible = true;
-        await sleep(0);
-        document.getElementById('editor')?.scrollIntoView({ behavior: 'smooth' });
-      }}
+      onClick={async () => (editor.isVisible = true)}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
         <path
