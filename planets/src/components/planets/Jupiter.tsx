@@ -10,6 +10,12 @@ import { moons, points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
 import storage from '../../lib/storage';
 
+const isMoonAvailable = (moon?: _Moon & { active?: boolean }) => {
+  if (!moon) return false;
+  if ('active' in moon) return moon.active === true;
+  return true;
+};
+
 const Jupiter = () => {
   const planet = usePlanet<Jupiter>();
 
@@ -20,29 +26,29 @@ const Jupiter = () => {
 
   return (
     <PanelGroup id="jupiter" direction="horizontal" className="p-1 bg-neutral-100">
-      {(planet.small.active || planet.medium.active) && (
+      {(isMoonAvailable(planet.small) || isMoonAvailable(planet.medium)) && (
         <>
           <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>
             <PanelGroup id="jupiter-side-inner" direction="vertical" className="pl-1">
-              {planet.medium.active && (
+              {isMoonAvailable(planet.medium) && (
                 <Panel id="jupiter-moons-medium" order={1} collapsible minSizePixels={100}>
                   <div className="p-1 pt-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon moon={planet.medium} />
+                      <Moon moon={planet.medium!} />
                     </div>
                   </div>
                 </Panel>
               )}
-              {planet.small.active && planet.medium.active && (
+              {isMoonAvailable(planet.small) && isMoonAvailable(planet.medium) && (
                 <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:calc(100%-theme(spacing.2))] relative before:content-[''] before:absolute before:-top-3 before:left-1 before:h-7 before:w-[calc(100%-theme(spacing.2))] before:z-10">
                   <div className="w-[var(--size,theme(spacing.12))] h-1 rounded-full bg-neutral-300 transition-all" />
                 </PanelResizeHandle>
               )}
-              {planet.small.active && (
+              {isMoonAvailable(planet.small) && (
                 <Panel id="jupiter-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
                   <div className="p-1 pb-2 h-full w-full">
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
-                      <Moon moon={planet.small} />
+                      <Moon moon={planet.small!} />
                     </div>
                   </div>
                 </Panel>

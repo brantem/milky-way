@@ -30,8 +30,8 @@ export type SolarSystem = {
 
 export type Jupiter = Planet & {
   layout: 'jupiter';
-  small: Moon & { active: boolean };
-  medium: Moon & { active: boolean };
+  small?: Moon & { active?: boolean };
+  medium?: Moon & { active?: boolean };
   large: Moon & {
     actions: {
       active: boolean;
