@@ -5,7 +5,7 @@ import Button from '../Button';
 import { cn, sleep } from '../../lib/helpers';
 
 type SubmitButtonProps = {
-  onClick(): void;
+  onClick(): Promise<void>;
 };
 
 const SubmitButton = ({ onClick }: SubmitButtonProps) => {
@@ -27,10 +27,10 @@ const SubmitButton = ({ onClick }: SubmitButtonProps) => {
     <Button
       shadowClassName={!isClicked && isSubmitted ? 'bg-lime-600' : 'bg-black'}
       contentClassName={cn('text-white px-4 py-2', !isClicked && isSubmitted ? 'bg-lime-500' : 'bg-neutral-800')}
-      onClick={() => {
+      onClick={async () => {
         if (isClicked) return;
         setIsClicked(true);
-        onClick();
+        await onClick();
         setIsSubmitted(true);
       }}
       disabled={isClicked || isSubmitted}

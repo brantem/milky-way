@@ -13,7 +13,7 @@ import storage from '../../lib/storage';
 const Jupiter = () => {
   const planet = usePlanet<Jupiter>();
 
-  const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
+  const handleSnapshot = (id: _Moon['id'], data: Awaited<ReturnType<Required<MoonHandle>['snapshot']>>) => {
     for (const file of data.files) storage.put('files', file.key, file.body);
     points.save(id, data.points);
   };
@@ -73,11 +73,20 @@ const Jupiter = () => {
                   <div className="flex justify-end">
                     {actions.submit && (
                       <SubmitButton
-                        onClick={() => {
+                        onClick={async () => {
+                          const keys = [];
+                          const promises = [];
                           for (const key of moons.refs.keys()) {
                             const ref = moons.refs.get(key);
                             if (!ref) continue;
-                            if (ref.snapshot) handleSnapshot(key, ref.snapshot());
+                            if (!ref.snapshot) continue;
+                            keys.push(key);
+                            promises.push(ref.snapshot());
+                          }
+
+                          const snapshots = await Promise.all(promises);
+                          for (let i = 0; i < snapshots.length; i++) {
+                            handleSnapshot(keys[i], snapshots[i]);
                           }
                         }}
                       />

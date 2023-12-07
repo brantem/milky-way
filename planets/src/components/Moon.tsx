@@ -76,8 +76,8 @@ const Loading = ({
 };
 
 export type MoonHandle = {
-  snapshot?: () => { files: File[]; points: number };
-  execute?: (action: string, data?: unknown) => void;
+  snapshot?: () => Promise<{ files: File[]; points: number }>;
+  execute?: (action: string, data?: unknown) => Promise<void>;
 };
 
 export type MoonProps = {
@@ -96,16 +96,20 @@ const Moon = memo(
       async request(resource, data) {
         switch (resource) {
           case Resource.Files: {
-            let cursor = await storage.cursor('files', IDBKeyRange.only(data));
-            const files = new Map<File['key'], File['body']>();
+            let cursor = await storage.cursor('files');
+            const m = new Map<File['key'], File['body']>();
             while (cursor) {
-              files.set(cursor.key, cursor.value);
-              cursor = await cursor.continue();
+              if (data.includes(cursor.key)) m.set(cursor.key, cursor.value);
+              if (m.size === data.length) {
+                cursor = null;
+              } else {
+                cursor = await cursor.continue();
+              }
             }
 
             return data.map((key) => {
-              const body = files.get(key);
-              if (!body) return undefined;
+              const body = m.get(key);
+              if (!body) return null;
               return { key, body };
             });
           }

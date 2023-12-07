@@ -126,7 +126,7 @@ const File = ({ path, file }: FileProps) => {
             onClick={(e) => {
               e.stopPropagation();
               storage.delete('files', key);
-              setEditor.keys = editor.keys.filter((key) => key !== key);
+              setEditor.keys = editor.keys.filter((k) => k !== key);
               setEditor.activeKey = '_temp';
             }}
           >
