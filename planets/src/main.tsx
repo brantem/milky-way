@@ -6,13 +6,29 @@ import Start from './pages/start';
 import Planet from './pages/planet';
 import Editor from './components/Editor';
 
-import type { SolarSystem } from './lib/types';
-import { files } from './lib/state';
-import { SOLAR_SYSTEM_FILE } from './lib/constants';
+import type { SolarSystem } from './types';
+import { editor, points } from './lib/state';
+import { SOLAR_SYSTEM_FILE } from './constants';
+import storage from './lib/storage';
 
 import './index.css';
 
-const getFile = (key: string) => files.value.find((file) => file.key === key);
+const fillEditorKeys = async () => {
+  editor.keys = await storage.getAllKeys('files');
+};
+
+const fillPoints = async () => {
+  let cursor = await storage.cursor('points');
+  while (cursor) {
+    points.value[cursor.key] = cursor.value;
+    cursor = await cursor.continue();
+  }
+};
+
+const getSolarSystem = async (root: string) => {
+  const body = await storage.get('files', `${root}/${SOLAR_SYSTEM_FILE}`);
+  return JSON.parse(body || '{}') as SolarSystem;
+};
 
 const router = createBrowserRouter([
   {
@@ -24,6 +40,15 @@ const router = createBrowserRouter([
       },
       {
         path: ':solarSystem',
+        id: 'solarSystem',
+        async loader({ params }) {
+          const [solarSystem] = await Promise.all([
+            getSolarSystem(params.solarSystem!),
+            fillEditorKeys(),
+            fillPoints(),
+          ]);
+          return solarSystem;
+        },
         element: (
           <>
             <Outlet />
@@ -37,15 +62,11 @@ const router = createBrowserRouter([
           },
           {
             path: ':planet',
-            loader({ params }) {
-              files.root = params.solarSystem || '';
-
-              const file = getFile(`${params.solarSystem}/${SOLAR_SYSTEM_FILE}`);
-              if (!file) return { solarSystem: null, planet: null }; // TODO: 404
-              const solarSystem: SolarSystem = JSON.parse(file.body || '[]');
+            async loader({ params }) {
+              const solarSystem = await getSolarSystem(params.solarSystem!);
               const planet = solarSystem.planets.find((planet) => planet.id === params.planet);
-              if (!planet) return { solarSystem, planet: null }; // TODO: 404
-              return { solarSystem, planet: JSON.parse(getFile(planet.file)?.body || '{}') || {} };
+              if (!planet) return redirect(`/${params.solarSystem}`);
+              return JSON.parse((await storage.get('files', planet.file)) || '{}');
             },
             element: <Planet />,
           },

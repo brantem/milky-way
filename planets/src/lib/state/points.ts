@@ -1,6 +1,7 @@
-import { proxy, subscribe, useSnapshot } from 'valtio';
+import { proxy, useSnapshot } from 'valtio';
 
-import type { Moon } from '../types';
+import type { Moon } from '../../types';
+import storage from '../storage';
 
 interface State {
   value: Record<string, number>;
@@ -8,13 +9,12 @@ interface State {
 }
 
 export const points = proxy<State>({
-  value: ((value) => (value ? JSON.parse(value) || {} : {}))(localStorage.getItem('points')),
+  value: {},
   save(id, value) {
     points.value[id] = value;
+    storage.put('points', id, value);
   },
 });
-
-subscribe(points, () => localStorage.setItem('points', JSON.stringify(points.value)));
 
 export const usePoints = () => {
   return [useSnapshot(points), points] as const;

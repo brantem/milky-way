@@ -2,12 +2,18 @@ import { proxy, useSnapshot } from 'valtio';
 
 interface State {
   isVisible: boolean;
-  saved: number;
+
+  keys: string[];
+  activeKey: string;
+  value: string;
 }
 
 export const editor = proxy<State>({
   isVisible: false,
-  saved: 0,
+
+  keys: [],
+  activeKey: '_temp',
+  value: '',
 });
 
 export const useEditor = () => {

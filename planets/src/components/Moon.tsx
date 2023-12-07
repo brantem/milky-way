@@ -1,10 +1,11 @@
 import { Suspense, lazy, memo, useEffect, useState } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
-import { Resource, type File, type Parent, type Moon as _Moon } from '../lib/types';
+import { Resource, type File, type Parent, type Moon as _Moon } from '../types';
 import { cn } from '../lib/helpers';
-import { files, points, moons } from '../lib/state';
-import { usePlanet } from '../lib/hooks';
+import { points, moons } from '../lib/state';
+import { useFiles, usePlanet } from '../lib/hooks';
+import storage from '../lib/storage';
 
 const Error = ({
   width = '100%',
@@ -87,20 +88,33 @@ const Moon = memo(
   function Moon({ moon: { url, ...moon }, ...props }: MoonProps) {
     const Component = lazy(() => import(/* @vite-ignore */ url));
 
+    const files = useFiles();
     const planet = usePlanet();
 
     const parent: Parent = {
       id: planet.id,
-      request(resource, data) {
+      async request(resource, data) {
         switch (resource) {
-          case Resource.Files:
-            return files.value.filter((file) => data.includes(file.key));
+          case Resource.Files: {
+            let cursor = await storage.cursor('files', IDBKeyRange.only(data));
+            const files = new Map<File['key'], File['body']>();
+            while (cursor) {
+              files.set(cursor.key, cursor.value);
+              cursor = await cursor.continue();
+            }
+
+            return data.map((key) => {
+              const body = files.get(key);
+              if (!body) return undefined;
+              return { key, body };
+            });
+          }
         }
       },
     };
 
     const handleChange = (_files: File[], _points: number): void => {
-      for (const file of _files) files.save(file.key, file.body);
+      for (const file of _files) storage.put('files', files.buildKey(file.key), file.body);
       points.save(moon.id, _points);
     };
 

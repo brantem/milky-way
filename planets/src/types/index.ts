@@ -48,5 +48,5 @@ export type Neptune = Planet & {
 
 export type Parent = {
   id: string;
-  request(resource: Resource.Files, keys: string[]): (File | undefined)[];
+  request(resource: Resource.Files, keys: string[]): Promise<(File | undefined)[]>;
 };

@@ -1,15 +1,7 @@
-import { proxy, subscribe, useSnapshot } from 'valtio';
 import { nanoid } from 'nanoid';
 
 import type { File, Moon, SolarSystem, Jupiter, Neptune } from '../types';
 import { SOLAR_SYSTEM_FILE } from '../constants';
-
-interface State {
-  root: string;
-  value: File[];
-  save(key: File['key'], body: File['body'], upsert?: boolean): File;
-  delete(key: File['key']): void;
-}
 
 const moons = [
   {
@@ -355,94 +347,64 @@ const neptune = [
   },
 ];
 
-export const files = proxy<State>({
-  root: '',
-  value: [
-    {
-      key: `milky-way/${SOLAR_SYSTEM_FILE}`,
-      body: JSON.stringify({
-        id: 'milky-way',
-        title: 'Milky Way',
-        planets: [
-          {
-            id: 'jupiter',
-            file: 'milky-way/jupiter/_planet.json',
-          },
-          {
-            id: 'neptune',
-            file: 'milky-way/neptune/_planet.json',
-          },
-        ],
-      } satisfies SolarSystem),
-    },
-    ...jupiter,
-    ...moons,
-    ...neptune,
-    {
-      key: 'milky-way/content.md',
-      body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
-    },
-    {
-      key: 'milky-way/tests/onnx.json',
-      body: JSON.stringify([
+export default [
+  {
+    key: `milky-way/${SOLAR_SYSTEM_FILE}`,
+    body: JSON.stringify({
+      id: 'milky-way',
+      title: 'Milky Way',
+      planets: [
         {
-          text: 'Draw the number 3',
-          data: {
-            label: 3,
-          },
+          id: 'jupiter',
+          file: 'milky-way/jupiter/_planet.json',
         },
         {
-          text: 'Draw the number 8',
-          data: {
-            label: 8,
-          },
+          id: 'neptune',
+          file: 'milky-way/neptune/_planet.json',
         },
-      ]),
-    },
-    {
-      key: 'milky-way/tests/teachable-machine.json',
-      body: JSON.stringify([
-        {
-          text: 'Draw a square with any color',
-          data: {
-            label: 'square',
-          },
-        },
-        {
-          text: 'Draw a triangle with [](color://#ef4444)',
-          data: {
-            label: 'triangle',
-            color: '#ef4444',
-          },
-        },
-      ]),
-    },
-  ],
-  save(key, body, upsert = true) {
-    const root = files.root as string;
-    const file = { key: root + key.trim().replace(new RegExp(`^${root.replace('/', '/')}`), ''), body };
-    const index = files.value.findIndex((f) => f.key === file.key);
-    if (index === -1) {
-      files.value.push(file);
-    } else {
-      if (upsert) files.value[index].body = body;
-    }
-    return file;
+      ],
+    } satisfies SolarSystem),
   },
-  delete(key) {
-    files.value = files.value.filter((file) => file.key !== key);
+  ...jupiter,
+  ...moons,
+  ...neptune,
+  {
+    key: 'milky-way/content.md',
+    body: 'Laboris esse officia cupidatat et officia elit pariatur laboris tempor adipisicing eiusmod pariatur officia. In nostrud commodo elit incididunt consectetur minim. Non sunt excepteur amet. Ipsum ad dolore in ut labore eiusmod deserunt mollit cillum pariatur ipsum. Sit est mollit occaecat elit nisi aliqua Lorem. Laboris mollit culpa minim ut sint ipsum aliquip cillum exercitation nisi est esse quis sit esse. Irure elit nostrud esse enim cupidatat in.\n\nTempor aliquip non qui veniam ea consectetur consectetur et sunt. Magna laboris tempor ut do veniam consequat magna magna dolor nisi. Adipisicing anim cillum deserunt occaecat minim proident non excepteur. Nulla ipsum veniam fugiat deserunt mollit aute laborum do sit cillum anim. Do occaecat ut aliqua. Do laborum enim id dolore do irure fugiat qui reprehenderit ut incididunt amet ad quis.',
   },
-
-  ...((value) => {
-    if (!value) return {};
-    const files: File[] = JSON.parse(value) || [];
-    if (!files.length) return {};
-    return { value: files };
-  })(localStorage.getItem('files')),
-});
-
-subscribe(files, () => localStorage.setItem('files', JSON.stringify(files.value)));
-
-export const useFiles = () => {
-  return [useSnapshot(files), files] as const;
-};
+  {
+    key: 'milky-way/tests/onnx.json',
+    body: JSON.stringify([
+      {
+        text: 'Draw the number 3',
+        data: {
+          label: 3,
+        },
+      },
+      {
+        text: 'Draw the number 8',
+        data: {
+          label: 8,
+        },
+      },
+    ]),
+  },
+  {
+    key: 'milky-way/tests/teachable-machine.json',
+    body: JSON.stringify([
+      {
+        text: 'Draw a square with any color',
+        data: {
+          label: 'square',
+        },
+      },
+      {
+        text: 'Draw a triangle with [](color://#ef4444)',
+        data: {
+          label: 'triangle',
+          color: '#ef4444',
+        },
+      },
+    ]),
+  },
+] as File[];

@@ -361,6 +361,9 @@ importers:
       clsx:
         specifier: ^2.0.0
         version: 2.0.0
+      idb:
+        specifier: ^8.0.0
+        version: 8.0.0
       nanoid:
         specifier: ^5.0.4
         version: 5.0.4
@@ -2360,6 +2363,10 @@ packages:
 
   /html-url-attributes@3.0.0:
     resolution: {integrity: sha512-/sXbVCWayk6GDVg3ctOX6nxaVj7So40FcFAnWlWGNAB1LpYKcV5Cd10APjPjW80O7zYW2MsjBV4zZ7IZO5fVow==}
+    dev: false
+
+  /idb@8.0.0:
+    resolution: {integrity: sha512-l//qvlAKGmQO31Qn7xdzagVPPaHTxXx199MhrAFuVBTPqydcPYBWjkrbv4Y0ktB+GmWOiwHl237UUOrLmQxLvw==}
     dev: false
 
   /ignore@5.3.0:

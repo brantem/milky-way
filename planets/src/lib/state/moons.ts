@@ -3,7 +3,7 @@ import { proxyMap } from 'valtio/utils';
 
 import type { MoonHandle } from '../../components/Moon';
 
-import type { Moon } from '../types';
+import type { Moon } from '../../types';
 
 interface State {
   refs: Map<Moon['id'], MoonHandle>;

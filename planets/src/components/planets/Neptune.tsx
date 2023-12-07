@@ -3,13 +3,11 @@ import { subscribe } from 'valtio';
 
 import Moon from '../Moon';
 
-import type { Neptune } from '../../lib/types';
-import { useEditor, points } from '../../lib/state';
+import type { Neptune } from '../../types';
+import { points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
 
 const Neptune = () => {
-  const [editor] = useEditor();
-
   const planet = usePlanet<Neptune>();
 
   const [stopAt, setStopAt] = useState<number>();
@@ -32,10 +30,7 @@ const Neptune = () => {
 
   return (
     <div className="flex-1 p-3 flex overflow-hidden">
-      <div
-        key={editor.saved}
-        className="flex-1 py-5 overflow-y-auto [scrollbar-gutter:stable] rounded-lg bg-white border border-neutral-200/50 shadow-sm"
-      >
+      <div className="flex-1 py-5 overflow-y-auto [scrollbar-gutter:stable] rounded-lg bg-white border border-neutral-200/50 shadow-sm">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
           {planet.moons.map((moon, i) => {
             if (typeof moon === 'string') return null;

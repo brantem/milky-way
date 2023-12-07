@@ -4,23 +4,22 @@ import Moon, { type MoonHandle } from '../Moon';
 import ResetButton from '../buttons/ResetButton';
 import SubmitButton from '../buttons/SubmitButton';
 
-import { type Moon as _Moon, type Jupiter } from '../../lib/types';
+import { type Moon as _Moon, type Jupiter } from '../../types';
 import { cn } from '../../lib/helpers';
-import { useEditor, files, moons, points } from '../../lib/state';
+import { moons, points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
+import storage from '../../lib/storage';
 
 const Jupiter = () => {
-  const [editor] = useEditor();
-
   const planet = usePlanet<Jupiter>();
 
   const handleSnapshot = (id: _Moon['id'], data: ReturnType<Required<MoonHandle>['snapshot']>) => {
-    for (const file of data.files) files.save(file.key, file.body);
+    for (const file of data.files) storage.put('files', file.key, file.body);
     points.save(id, data.points);
   };
 
   return (
-    <PanelGroup key={editor.saved} id="jupiter" direction="horizontal" className="p-1 bg-neutral-100">
+    <PanelGroup id="jupiter" direction="horizontal" className="p-1 bg-neutral-100">
       {(planet.small.active || planet.medium.active) && (
         <>
           <Panel id="jupiter-side" order={1} defaultSizePixels={400} minSizePixels={100} collapsible>

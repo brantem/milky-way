@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { githubLight } from '@uiw/codemirror-theme-github';
 import { json } from '@codemirror/lang-json';
@@ -9,14 +9,16 @@ import { useParams } from 'react-router-dom';
 
 import Button from './Button';
 
-import type { File as _File } from '../lib/types';
-import { useEditor, files, useFiles, points } from '../lib/state';
+import type { File } from '../types';
+import { useEditor, points } from '../lib/state';
 import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
+import storage from '../lib/storage';
+import { useFiles } from '../lib/hooks';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
 type AddFileProps = {
-  onFileCreate(key: string): void;
+  onFileCreate(key: string): Promise<void>;
 };
 
 const AddFile = ({ onFileCreate }: AddFileProps) => {
@@ -28,10 +30,10 @@ const AddFile = ({ onFileCreate }: AddFileProps) => {
   return (
     <form
       className="relative flex items-center w-full mt-[4px]"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        onFileCreate(key);
+        await onFileCreate(key);
         setIsInputVisible(false);
         setKey('');
       }}
@@ -94,33 +96,38 @@ const AddFile = ({ onFileCreate }: AddFileProps) => {
   );
 };
 
-type SidebarProps = {
-  activeKey: string;
-  onFileClick(key: _File['key']): void;
-  onFileDeleted(): void;
-};
-
 type FileProps = {
   path: string;
-  file: _File;
-  isActive: boolean;
-  onClick(): void;
-  onDeleteClick(): void;
+  file: string;
 };
 
-const File = ({ path, file, isActive, onClick, onDeleteClick }: FileProps) => {
+const File = ({ path, file }: FileProps) => {
+  const key = path + file;
+
+  const [editor, setEditor] = useEditor();
+
   return (
-    <button type="button" className="flex items-start py-1 cursor-pointer w-full" onClick={onClick}>
+    <button
+      type="button"
+      className="flex items-start py-1 cursor-pointer w-full"
+      onClick={() => (setEditor.activeKey = key)}
+    >
       <span className="w-3 mr-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
-      <span className={cn('group flex-1 flex items-center justify-between gap-2', isActive && 'font-semibold')}>
-        <span>{file.key}</span>
-        {!file.key.startsWith('_') && (
+      <span
+        className={cn(
+          'group flex-1 flex items-center justify-between gap-2',
+          editor.activeKey === key && 'font-semibold',
+        )}
+      >
+        <span>{file}</span>
+        {!file.startsWith('_') && (
           <span
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
-              files.delete(path + file.key);
-              onDeleteClick();
+              storage.delete('files', key);
+              setEditor.keys = editor.keys.filter((key) => key !== key);
+              setEditor.activeKey = '_temp';
             }}
           >
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-4 h-4">
@@ -137,35 +144,35 @@ const File = ({ path, file, isActive, onClick, onDeleteClick }: FileProps) => {
   );
 };
 
-type FolderProps = SidebarProps & {
+type FolderProps = {
   path: string;
   level: number;
 };
 
-const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderProps) => {
-  const [files] = useFiles();
+const Folder = ({ path, level }: FolderProps) => {
+  const [editor, setEditor] = useEditor();
   const data = (() => {
     const folders = new Set<string>();
     const _files = [];
-    for (const file of files.value) {
-      if (!file.key.startsWith(path)) continue;
-      const key = file.key.replace(path, '');
-      if (key.includes('/')) {
-        folders.add(key.split('/')[0]);
+    for (const key of editor.keys) {
+      if (!key.startsWith(path)) continue;
+      const k = key.replace(path, '');
+      if (k.includes('/')) {
+        folders.add(k.split('/')[0]);
       } else {
-        _files.push({ ...file, key });
+        _files.push(k);
       }
     }
     return {
       folders: [...folders].sort((a, b) => a.localeCompare(b)),
-      files: _files.sort((a, b) => a.key.localeCompare(b.key)),
+      files: _files.sort((a, b) => a.localeCompare(b)),
     };
   })();
 
   const s = path.split('/');
 
-  const isActive = activeKey.includes(path);
-  const isPointsActive = level === 0 && activeKey === 'points';
+  const isActive = editor.activeKey.includes(path);
+  const isPointsActive = level === 0 && editor.activeKey === 'points';
 
   return (
     <div className={cn('relative', level === 1 ? 'ml-1' : level > 1 ? 'ml-5' : '')}>
@@ -187,32 +194,22 @@ const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderPr
         </span>
       </div>
       {level === 0 && (
-        <button type="button" className="flex items-start py-1 relative w-full" onClick={() => onFileClick('points')}>
+        <button
+          type="button"
+          className="flex items-start py-1 relative w-full"
+          onClick={() => (setEditor.activeKey = 'points')}
+        >
           <span className="w-3 mx-1 border-b border-l rounded-bl-lg border-neutral-200 h-[10.5px]" />
           <span className={cn('text-amber-500 ', isPointsActive ? 'font-semibold' : 'font-medium')}>points</span>
         </button>
       )}
-      {data.folders.map((folder) => (
-        <Folder
-          key={folder}
-          path={path + folder + '/'}
-          level={level + 1}
-          activeKey={activeKey}
-          onFileClick={onFileClick}
-          onFileDeleted={onFileDeleted}
-        />
+      {data.folders.map((key) => (
+        <Folder key={key} path={path + key + '/'} level={level + 1} />
       ))}
       {data.files.length ? (
         <div className={cn('flex-1', level > 0 ? 'ml-5' : 'ml-1')}>
-          {data.files.map((file) => (
-            <File
-              path={path}
-              key={file.key}
-              file={file}
-              onClick={() => onFileClick(path + file.key)}
-              onDeleteClick={onFileDeleted}
-              isActive={path + file.key === activeKey}
-            />
+          {data.files.map((key) => (
+            <File path={path} key={key} file={key} />
           ))}
         </div>
       ) : null}
@@ -220,39 +217,40 @@ const Folder = ({ path, level, activeKey, onFileClick, onFileDeleted }: FolderPr
   );
 };
 
-const Sidebar = ({ activeKey, onFileClick, onFileDeleted }: SidebarProps) => {
+const Sidebar = () => {
   const params = useParams() as { solarSystem: string };
   return (
     <div className="text-sm overflow-hidden bg-white rounded-lg shadow-sm border border-neutral-200/50">
       <div className="overflow-y-auto h-full px-2 py-1">
         <div className="flex flex-col">
-          <Folder
-            path={`${params.solarSystem}/`}
-            level={0}
-            activeKey={activeKey}
-            onFileClick={onFileClick}
-            onFileDeleted={onFileDeleted}
-          />
+          <Folder path={`${params.solarSystem}/`} level={0} />
         </div>
       </div>
     </div>
   );
 };
 
+type Values = Record<string, string>;
+
 const Editor = () => {
   const [editor, setEditor] = useEditor();
-  const [files, setFiles] = useFiles();
+  const files = useFiles();
 
-  const [activeKey, setActiveKey] = useState('_temp');
-  const [values, setValues] = useState<Record<string, string>>({});
+  const [values, setValues] = useState<Values>({});
 
-  const isPointsActive = activeKey === 'points';
-  const file = isPointsActive
-    ? { key: 'points.json', body: JSON.stringify(points.value, null, 2) }
-    : files.value.find((file) => file.key === activeKey);
-  const isJSON = file?.key.endsWith('.json');
-  let value = values[activeKey] || file?.body || '';
-  if (isJSON) value = prettifyJSON(value);
+  useEffect(() => {
+    if (editor.activeKey === '_temp' || editor.activeKey === 'points') {
+      if (setEditor.value) setEditor.value = '';
+      return;
+    }
+    (async () => {
+      const value = await storage.get('files', editor.activeKey);
+      setEditor.value = value || '';
+    })();
+  }, [editor.activeKey]);
+
+  const isPoints = editor.activeKey === 'points';
+  const isJSON = editor.activeKey.endsWith('.json');
 
   return (
     <div
@@ -265,17 +263,15 @@ const Editor = () => {
       <PanelGroup direction="horizontal">
         <Panel defaultSizePixels={400} collapsible minSizePixels={100}>
           <div className="flex flex-col gap-2 h-full p-2 pr-1">
-            <Sidebar
-              activeKey={activeKey}
-              onFileClick={(key) => setActiveKey(key)}
-              onFileDeleted={() => setActiveKey(files.value[0].key)}
-            />
+            <Sidebar />
             <AddFile
-              onFileCreate={(key) => {
-                const file = setFiles.save(key, values['_temp'], false);
+              onFileCreate={async (key) => {
+                const file = { key: files.buildKey(key), body: values['_temp'] };
+                setEditor.keys.push(file.key);
+                storage.add('files', file.key, file.body);
+                setEditor.activeKey = file.key;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 setValues(({ _temp, ...prev }) => prev);
-                setActiveKey(file.key);
               }}
             />
           </div>
@@ -299,28 +295,34 @@ const Editor = () => {
                 Object.keys(values).forEach((key) => {
                   if (key === '_temp') return;
                   if (key === 'points') {
-                    points.value = JSON.parse(values[key]);
+                    const obj = JSON.parse(values[key]);
+                    for (const key of Object.keys(obj)) points.save(key, obj[key]);
                   } else {
-                    setFiles.save(key, values[key]);
+                    storage.put('files', files.buildKey(key), values[key]);
                   }
                 });
-                ++setEditor.saved;
                 setEditor.isVisible = false;
+                setEditor.value = values[setEditor.activeKey] || '';
+                setValues({});
               }}
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">
                 <CodeMirror
-                  value={value}
+                  value={(() => {
+                    if (isPoints) return JSON.stringify(points.value, null, 2);
+                    const v = values[editor.activeKey] || editor.value || '';
+                    return isJSON ? prettifyJSON(v) : v;
+                  })()}
                   width="100%"
                   height="100%"
                   theme={githubLight}
                   extensions={(() => {
                     const extensions = [EditorView.lineWrapping];
-                    if (file?.key.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
-                    if (isJSON) extensions.push(json());
+                    if (editor.activeKey.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
+                    if (isPoints || isJSON) extensions.push(json());
                     return extensions;
                   })()}
-                  onChange={(v) => setValues((prev) => ({ ...prev, [activeKey]: isJSON ? uglifyJSON(v) : v }))}
+                  onChange={(v) => setValues((prev) => ({ ...prev, [editor.activeKey]: isJSON ? uglifyJSON(v) : v }))}
                   className="w-full h-full"
                 />
               </div>
