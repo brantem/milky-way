@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
 
 import { Action, Resource, type File, type Item, type Coordinate, type Line } from './types';
 import { shuffle } from './helpers';
@@ -40,14 +40,14 @@ export const IoContext = createContext<State>({
 });
 
 export type ProviderHandle = {
-  snapshot(): { files: File[]; points: number };
-  execute(action: Action.Reset): boolean;
+  snapshot(): Promise<{ files: File[]; points: number }>;
+  execute(action: Action.Reset): Promise<boolean>;
 };
 
 export type ProviderProps = {
   parent: {
     id: string;
-    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+    request(resource: Resource.Files, keys: string[]): Promise<(File | null)[]>;
   };
   id: string;
   data: {
@@ -71,34 +71,14 @@ export type ProviderProps = {
 };
 
 export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id, data, children, onChange }, ref) => {
-  const initial = useMemo(() => {
-    const obj = {
-      leftIds: data.left.items.map((item) => item.id),
-      rightIds: data.right.items.map((item) => item.id),
-      lines: [],
-    };
-    if (data.left.shuffle) obj.leftIds = shuffle(obj.leftIds);
-    if (data.right.shuffle) obj.rightIds = shuffle(obj.rightIds);
-
-    const keys = [];
-    if (data.initial?.file) keys.push(data.initial.file);
-    if (data.output?.file) keys.push(data.output.file);
-    if (!keys.length) return obj;
-
-    const [initial, output] = parent.request(Resource.Files, keys);
-    const body = JSON.parse((output || initial)?.body || '{}') || {};
-    if ('leftIds' in body) obj.leftIds = body.leftIds;
-    if ('rightIds' in body) obj.rightIds = body.rightIds;
-    if ('lines' in body) obj.lines = body.lines.map((line: Line) => ({ a: `${id}-${line.a}`, b: `${id}-${line.b}` }));
-
-    return obj;
-  }, [data.initial?.file, data.output?.file, data.left, data.right]);
-
-  const [lines, setLines] = useState<State['lines']>(() => initial.lines);
+  const [leftIds, setLeftIds] = useState<State['leftIds']>([]);
+  const [rightIds, setRightIds] = useState<State['rightIds']>([]);
   const [a, setA] = useState<State['a']>(null);
   const [b, setB] = useState<State['b']>(null);
+  const [lines, setLines] = useState<State['lines']>([]);
+  const [isReady, setIsReady] = useState(false);
 
-  const snapshot: ProviderHandle['snapshot'] = () => {
+  const snapshot = () => {
     const points = lines.reduce((points, line) => {
       return line.a.split('-')[1] === line.b.split('-')[1] ? ++points : points;
     }, 0);
@@ -108,8 +88,8 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
             {
               key: data.output.file,
               body: JSON.stringify({
-                leftIds: initial.leftIds,
-                rightIds: initial.rightIds,
+                leftIds,
+                rightIds,
                 lines: lines.map((line) => ({
                   a: line.a.replace(`${id}-`, ''),
                   b: line.b.replace(`${id}-`, ''),
@@ -123,8 +103,10 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   };
 
   useImperativeHandle(ref, () => ({
-    snapshot,
-    execute(action) {
+    async snapshot() {
+      return snapshot();
+    },
+    async execute(action) {
       switch (action) {
         case Action.Reset:
           setLines([]);
@@ -136,6 +118,35 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   }));
 
   useEffect(() => {
+    (async () => {
+      const obj = {
+        leftIds: data.left.items.map((item) => item.id),
+        rightIds: data.right.items.map((item) => item.id),
+        lines: [],
+      };
+      if (data.left.shuffle) obj.leftIds = shuffle(obj.leftIds);
+      if (data.right.shuffle) obj.rightIds = shuffle(obj.rightIds);
+
+      const keys = [];
+      if (data.initial?.file) keys.push(data.initial.file);
+      if (data.output?.file) keys.push(data.output.file);
+      if (keys.length) {
+        const [initial, output] = await parent.request(Resource.Files, keys);
+        const body = JSON.parse((output || initial)?.body || '{}') || {};
+        if ('leftIds' in body) obj.leftIds = body.leftIds;
+        if ('rightIds' in body) obj.rightIds = body.rightIds;
+        if ('lines' in body) obj.lines = body.lines.map((l: Line) => ({ a: `${id}-${l.a}`, b: `${id}-${l.b}` }));
+      }
+
+      setLeftIds(obj.leftIds);
+      setRightIds(obj.rightIds);
+      setLines(obj.lines);
+      setIsReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
     const { files, points } = snapshot();
     onChange(files, points);
   }, [lines]);
@@ -153,8 +164,8 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
     <IoContext.Provider
       value={{
         _id: id,
-        leftIds: initial.leftIds,
-        rightIds: initial.rightIds,
+        leftIds,
+        rightIds,
 
         a,
         start(id) {

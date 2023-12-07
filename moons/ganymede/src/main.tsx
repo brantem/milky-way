@@ -46,8 +46,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       // height={768}
       parent={{
         id: 'aXjyt3QFH51MWJ4c7WSmS',
-        request(_, keys) {
-          return keys.map((key) => files[key] || null);
+        async request(_, keys) {
+          return Promise.resolve(keys.map((key) => files[key] || null));
         },
       }}
       id="aXjyt3QFH51MWJ4c7WSmS"

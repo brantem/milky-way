@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useEffect, useImperativeHandle, useMemo, useRef } from 'react';
+import { createContext, forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
 import { subscribe } from 'valtio';
 
 import { type AppState, state } from './shared';
@@ -8,22 +8,14 @@ import { Action, Resource, type File } from '../types';
 export const AppContext = createContext<AppState>({});
 
 export type AppProviderHandle = {
-  snapshot(): { files: File[]; points: number };
-  execute(action: Action, data: unknown): boolean;
-};
-
-type Test = {
-  text: string;
-  data: {
-    label: string;
-    color?: string;
-  };
+  snapshot(): Promise<{ files: File[]; points: number }>;
+  execute(action: Action, data: unknown): Promise<boolean>;
 };
 
 export type AppProviderProps = {
   parent: {
     id: string;
-    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+    request(resource: Resource.Files, keys: string[]): Promise<(File | null)[]>;
   };
   id: string;
   data: Partial<Pick<AppState, 'model'>> & {
@@ -46,14 +38,9 @@ export type AppProviderProps = {
 
 export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
   ({ parent, id, onChange, onPublish, children, ...props }, ref) => {
-    const tests = useMemo(() => {
-      if (!props.data.tests?.file) return [];
-      const [file] = parent.request(Resource.Files, [props.data.tests.file]);
-      return (JSON.parse(file?.body || '[]') || []) as Test[];
-    }, []);
     const value = useRef(state).current;
 
-    const snapshot: AppProviderHandle['snapshot'] = () => {
+    const snapshot = () => {
       const files = [];
       let points = 0;
 
@@ -68,11 +55,11 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
         });
       }
 
-      if (state.model && tests.length) {
+      if (state.model && state.tests.length) {
         const { min, max } = state.model.probability;
-        const items = Array.from({ length: tests.length }).fill(null);
+        const items = Array.from({ length: state.tests.length }).fill(null);
         state.visiblePaths.forEach((path) => {
-          tests.forEach((test, i) => {
+          state.tests.forEach((test, i) => {
             if (!path.prediction) return;
             if (path.prediction.label !== test.data.label) return;
             const probability = path.prediction.probability * 100;
@@ -92,8 +79,10 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      snapshot,
-      execute(action, data) {
+      async snapshot() {
+        return snapshot();
+      },
+      async execute(action, data) {
         switch (action) {
           case Action.SetColor:
             value.color = data as string;
@@ -113,15 +102,21 @@ export const AppProvider = forwardRef<AppProviderHandle, AppProviderProps>(
       value.model = props.data.model || null;
       value.debug = Boolean(props.debug);
 
-      const keys = [];
-      if (props.data.initial?.file) keys.push(props.data.initial.file);
-      if (props.data.output?.file) keys.push(props.data.output.file);
-      if (!keys.length) return;
-      const [initial, output] = parent.request(Resource.Files, keys);
-      const body = JSON.parse((output || initial)?.body || '{}') || {};
-      if ('color' in body) value.color = body.color;
-      if ('paths' in body) value.paths = body.paths;
-      if ('n' in body) value.n = body.n;
+      (async () => {
+        const keys = [];
+        if (props.data.initial?.file) keys.push(props.data.initial.file);
+        if (props.data.output?.file) keys.push(props.data.output.file);
+        if (!keys.length) return;
+        const [initial, output] = await parent.request(Resource.Files, keys);
+        const body = JSON.parse((output || initial)?.body || '{}') || {};
+        if ('color' in body) value.color = body.color;
+        if ('paths' in body) value.paths = body.paths;
+        if ('n' in body) value.n = body.n;
+
+        if (!props.data.tests?.file) return;
+        const [tests] = await parent.request(Resource.Files, [props.data.tests.file]);
+        value.tests = JSON.parse(tests?.body || '[]') || [];
+      })();
     }, []);
 
     useEffect(() => {

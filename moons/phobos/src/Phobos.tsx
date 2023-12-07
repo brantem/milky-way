@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useEffect, useState } from 'react';
 import Markdown, { defaultUrlTransform } from 'react-markdown';
 
 import { Resource, type File } from './lib/types';
@@ -10,7 +10,7 @@ type PhobosProps = {
   width?: React.CSSProperties['width'];
   parent: {
     id: string;
-    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+    request(resource: Resource.Files, keys: string[]): Promise<(File | null)[]>;
   };
   id: string;
   data: {
@@ -22,7 +22,14 @@ type PhobosProps = {
 };
 
 const Phobos = memo(({ width = '100%', height = '100%', parent, id, data, onPublish }: PhobosProps) => {
-  const text = parent.request(Resource.Files, [data.content.file])[0]?.body || '';
+  const [text, setText] = useState('');
+
+  useEffect(() => {
+    (async () => {
+      const [file] = await parent.request(Resource.Files, [data.content.file]);
+      setText(file?.body || '');
+    })();
+  }, []);
 
   return (
     <div id={`phobos-${id}`} style={{ width, height }}>

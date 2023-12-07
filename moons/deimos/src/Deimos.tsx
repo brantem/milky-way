@@ -7,7 +7,7 @@ import { Action, Resource, type File } from './lib/types';
 import './index.css';
 
 export type DeimosHandle = {
-  execute(action: Action): boolean;
+  execute(action: Action): Promise<boolean>;
 };
 
 type DeimosProps = {
@@ -15,7 +15,7 @@ type DeimosProps = {
   width?: React.CSSProperties['width'];
   parent: {
     id: string;
-    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+    request(resource: Resource.Files, keys: string[]): Promise<(File | null)[]>;
   };
   id: string;
   data: {
@@ -50,11 +50,11 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
     };
 
     useImperativeHandle(ref, () => ({
-      execute(action) {
+      async execute(action) {
         switch (action) {
           case Action.Refresh: {
             if (!data.tasks?.output) return true;
-            const [file] = parent.request(Resource.Files, [data.tasks.output]);
+            const [file] = await parent.request(Resource.Files, [data.tasks.output]);
             refresh(JSON.parse(file?.body || '[]') || []);
             return true;
           }
@@ -65,11 +65,13 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
     }));
 
     useEffect(() => {
-      const keys = [data.tasks.file];
-      if (data.tasks?.output) keys.push(data.tasks.output);
-      const [file, output] = parent.request(Resource.Files, keys);
-      if (file) setItems(JSON.parse(file.body || '[]') || []);
-      if (output) refresh(JSON.parse(output.body || '[]') || []);
+      (async () => {
+        const keys = [data.tasks.file];
+        if (data.tasks?.output) keys.push(data.tasks.output);
+        const [file, output] = await parent.request(Resource.Files, keys);
+        if (file) setItems(JSON.parse(file.body || '[]') || []);
+        if (output) refresh(JSON.parse(output.body || '[]') || []);
+      })();
     }, [data.tasks]);
 
     return (

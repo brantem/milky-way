@@ -2,7 +2,7 @@ import { proxy } from 'valtio';
 import { nanoid } from 'nanoid';
 
 import { getPath } from '../helpers';
-import type { Path, Prediction, ModelOpts } from '../types';
+import type { Path, Prediction, ModelOpts, Test } from '../types';
 
 declare module 'valtio' {
   function useSnapshot<T extends object>(p: T): T;
@@ -11,6 +11,7 @@ declare module 'valtio' {
 export type AppState = {
   id: string;
   color: string;
+  tests: Test[];
 
   paths: Path[];
   get visiblePaths(): Path[];
@@ -30,6 +31,7 @@ export type AppState = {
 export const state = proxy<AppState>({
   id: '',
   color: '#000',
+  tests: [],
 
   paths: [],
   get visiblePaths(): Path[] /* why */ {

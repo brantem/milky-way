@@ -40,3 +40,11 @@ export type ModelOpts = {
     max: number;
   };
 };
+
+export type Test = {
+  text: string;
+  data: {
+    label: string;
+    color?: string;
+  };
+};

@@ -13,9 +13,6 @@ export default defineConfig({
       },
     }),
   ],
-  preview: {
-    port: 7002,
-  },
   build: {
     rollupOptions: {
       external: ['react', 'react-dom'],

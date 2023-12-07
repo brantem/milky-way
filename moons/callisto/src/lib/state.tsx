@@ -1,4 +1,4 @@
-import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useMemo, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useState } from 'react';
 
 import { Action, Resource, type File, type Choice, type Answer } from './types';
 import { shuffle } from './helpers';
@@ -22,14 +22,14 @@ export const CallistoContext = createContext<State>({
 });
 
 export type ProviderHandle = {
-  snapshot(): { files: File[]; points: number };
-  execute(action: Action.Reset): boolean;
+  snapshot(): Promise<{ files: File[]; points: number }>;
+  execute(action: Action.Reset): Promise<boolean>;
 };
 
 export type ProviderProps = {
   parent: {
     id: string;
-    request: (resource: Resource.Files, keys: string[]) => (File | undefined)[];
+    request(resource: Resource.Files, keys: string[]): Promise<(File | null)[]>;
   };
   id: string;
   data: {
@@ -50,38 +50,12 @@ export type ProviderProps = {
 };
 
 export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id, data, children, onChange }, ref) => {
-  const initial = useMemo(() => {
-    const obj: Pick<State, 'm' | 'choiceIds' | 'answers'> = {
-      m: new Map<Choice['id'], Choice>(),
-      choiceIds: [],
-      answers: [],
-    };
+  const [m, setM] = useState<State['m']>(new Map());
+  const [choiceIds, setChoiceIds] = useState<State['choiceIds']>([]);
+  const [answers, setAnswers] = useState<State['answers']>([]);
+  const [isReady, setIsReady] = useState(false);
 
-    let choices = data.choices.items || [];
-    if (data.choices.shuffle) choices = shuffle(choices, id);
-    choices.forEach((choice) => obj.m.set(choice.id, choice));
-    obj.choiceIds = Array.from(obj.m.keys());
-
-    const keys = [];
-    if (data.initial?.file) keys.push(data.initial.file);
-    if (data.output?.file) keys.push(data.output?.file);
-    if (!keys.length) return obj;
-
-    const [initial, output] = parent.request(Resource.Files, keys);
-    const answers: Answer[] = JSON.parse((output || initial)?.body || '{}').answers || [];
-    if (!answers.length) return obj;
-
-    const choiceIds = answers.map((answer) => answer.choiceId);
-    obj.choiceIds = obj.choiceIds.filter((choiceId) => !choiceIds.includes(choiceId));
-    obj.answers = answers;
-
-    return obj;
-  }, [id, data.initial?.file, data.output?.file, data.choices]);
-
-  const [choiceIds, setChoiceIds] = useState(() => initial.choiceIds);
-  const [answers, setAnswers] = useState(() => initial.answers);
-
-  const snapshot: ProviderHandle['snapshot'] = () => {
+  const snapshot = () => {
     const points = answers.reduce((points, answer) => {
       return answer.blankId === `__${answer.choiceId}__` ? ++points : points;
     }, 0);
@@ -92,8 +66,10 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   };
 
   useImperativeHandle(ref, () => ({
-    snapshot,
-    execute(action) {
+    async snapshot() {
+      return snapshot();
+    },
+    async execute(action) {
       switch (action) {
         case Action.Reset:
           setChoiceIds((prev) => [...prev, ...answers.map((answer) => answer.choiceId)]);
@@ -106,6 +82,40 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   }));
 
   useEffect(() => {
+    (async () => {
+      const obj: Pick<State, 'm' | 'choiceIds' | 'answers'> = {
+        m: new Map<Choice['id'], Choice>(),
+        choiceIds: [],
+        answers: [],
+      };
+
+      let choices = data.choices.items || [];
+      if (data.choices.shuffle) choices = shuffle(choices, id);
+      choices.forEach((choice) => obj.m.set(choice.id, choice));
+      obj.choiceIds = Array.from(obj.m.keys());
+
+      const keys = [];
+      if (data.initial?.file) keys.push(data.initial.file);
+      if (data.output?.file) keys.push(data.output?.file);
+      if (keys.length) {
+        const [initial, output] = await parent.request(Resource.Files, keys);
+        const answers: Answer[] = JSON.parse((output || initial)?.body || '{}').answers || [];
+        if (answers.length) {
+          const choiceIds = answers.map((answer) => answer.choiceId);
+          obj.choiceIds = obj.choiceIds.filter((choiceId) => !choiceIds.includes(choiceId));
+          obj.answers = answers;
+        }
+      }
+
+      setM(obj.m);
+      setChoiceIds(obj.choiceIds);
+      setAnswers(obj.answers);
+      setIsReady(true);
+    })();
+  }, []);
+
+  useEffect(() => {
+    if (!isReady) return;
     const { files, points } = snapshot();
     onChange(files, points);
   }, [answers]);
@@ -113,7 +123,7 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
   return (
     <CallistoContext.Provider
       value={{
-        m: initial.m,
+        m,
         choiceIds,
         answers,
 
