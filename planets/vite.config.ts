@@ -28,6 +28,7 @@ export default defineConfig({
           },
         ],
       },
+      base: '/',
       includeAssets: ['favicon.ico'],
     }),
   ],
