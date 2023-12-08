@@ -14,12 +14,10 @@ export type Moon = {
   height?: React.CSSProperties['height'];
   data: Record<string, unknown>;
   debug?: boolean;
-};
-
-export type Planet = {
-  id: string;
-  title: string;
-  layout: 'jupiter' | 'neptune';
+  points?: {
+    min?: number;
+    max?: number;
+  };
 };
 
 export type SolarSystem = {
@@ -28,7 +26,9 @@ export type SolarSystem = {
   planets: { id: string; file: string }[];
 };
 
-export type Jupiter = Planet & {
+export type Jupiter = {
+  id: string;
+  title: string;
   layout: 'jupiter';
   small?: Moon & { active?: boolean };
   medium?: Moon & { active?: boolean };
@@ -41,10 +41,14 @@ export type Jupiter = Planet & {
   };
 };
 
-export type Neptune = Planet & {
+export type Neptune = {
+  id: string;
+  title: string;
   layout: 'neptune';
-  moons: (string | (Moon & { points: { min: number } }))[];
+  moons: Moon[];
 };
+
+export type Planet = Jupiter | Neptune;
 
 export type Parent = {
   id: string;

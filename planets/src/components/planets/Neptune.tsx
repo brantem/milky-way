@@ -16,8 +16,7 @@ const Neptune = () => {
     const cb = () => {
       for (let i = 0; i < planet.moons.length; i++) {
         const moon = planet.moons[i];
-        if (typeof moon === 'string') continue;
-        if ((points.value[moon.id] || 0) >= moon.points.min) continue;
+        if ((points.value[moon.id] || 0) >= (moon.points?.min || 0)) continue;
         setStopAt(i);
         return;
       }
@@ -33,7 +32,6 @@ const Neptune = () => {
       <div className="flex-1 py-5 overflow-y-auto [scrollbar-gutter:stable] rounded-lg bg-white border border-neutral-200/50 shadow-sm">
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
           {planet.moons.map((moon, i) => {
-            if (typeof moon === 'string') return null;
             if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
             return <Moon key={i} moon={moon} />;
           })}
