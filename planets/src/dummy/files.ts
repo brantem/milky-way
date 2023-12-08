@@ -221,7 +221,9 @@ const jupiter = [
             },
           },
         },
-
+        points: {
+          min: 2,
+        },
         actions: {
           active: true,
           reset: true,
