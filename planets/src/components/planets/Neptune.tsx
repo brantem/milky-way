@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { subscribe } from 'valtio';
 
 import Moon from '../Moon';
@@ -10,31 +10,33 @@ import { usePlanet } from '../../lib/hooks';
 const Neptune = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const planet = usePlanet<Neptune>();
+  const firstStopIndex = useMemo(() => planet.moons.findIndex((moon) => (moon.points?.min || 0) !== 0), [planet.moons]);
 
   const [stopAt, setStopAt] = useState<number>();
 
-  const updateStopAt = (i: number) => {
+  const updateStopAt = (i: number, skipAutoScroll: boolean) => {
     setStopAt(i);
+    if (i === firstStopIndex || skipAutoScroll) return;
     setTimeout(() => {
       const el = containerRef.current?.querySelector(`& > div > [data-i="${i === -1 ? planet.moons.length - 1 : i}"]`);
       if (!el) return;
-      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'center' });
+      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'start' });
     }, 100);
   };
 
   useEffect(() => {
-    const cb = () => {
+    const cb = (skipAutoScroll: boolean) => {
       for (let i = 0; i < planet.moons.length; i++) {
         const moon = planet.moons[i];
         if ((points.value[moon.id] || 0) >= (moon.points?.min || 0)) continue;
-        updateStopAt(i);
+        updateStopAt(i, skipAutoScroll);
         return;
       }
-      updateStopAt(-1);
+      updateStopAt(-1, skipAutoScroll);
     };
 
-    cb();
-    return subscribe(points, cb);
+    cb(true);
+    return subscribe(points, () => cb(false));
   }, [planet.moons]);
 
   return (
