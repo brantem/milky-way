@@ -5,21 +5,22 @@ import Button from '../Button';
 import { cn, sleep } from '../../lib/helpers';
 
 type ResetButtonProps = {
-  onClick(): void;
+  onClick(): Promise<void>;
+  children?: React.ReactNode;
 };
 
-const ResetButton = ({ onClick }: ResetButtonProps) => {
+const ResetButton = ({ onClick, children }: ResetButtonProps) => {
   const [isClicked, setIsClicked] = useState(false);
 
   return (
     <Button
-      className="aspect-square"
+      className={children ? undefined : 'aspect-square'}
       shadowClassName="bg-red-600"
-      contentClassName="bg-red-500 text-white"
+      contentClassName={cn('bg-red-500 text-white', children && 'pl-3 pr-4 gap-2')}
       onClick={async () => {
         if (isClicked) return;
         setIsClicked(true);
-        onClick();
+        await onClick();
         await sleep(250);
         setIsClicked(false);
       }}
@@ -40,6 +41,7 @@ const ResetButton = ({ onClick }: ResetButtonProps) => {
           clipRule="evenodd"
         />
       </svg>
+      {children}
     </Button>
   );
 };

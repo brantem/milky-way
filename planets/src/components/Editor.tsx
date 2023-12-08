@@ -5,7 +5,7 @@ import { json } from '@codemirror/lang-json';
 import { markdown } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
-import { useParams } from 'react-router-dom';
+import { useParams, useRevalidator } from 'react-router-dom';
 
 import Button from './Button';
 
@@ -13,7 +13,7 @@ import type { File } from '../types';
 import { useEditor, points } from '../lib/state';
 import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
 import storage from '../lib/storage';
-import { useFiles } from '../lib/hooks';
+import { useFiles, useSolarSystem } from '../lib/hooks';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
@@ -233,10 +233,19 @@ const Sidebar = () => {
 type Values = Record<string, string>;
 
 const Editor = () => {
+  const params = useParams();
+  const revalidator = useRevalidator();
+
   const [editor, setEditor] = useEditor();
+  const solarSystem = useSolarSystem();
   const files = useFiles();
 
   const [values, setValues] = useState<Values>({});
+
+  useEffect(() => {
+    const planet = solarSystem.planets.find((planet) => planet.id === params.planet);
+    setEditor.activeKey = planet?.file || '_temp';
+  }, [params.planet]);
 
   useEffect(() => {
     if (editor.activeKey === '_temp' || editor.activeKey === 'points') {
@@ -304,6 +313,7 @@ const Editor = () => {
                 setEditor.isVisible = false;
                 setEditor.value = values[setEditor.activeKey] || '';
                 setValues({});
+                revalidator.revalidate();
               }}
             >
               <div className="bg-white h-full w-full shadow-sm overflow-y-auto overscroll-contain flex-1 flex border-b border-neutral-200/50">

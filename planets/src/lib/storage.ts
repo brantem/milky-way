@@ -70,6 +70,11 @@ class Storage {
     const db = await this.db;
     return db.delete(name, key);
   }
+
+  async close() {
+    const db = await this.db;
+    return db.close();
+  }
 }
 
 export default new Storage();

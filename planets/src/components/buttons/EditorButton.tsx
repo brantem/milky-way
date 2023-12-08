@@ -4,15 +4,15 @@ import { cn } from '../../lib/helpers';
 import { editor } from '../../lib/state';
 
 type EditorButtonProps = {
-  className?: string;
+  children?: React.ReactNode;
 };
 
-const EditorButton = ({ className }: EditorButtonProps) => {
+const EditorButton = ({ children }: EditorButtonProps) => {
   return (
     <Button
-      className={cn('aspect-square', className)}
+      className={children ? undefined : 'aspect-square'}
       shadowClassName="bg-violet-600"
-      contentClassName="bg-violet-500 text-white"
+      contentClassName={cn('bg-violet-500 text-white', children && 'pl-3 pr-4 gap-2')}
       onClick={async () => (editor.isVisible = true)}
     >
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
@@ -22,6 +22,7 @@ const EditorButton = ({ className }: EditorButtonProps) => {
           clipRule="evenodd"
         />
       </svg>
+      {children}
     </Button>
   );
 };
