@@ -1,8 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { githubLight } from '@uiw/codemirror-theme-github';
-import { json } from '@codemirror/lang-json';
-import { markdown } from '@codemirror/lang-markdown';
 import { EditorView } from '@codemirror/view';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useRevalidator } from 'react-router-dom';
@@ -240,6 +238,7 @@ const Editor = () => {
   const solarSystem = useSolarSystem();
   const files = useFiles();
 
+  const [extensions, setExtensions] = useState([EditorView.lineWrapping]);
   const [values, setValues] = useState<Values>({});
 
   useEffect(() => {
@@ -252,9 +251,19 @@ const Editor = () => {
       if (setEditor.value) setEditor.value = '';
       return;
     }
+
     (async () => {
       const value = await storage.get('files', editor.activeKey);
       setEditor.value = value || '';
+
+      if (editor.activeKey.endsWith('.md')) {
+        const { markdown } = await import('@codemirror/lang-markdown');
+        setExtensions([EditorView.lineWrapping, markdown({ completeHTMLTags: false })]);
+      }
+      if (isPoints || isJSON) {
+        const { json } = await import('@codemirror/lang-json');
+        setExtensions([EditorView.lineWrapping, json()]);
+      }
     })();
   }, [editor.activeKey]);
 
@@ -326,12 +335,7 @@ const Editor = () => {
                   width="100%"
                   height="100%"
                   theme={githubLight}
-                  extensions={(() => {
-                    const extensions = [EditorView.lineWrapping];
-                    if (editor.activeKey.endsWith('.md')) extensions.push(markdown({ completeHTMLTags: false }));
-                    if (isPoints || isJSON) extensions.push(json());
-                    return extensions;
-                  })()}
+                  extensions={extensions}
                   onChange={(v) => setValues((prev) => ({ ...prev, [editor.activeKey]: isJSON ? uglifyJSON(v) : v }))}
                   className="w-full h-full"
                 />
