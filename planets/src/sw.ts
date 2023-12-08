@@ -22,6 +22,13 @@ self.addEventListener('message', (event) => {
   switch (event.data.action) {
     case 'cache':
       if (!event.data.urls.length) break;
-      event.waitUntil(caches.open(event.data.name).then((cache) => cache.addAll(event.data.urls)));
+
+      event.waitUntil(
+        caches.open(event.data.name).then((cache) => {
+          cache.addAll(event.data.urls).then(() => {
+            event.source?.postMessage({ action: 'cache', success: true });
+          });
+        }),
+      );
   }
 });

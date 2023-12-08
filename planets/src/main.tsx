@@ -5,6 +5,7 @@ import { Outlet, RouterProvider, createBrowserRouter, json, redirect } from 'rea
 import Start from './pages/start';
 import Planet from './pages/planet';
 import Editor from './components/Editor';
+import Offline from './components/Offline';
 
 import type { SolarSystem } from './types';
 import { editor, points } from './lib/state';
@@ -25,11 +26,6 @@ const fillPoints = async () => {
   }
 };
 
-const getUrlsToCache = async (root: string) => {
-  const body = await storage.get('files', `${root}/_cache.json`);
-  return JSON.parse(body || '[]') as string[];
-};
-
 const getSolarSystem = async (root: string) => {
   const body = await storage.get('files', `${root}/${SOLAR_SYSTEM_FILE}`);
   return JSON.parse(body || '{}') as SolarSystem;
@@ -47,18 +43,17 @@ const router = createBrowserRouter([
         path: ':solarSystem',
         id: 'solarSystem',
         async loader({ params }) {
-          const [urls, solarSystem] = await Promise.all([
-            getUrlsToCache(params.solarSystem!),
+          const [solarSystem] = await Promise.all([
             getSolarSystem(params.solarSystem!),
             fillEditorKeys(),
             fillPoints(),
           ]);
-          navigator.serviceWorker.controller?.postMessage({ action: 'cache', name: params.solarSystem, urls });
           return json(solarSystem);
         },
         element: (
           <>
             <Outlet />
+            <Offline />
             <Editor />
           </>
         ),
