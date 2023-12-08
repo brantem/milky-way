@@ -9,6 +9,23 @@ import { useSolarSystem } from '../lib/hooks';
 import storage from '../lib/storage';
 import { sleep } from '../lib/helpers';
 
+const resetStorage = async () => {
+  await storage.close();
+  await deleteDB('solar-system');
+};
+
+const resetServiceWorker = async () => {
+  if (!('serviceWorker' in navigator)) return;
+
+  const registration = await navigator.serviceWorker.getRegistration();
+  if (!registration) return;
+
+  await registration.unregister();
+
+  const keys = await caches.keys();
+  await Promise.all(keys.map((key) => caches.delete(key)));
+};
+
 const Start = () => {
   const solarSystem = useSolarSystem();
   const firstPlanet = solarSystem.planets[0];
@@ -21,8 +38,7 @@ const Start = () => {
           <div className="flex gap-2 mt-6">
             <ResetButton
               onClick={async () => {
-                await storage.close();
-                await deleteDB('solar-system');
+                await Promise.all([resetStorage(), resetServiceWorker()]);
                 await sleep(250);
                 window.location.reload();
               }}
