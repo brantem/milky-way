@@ -77,7 +77,7 @@ const Jupiter = () => {
               </div>
               {actions?.active && (
                 <div className="grid grid-cols-2 gap-2 p-2">
-                  {actions.reset && <ResetButton onClick={() => moons.publish('reset')} />}
+                  {actions.reset && <ResetButton onClick={async () => await moons.publish('reset')} />}
                   <div className="flex justify-end">
                     {actions.submit && (
                       <SubmitButton
