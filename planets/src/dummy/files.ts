@@ -407,4 +407,20 @@ export default [
       },
     ]),
   },
+  {
+    key: 'milky-way/_cache.json',
+    body: JSON.stringify([
+      'https://moons.brantem.com/callisto/bundle.js',
+      'https://moons.brantem.com/deimos/bundle.js',
+      'https://moons.brantem.com/europa/bundle.js',
+      'https://moons.brantem.com/ganymede/bundle.js',
+      'https://moons.brantem.com/ganymede/ort-wasm-simd-threaded.wasm',
+      'https://moons.brantem.com/ganymede/ort-wasm-simd.wasm',
+      'https://moons.brantem.com/ganymede/ort-wasm-threaded.wasm',
+      'https://moons.brantem.com/ganymede/ort-wasm.wasm',
+      'https://moons.brantem.com/io/bundle.js',
+      'https://moons.brantem.com/phobos/bundle.js',
+      'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
+    ]),
+  },
 ] as File[];

@@ -11,6 +11,24 @@ export default defineConfig({
       filename: 'sw.ts',
       strategies: 'injectManifest',
       registerType: 'autoUpdate',
+      manifest: {
+        name: 'Solar System',
+        short_name: 'Solar System',
+        theme_color: '#ffffff',
+        icons: [
+          {
+            src: 'icons/icon-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+          },
+          {
+            src: 'icons/icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+          },
+        ],
+      },
+      includeAssets: ['favicon.ico'],
     }),
   ],
   build: {

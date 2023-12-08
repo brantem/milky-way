@@ -437,6 +437,12 @@ importers:
       workbox-precaching:
         specifier: ^7.0.0
         version: 7.0.0
+      workbox-routing:
+        specifier: ^7.0.0
+        version: 7.0.0
+      workbox-strategies:
+        specifier: ^7.0.0
+        version: 7.0.0
 
 packages:
 
@@ -536,7 +542,7 @@ packages:
     dependencies:
       '@babel/compat-data': 7.23.5
       '@babel/helper-validator-option': 7.23.5
-      browserslist: 4.22.1
+      browserslist: 4.22.2
       lru-cache: 5.1.1
       semver: 6.3.1
     dev: true
