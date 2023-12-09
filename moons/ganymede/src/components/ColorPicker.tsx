@@ -1,16 +1,6 @@
 import { useAppState } from '../lib/state';
 
-const colors = [
-  '#000',
-  '#ef4444',
-  '#f59e0b',
-  '#84cc16',
-  '#10b981',
-  '#06b6d4',
-  '#3b82f6',
-  '#8b5cf6',
-  '#d946ef',
-] as const;
+const colors = ['#000', '#ef4444', '#f59e0b', '#84cc16', '#06b6d4', '#3b82f6', '#8b5cf6', '#d946ef'] as const;
 
 const ColorPicker = () => {
   const [state, set] = useAppState();
