@@ -38,7 +38,7 @@ const Navigation = () => {
   return (
     <div className="grid grid-cols-4 items-center pt-0 p-3">
       <div className="flex items-center gap-3">
-        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'}>
+        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'} reloadDocument>
           <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
             Prev
           </Button>
@@ -85,7 +85,7 @@ const Navigation = () => {
       <div className="flex items-center gap-3">
         <div className="h-[3px] flex-1 bg-neutral-200 rounded-r-full" />
 
-        <Link to={navigation.nextId ? `/${solarSystem.id}/${navigation.nextId}` : '#'}>
+        <Link to={navigation.nextId ? `/${solarSystem.id}/${navigation.nextId}` : '#'} reloadDocument>
           <Button
             shadowClassName="bg-sky-600"
             contentClassName="bg-sky-500 px-4 py-2 text-white group-disabled:bg-neutral-200 group-disabled:text-neutral-400"
