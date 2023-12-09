@@ -39,6 +39,7 @@ const App = () => {
         },
         output: {
           file: 'io-2.json',
+          deimos: 'deimos.json',
         },
         left: {
           items: [

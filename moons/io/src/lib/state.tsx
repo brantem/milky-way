@@ -56,6 +56,7 @@ export type ProviderProps = {
     };
     output?: {
       file?: string;
+      deimos?: string;
     };
     left: {
       items: Item[];
@@ -80,26 +81,27 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
 
   const snapshot = () => {
     const points = lines.reduce((points, line) => {
-      return line.a.split('-')[1] === line.b.split('-')[1] ? ++points : points;
+      return line.a.split('-')[2] === line.b.split('-')[2] ? ++points : points;
     }, 0);
-    return {
-      files: data.output?.file
-        ? [
-            {
-              key: data.output.file,
-              body: JSON.stringify({
-                leftIds,
-                rightIds,
-                lines: lines.map((line) => ({
-                  a: line.a.replace(`${id}-`, ''),
-                  b: line.b.replace(`${id}-`, ''),
-                })),
-              }),
-            },
-          ]
-        : [],
-      points,
-    };
+
+    const files = [];
+    if (data.output?.file) {
+      files.push({
+        key: data.output.file,
+        body: JSON.stringify({
+          leftIds,
+          rightIds,
+          lines: lines.map((line) => ({
+            a: line.a.replace(`${id}-`, ''),
+            b: line.b.replace(`${id}-`, ''),
+          })),
+        }),
+      });
+    }
+
+    if (data.output?.deimos) files.push({ key: data.output.deimos, body: JSON.stringify({ value: points }) });
+
+    return { files, points };
   };
 
   useImperativeHandle(ref, () => ({
