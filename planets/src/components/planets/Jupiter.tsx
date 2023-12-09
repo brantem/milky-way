@@ -6,9 +6,8 @@ import SubmitButton from '../buttons/SubmitButton';
 
 import { type Moon as _Moon, type Jupiter } from '../../types';
 import { cn } from '../../lib/helpers';
-import { moons, points } from '../../lib/state';
+import { files, moons, points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
-import storage from '../../lib/storage';
 
 const isMoonActive = (moon?: _Moon & { active?: boolean }) => {
   if (!moon) return false;
@@ -20,7 +19,7 @@ const Jupiter = () => {
   const planet = usePlanet<Jupiter>();
 
   const handleSnapshot = (id: _Moon['id'], data: Awaited<ReturnType<Required<MoonHandle>['snapshot']>>) => {
-    for (const file of data.files) storage.put('files', file.key, file.body);
+    for (const file of data.files) files.save(file.key, file.body);
     points.save(id, data.points);
   };
 

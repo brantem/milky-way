@@ -3,8 +3,8 @@ import { ErrorBoundary } from 'react-error-boundary';
 
 import { Resource, type File, type Parent, type Moon as _Moon } from '../types';
 import { cn } from '../lib/helpers';
-import { points, moons } from '../lib/state';
-import { useFiles, usePlanet } from '../lib/hooks';
+import { files, points, moons } from '../lib/state';
+import { usePlanet } from '../lib/hooks';
 import storage from '../lib/storage';
 
 const Error = ({
@@ -88,7 +88,6 @@ const Moon = memo(
   function Moon({ moon: { url, ...moon }, ...props }: MoonProps) {
     const Component = lazy(() => import(/* @vite-ignore */ url));
 
-    const files = useFiles();
     const planet = usePlanet();
 
     const parent: Parent = {
@@ -118,7 +117,7 @@ const Moon = memo(
     };
 
     const handleChange = (_files: File[], _points: number): void => {
-      for (const file of _files) storage.put('files', files.buildKey(file.key), file.body);
+      for (const file of _files) files.save(file.key, file.body);
       points.save(moon.id, _points);
     };
 

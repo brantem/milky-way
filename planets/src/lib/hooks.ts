@@ -3,18 +3,6 @@ import { useLoaderData, useParams, useRouteLoaderData } from 'react-router-dom';
 
 import type { Planet, SolarSystem } from '../types';
 
-export const useFiles = () => {
-  const params = useParams() as { solarSystem: string };
-  return {
-    buildKey(key: string) {
-      let k = key;
-      if (k.startsWith('/')) k = k.slice(1);
-      if (!k.startsWith(params.solarSystem)) k = `${params.solarSystem}/${k.replace(/^\//, '')}`;
-      return k;
-    },
-  };
-};
-
 export const useSolarSystem = () => {
   return useRouteLoaderData('solarSystem') as SolarSystem;
 };

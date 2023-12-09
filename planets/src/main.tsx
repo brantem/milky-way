@@ -8,17 +8,18 @@ import Editor from './components/Editor';
 import Offline from './components/Offline';
 
 import type { SolarSystem } from './types';
-import { editor, points } from './lib/state';
+import { files, points } from './lib/state';
 import { SOLAR_SYSTEM_FILE } from './constants';
 import storage from './lib/storage';
 
 import './index.css';
 
-const fillEditorKeys = async () => {
-  editor.keys = await storage.getAllKeys('files');
+const loadFiles = async (root: string) => {
+  files.root = root;
+  files.keys = await storage.getAllKeys('files');
 };
 
-const fillPoints = async () => {
+const loadPoints = async () => {
   let cursor = await storage.cursor('points');
   while (cursor) {
     points.value[cursor.key] = cursor.value;
@@ -45,8 +46,8 @@ const router = createBrowserRouter([
         async loader({ params }) {
           const [solarSystem] = await Promise.all([
             getSolarSystem(params.solarSystem!),
-            fillEditorKeys(),
-            fillPoints(),
+            loadFiles(params.solarSystem!),
+            loadPoints(),
           ]);
           return json(solarSystem);
         },

@@ -7,15 +7,15 @@ import { useParams, useRevalidator } from 'react-router-dom';
 import Button from './Button';
 
 import type { File } from '../types';
-import { useEditor, points } from '../lib/state';
+import { useEditor, files, useFiles, points } from '../lib/state';
 import { cn, sleep, prettifyJSON, uglifyJSON } from '../lib/helpers';
 import storage from '../lib/storage';
-import { useFiles, useSolarSystem } from '../lib/hooks';
+import { useSolarSystem } from '../lib/hooks';
 
 const SUPPORTED_EXTENSIONS = ['.json', '.md', '.txt'];
 
 type AddFileProps = {
-  onFileCreate(key: string): Promise<void>;
+  onFileCreate(key: string): Promise<boolean>;
 };
 
 const AddFile = ({ onFileCreate }: AddFileProps) => {
@@ -30,7 +30,7 @@ const AddFile = ({ onFileCreate }: AddFileProps) => {
       onSubmit={async (e) => {
         e.preventDefault();
         if (!key || !SUPPORTED_EXTENSIONS.some((ext) => key.endsWith(ext))) return;
-        await onFileCreate(key);
+        if (!(await onFileCreate(key))) return;
         setIsInputVisible(false);
         setKey('');
       }}
@@ -122,8 +122,7 @@ const File = ({ path, file }: FileProps) => {
             className="text-neutral-300 hover:text-rose-500 opacity-0 group-hover:opacity-100 transition-all"
             onClick={(e) => {
               e.stopPropagation();
-              storage.delete('files', key);
-              setEditor.keys = editor.keys.filter((k) => k !== key);
+              files.delete(key);
               setEditor.activeKey = '_temp';
             }}
           >
@@ -148,10 +147,12 @@ type FolderProps = {
 
 const Folder = ({ path, level }: FolderProps) => {
   const [editor, setEditor] = useEditor();
+  const [files] = useFiles();
+
   const data = (() => {
     const folders = new Set<string>();
     const _files = [];
-    for (const key of editor.keys) {
+    for (const key of files.keys) {
       if (!key.startsWith(path)) continue;
       const k = key.replace(path, '');
       if (k.includes('/')) {
@@ -235,7 +236,6 @@ const Editor = () => {
 
   const [editor, setEditor] = useEditor();
   const solarSystem = useSolarSystem();
-  const files = useFiles();
 
   const [extensions, setExtensions] = useState<Extension[]>([]);
   const [values, setValues] = useState<Values>({});
@@ -286,12 +286,12 @@ const Editor = () => {
             <Sidebar />
             <AddFile
               onFileCreate={async (key) => {
-                const file = { key: files.buildKey(key), body: values['_temp'] };
-                setEditor.keys.push(file.key);
-                storage.add('files', file.key, file.body);
+                const file = files.save(key, values['_temp'], false);
+                if (!file) return false;
                 setEditor.activeKey = file.key;
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 setValues(({ _temp, ...prev }) => prev);
+                return true;
               }}
             />
           </div>
@@ -318,7 +318,7 @@ const Editor = () => {
                     const obj = JSON.parse(values[key]);
                     for (const key of Object.keys(obj)) points.save(key, obj[key]);
                   } else {
-                    storage.put('files', files.buildKey(key), values[key]);
+                    files.save(key, values[key]);
                   }
                 });
                 setEditor.isVisible = false;
