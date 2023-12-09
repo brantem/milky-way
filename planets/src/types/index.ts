@@ -33,10 +33,10 @@ export type Jupiter = {
   small?: Moon & { active?: boolean };
   medium?: Moon & { active?: boolean };
   large: Moon & {
-    actions: {
-      active: boolean;
-      reset: boolean;
-      submit: boolean;
+    actions?: {
+      active?: boolean;
+      reset?: boolean;
+      submit?: boolean;
     };
   };
 };

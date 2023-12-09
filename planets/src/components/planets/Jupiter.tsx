@@ -63,45 +63,50 @@ const Jupiter = () => {
       )}
       <Panel id="jupiter-moons-large" order={2} collapsible minSizePixels={100}>
         <div className={cn('p-2 h-full w-full', isSideActive && 'pl-1')}>
-          {(({ actions, ...moon }) => (
-            <div
-              className={cn(
-                'h-full w-full rounded-lg overflow-hidden',
-                planet.large.actions?.active && 'flex flex-col bg-neutral-50 shadow-sm border border-neutral-200/50',
-              )}
-            >
-              <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
-                <Moon moon={moon} />
-              </div>
-              {actions?.active && (
-                <div className="grid grid-cols-2 gap-2 p-2">
-                  {actions.reset && <ResetButton onClick={async () => await moons.publish('reset')} />}
-                  <div className="flex justify-end">
-                    {actions.submit && (
-                      <SubmitButton
-                        onClick={async () => {
-                          const keys = [];
-                          const promises = [];
-                          for (const key of moons.refs.keys()) {
-                            const ref = moons.refs.get(key);
-                            if (!ref) continue;
-                            if (!ref.snapshot) continue;
-                            keys.push(key);
-                            promises.push(ref.snapshot());
-                          }
-
-                          const snapshots = await Promise.all(promises);
-                          for (let i = 0; i < snapshots.length; i++) {
-                            handleSnapshot(keys[i], snapshots[i]);
-                          }
-                        }}
-                      />
-                    )}
-                  </div>
+          {(({ actions, ...moon }) => {
+            const isActionsVisible = actions?.active !== false;
+            const isResetVisible = actions?.reset !== false;
+            const isSubmitVisible = actions?.submit !== false;
+            return (
+              <div className="h-full w-full rounded-lg overflow-hidden flex flex-col bg-neutral-50 shadow-sm border border-neutral-200/50">
+                <div
+                  className={cn(
+                    'flex-1 flex justify-center min-w-[768px] flex-shrink-0 bg-white z-10 h-full',
+                    isActionsVisible && 'shadow-sm border-b border-neutral-200/50',
+                  )}
+                >
+                  <Moon moon={moon} />
                 </div>
-              )}
-            </div>
-          ))(planet.large)}
+                {isActionsVisible && (
+                  <div className="grid grid-cols-2 gap-2 p-2">
+                    {isResetVisible && <ResetButton onClick={async () => await moons.publish('reset')} />}
+                    <div className="col-start-2 flex justify-end">
+                      {isSubmitVisible && (
+                        <SubmitButton
+                          onClick={async () => {
+                            const keys = [];
+                            const promises = [];
+                            for (const key of moons.refs.keys()) {
+                              const ref = moons.refs.get(key);
+                              if (!ref) continue;
+                              if (!ref.snapshot) continue;
+                              keys.push(key);
+                              promises.push(ref.snapshot());
+                            }
+
+                            const snapshots = await Promise.all(promises);
+                            for (let i = 0; i < snapshots.length; i++) {
+                              handleSnapshot(keys[i], snapshots[i]);
+                            }
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })(planet.large)}
         </div>
       </Panel>
     </PanelGroup>
