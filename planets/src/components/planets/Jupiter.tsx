@@ -33,7 +33,7 @@ const Jupiter = () => {
             <PanelGroup id="jupiter-side-inner" direction="vertical" className="pl-1">
               {isMoonActive(planet.medium) && (
                 <Panel id="jupiter-moons-medium" order={1} collapsible minSizePixels={100}>
-                  <div className="p-1 pt-2 h-full w-full">
+                  <div className={cn('p-1 h-full w-full', isMoonActive(planet.small) ? 'pt-2' : 'py-2')}>
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon moon={planet.medium!} />
                     </div>
@@ -47,7 +47,7 @@ const Jupiter = () => {
               )}
               {isMoonActive(planet.small) && (
                 <Panel id="jupiter-moons-small" order={2} defaultSizePixels={400} collapsible minSizePixels={100}>
-                  <div className="p-1 pb-2 h-full w-full">
+                  <div className={cn('p-1 h-full w-full', isMoonActive(planet.medium) ? 'pb-2' : 'py-2')}>
                     <div className="h-full w-full bg-white shadow-sm rounded-lg overflow-hidden border border-neutral-200/50">
                       <Moon moon={planet.small!} />
                     </div>
