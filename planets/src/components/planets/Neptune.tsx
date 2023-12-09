@@ -49,7 +49,7 @@ const Neptune = () => {
           {planet.moons.map((moon, i) => {
             if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
             return (
-              <div key={i} data-i={i}>
+              <div key={i} data-i={i} className="w-full">
                 <Moon moon={moon} />
               </div>
             );

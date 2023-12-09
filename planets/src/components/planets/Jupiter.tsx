@@ -66,9 +66,8 @@ const Jupiter = () => {
           {(({ actions, ...moon }) => (
             <div
               className={cn(
-                'h-full w-full',
-                planet.large.actions?.active &&
-                  'flex flex-col bg-neutral-50 rounded-lg overflow-hidden shadow-sm border border-neutral-200/50',
+                'h-full w-full rounded-lg overflow-hidden',
+                planet.large.actions?.active && 'flex flex-col bg-neutral-50 shadow-sm border border-neutral-200/50',
               )}
             >
               <div className="flex-1 flex justify-center min-w-[768px] flex-shrink-0 shadow-sm bg-white z-10 relative h-full border-b border-neutral-200/50">
