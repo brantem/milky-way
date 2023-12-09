@@ -33,9 +33,9 @@ const Phobos = memo(({ width = '100%', height = '100%', parent, id, data, onPubl
 
   return (
     <div id={`phobos-${id}`} style={{ width, height }}>
-      <div className="h-full w-full overflow-auto py-2 px-3 flex justify-center font-sans">
+      <div className="h-full w-full overflow-auto py-5 px-3 font-sans">
         <Markdown
-          className="markdown markdown-neutral w-full"
+          className="markdown markdown-neutral w-full mx-auto"
           urlTransform={(url) => {
             if (url.startsWith('color://')) return url;
             return defaultUrlTransform(url);
