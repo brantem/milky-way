@@ -37,7 +37,7 @@ export default defineConfig({
       external: ['react', 'react-dom'],
       output: {
         manualChunks: {
-          codemirror: ['@codemirror/view', '@uiw/codemirror-theme-github', '@uiw/react-codemirror'],
+          codemirror: ['@uiw/codemirror-theme-github', '@uiw/react-codemirror'],
         },
       },
     },

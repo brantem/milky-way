@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
-import CodeMirror from '@uiw/react-codemirror';
+import CodeMirror, { type Extension } from '@uiw/react-codemirror';
 import { githubLight } from '@uiw/codemirror-theme-github';
-import { EditorView } from '@codemirror/view';
 import { PanelGroup, Panel, PanelResizeHandle } from 'react-resizable-panels';
 import { useParams, useRevalidator } from 'react-router-dom';
 
@@ -238,7 +237,7 @@ const Editor = () => {
   const solarSystem = useSolarSystem();
   const files = useFiles();
 
-  const [extensions, setExtensions] = useState([EditorView.lineWrapping]);
+  const [extensions, setExtensions] = useState<Extension[]>([]);
   const [values, setValues] = useState<Values>({});
 
   useEffect(() => {
@@ -257,12 +256,15 @@ const Editor = () => {
       setEditor.value = value || '';
 
       if (editor.activeKey.endsWith('.md')) {
-        const { markdown } = await import('@codemirror/lang-markdown');
+        const [{ EditorView }, { markdown }] = await Promise.all([
+          import('@codemirror/view'),
+          import('@codemirror/lang-markdown'),
+        ]);
         setExtensions([EditorView.lineWrapping, markdown({ completeHTMLTags: false })]);
       }
       if (isPoints || isJSON) {
         const { json } = await import('@codemirror/lang-json');
-        setExtensions([EditorView.lineWrapping, json()]);
+        setExtensions([json()]);
       }
     })();
   }, [editor.activeKey]);
