@@ -2,6 +2,7 @@ import { cacheNames, clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
 import { StaleWhileRevalidate } from 'workbox-strategies';
+import { RangeRequestsPlugin } from 'workbox-range-requests';
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -34,4 +35,10 @@ self.addEventListener('message', (event) => {
   }
 });
 
-registerRoute(() => true, new StaleWhileRevalidate({ cacheName: cacheNames.runtime }));
+registerRoute(
+  () => true,
+  new StaleWhileRevalidate({
+    cacheName: cacheNames.runtime,
+    plugins: [new RangeRequestsPlugin()],
+  }),
+);
