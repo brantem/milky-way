@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigation } from 'react-router-dom';
 import { subscribe } from 'valtio';
 
 import Moon from '../Moon';
@@ -8,6 +9,7 @@ import { points } from '../../lib/state';
 import { usePlanet } from '../../lib/hooks';
 
 const Neptune = () => {
+  const navigation = useNavigation();
   const containerRef = useRef<HTMLDivElement>(null);
   const planet = usePlanet<Neptune>();
   const firstStopIndex = useMemo(() => planet.moons.findIndex((moon) => (moon.points?.min || 0) !== 0), [planet.moons]);
@@ -46,7 +48,7 @@ const Neptune = () => {
         className="flex-1 py-5 overflow-y-auto [scrollbar-gutter:stable] rounded-lg bg-white border border-neutral-200/50 shadow-sm"
       >
         <div className="max-w-5xl mx-auto flex flex-col items-center gap-5">
-          {planet.moons.map((moon, i) => {
+          {(navigation.state === 'idle' ? planet.moons : []).map((moon, i) => {
             if (stopAt === undefined || (stopAt !== -1 && i > stopAt)) return null;
             return (
               <div key={i} data-i={i} className="w-full">

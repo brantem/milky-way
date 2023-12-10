@@ -547,7 +547,7 @@ const vertical = [
     key: 'milky-way/vertical/_planet.json',
     body: JSON.stringify({
       id: generateId(),
-      title: 'Neptune',
+      title: 'Vertical',
       layout: 'neptune',
       moons: [
         {

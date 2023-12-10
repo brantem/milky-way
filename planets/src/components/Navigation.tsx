@@ -38,7 +38,7 @@ const Navigation = () => {
   return (
     <div className="grid grid-cols-4 items-center pt-0 p-3">
       <div className="flex items-center gap-3">
-        <Link to="/" reloadDocument>
+        <Link to="/">
           <Button className="aspect-square" shadowClassName="bg-black" contentClassName="bg-neutral-800 text-white">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5">
               <path
@@ -50,7 +50,7 @@ const Navigation = () => {
           </Button>
         </Link>
 
-        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'} reloadDocument>
+        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'}>
           <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
             Prev
           </Button>
@@ -97,7 +97,7 @@ const Navigation = () => {
       <div className="flex items-center gap-3">
         <div className="h-[3px] flex-1 bg-neutral-200 rounded-r-full" />
 
-        <Link to={navigation.nextId ? `/${solarSystem.id}/${navigation.nextId}` : '#'} reloadDocument>
+        <Link to={navigation.nextId ? `/${solarSystem.id}/${navigation.nextId}` : '#'}>
           <Button
             shadowClassName="bg-sky-600"
             contentClassName="bg-sky-500 px-4 py-2 text-white group-disabled:bg-neutral-200 group-disabled:text-neutral-400"
