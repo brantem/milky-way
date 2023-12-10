@@ -99,7 +99,7 @@ export const Provider = forwardRef<ProviderHandle, ProviderProps>(({ parent, id,
       });
     }
 
-    if (data.output?.deimos) files.push({ key: data.output.deimos, body: JSON.stringify({ value: points }) });
+    if (data.output?.deimos) files.push({ key: data.output.deimos, body: JSON.stringify([{ value: points }]) });
 
     return { files, points };
   };
