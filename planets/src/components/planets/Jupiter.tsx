@@ -41,8 +41,8 @@ const Jupiter = () => {
                 </Panel>
               )}
               {isMoonActive(planet.small) && isMoonActive(planet.medium) && (
-                <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:calc(100%-theme(spacing.2))] relative before:content-[''] before:absolute before:-top-3 before:left-1 before:h-7 before:w-[calc(100%-theme(spacing.2))] before:z-10">
-                  <div className="w-[var(--size,theme(spacing.12))] h-1 rounded-full bg-neutral-300 transition-all" />
+                <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:theme(spacing.36)] relative before:content-[''] before:absolute before:-top-3 before:left-1 before:h-7 before:w-[calc(100%-theme(spacing.2))] before:z-10">
+                  <div className="w-[var(--size,theme(spacing.12))] h-1 rounded-full bg-neutral-300 transition-all max-w-[calc(100%-theme(spacing.2))]" />
                 </PanelResizeHandle>
               )}
               {isMoonActive(planet.small) && (
@@ -56,8 +56,8 @@ const Jupiter = () => {
               )}
             </PanelGroup>
           </Panel>
-          <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:calc(100%-theme(spacing.4))] relative before:content-[''] before:absolute before:top-2 before:-right-2 before:w-5 before:h-[calc(100%-theme(spacing.4))] before:z-10">
-            <div className="h-[var(--size,theme(spacing.12))] w-1 rounded-full bg-neutral-300 transition-all" />
+          <PanelResizeHandle className="flex items-center justify-center data-[resize-handle-active]:[--size:theme(spacing.36)] relative before:content-[''] before:absolute before:top-2 before:-right-2 before:w-5 before:h-[calc(100%-theme(spacing.4))] before:z-10">
+            <div className="h-[var(--size,theme(spacing.12))] w-1 rounded-full bg-neutral-300 transition-all max-h-[calc(100%-theme(spacing.4))]" />
           </PanelResizeHandle>
         </>
       )}

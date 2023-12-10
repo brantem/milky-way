@@ -61,7 +61,7 @@ const Navigation = () => {
             }
             style={{ '--percentage': `${(earnedPoints / requiredPoints) * 100}%` } as React.CSSProperties}
           >
-            <span className="truncate">{planet.title}</span>-<span className="truncate">{solarSystem.title}</span>
+            <span className="truncate">{planet.title}</span> - <span className="truncate">{solarSystem.title}</span>
           </span>
           {requiredPoints > 0 && (
             <svg
