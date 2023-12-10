@@ -69,6 +69,7 @@ const App = () => {
           ...files.reduce((obj, file) => ({ ...obj, [file.key]: file }), {} as Record<string, File>),
         }));
       }}
+      onPublish={(action, data) => console.log(action, data)}
     />
   );
 };
