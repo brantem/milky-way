@@ -39,12 +39,13 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
     const [items, setItems] = useState<Item[]>([]);
     const [values, setValues] = useState<(boolean | null)[]>([]);
 
-    const refresh = (items2: Item2[]) => {
-      if (!items2.length) return;
-      const values = items.map((item, i) => {
-        const item2 = items2[i];
+    const refresh = (a: Item[], b: Item2[]) => {
+      const values = a.map((item, i) => {
+        const item2 = b[i];
         if (!item2) return null;
-        return Object.keys(item.data).every((key) => item.data[key] === item2[key]);
+        return Object.keys(item.data).every((key) => {
+          return item.data[key] === item2[key];
+        });
       });
       setValues(values);
     };
@@ -55,7 +56,7 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
           case Action.Refresh: {
             if (!data.tasks?.output) return true;
             const [file] = await parent.request(Resource.Files, [data.tasks.output]);
-            refresh(JSON.parse(file?.body || '[]') || []);
+            refresh(items, JSON.parse(file?.body || '[]') || []);
             return true;
           }
           default:
@@ -69,8 +70,9 @@ const Deimos = forwardRef<DeimosHandle, DeimosProps>(
         const keys = [data.tasks.file];
         if (data.tasks?.output) keys.push(data.tasks.output);
         const [file, output] = await parent.request(Resource.Files, keys);
-        if (file) setItems(JSON.parse(file.body || '[]') || []);
-        if (output) refresh(JSON.parse(output.body || '[]') || []);
+        const items = JSON.parse(file?.body || '[]') || [];
+        if (items.length) setItems(items);
+        if (output) refresh(items, JSON.parse(output.body || '[]') || []);
       })();
     }, [data.tasks]);
 
