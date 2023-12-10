@@ -405,8 +405,8 @@ const media = [
         id: generateId(),
         url: 'https://moons.brantem.com/media/bundle.js',
         data: {
-          type: 'image',
-          url: 'https://moons.brantem.com/phobos/numbers.webp',
+          type: 'video',
+          url: 'https://moons.brantem.com/media/video.mp4',
         },
       },
       large: {
@@ -877,6 +877,7 @@ export default [
       'https://moons.brantem.com/media/bundle.js',
       'https://moons.brantem.com/media/image-1.webp',
       'https://moons.brantem.com/media/image-2.webp',
+      'https://moons.brantem.com/media/video.mp4',
       'https://moons.brantem.com/phobos/bundle.js',
       'https://moons.brantem.com/phobos/numbers.webp',
       'https://moons.brantem.com/phobos/square.webp',
