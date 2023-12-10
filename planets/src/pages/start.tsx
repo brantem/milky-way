@@ -42,7 +42,7 @@ const Start = () => {
   return (
     <>
       <div className="p-3 h-full w-full flex">
-        <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border border-neutral-200/50 -mb-10">
+        <div className="flex-1 flex flex-col items-center justify-center bg-white rounded-lg shadow-sm border border-neutral-200/50">
           <h1 className="text-5xl font-bold">{solarSystem.title}</h1>
           <div className="flex gap-2 mt-6">
             <ResetButton
@@ -62,7 +62,7 @@ const Start = () => {
                 contentClassName="bg-sky-500 text-white px-4"
                 disabled={!firstPlanet}
               >
-                Start
+                Start{' '}
               </Button>
             </Link>
           </div>
