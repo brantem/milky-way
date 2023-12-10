@@ -1,6 +1,7 @@
-import { clientsClaim } from 'workbox-core';
+import { cacheNames, clientsClaim } from 'workbox-core';
 import { cleanupOutdatedCaches, createHandlerBoundToURL, precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
+import { StaleWhileRevalidate } from 'workbox-strategies';
 
 declare let self: ServiceWorkerGlobalScope;
 
@@ -24,7 +25,7 @@ self.addEventListener('message', (event) => {
       if (!event.data.urls.length) break;
 
       event.waitUntil(
-        caches.open(event.data.name).then((cache) => {
+        caches.open(cacheNames.runtime).then((cache) => {
           cache.addAll(event.data.urls).then(() => {
             event.source?.postMessage({ action: 'cache', success: true });
           });
@@ -32,3 +33,5 @@ self.addEventListener('message', (event) => {
       );
   }
 });
+
+registerRoute(() => true, new StaleWhileRevalidate({ cacheName: cacheNames.runtime }));

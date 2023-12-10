@@ -16,7 +16,7 @@ const Offline = () => {
     (async () => {
       await navigator.serviceWorker.ready;
       const urls = await getUrlsToCache(params.solarSystem);
-      navigator.serviceWorker.controller?.postMessage({ action: 'cache', name: params.solarSystem, urls });
+      navigator.serviceWorker.controller?.postMessage({ action: 'cache', urls });
     })();
 
     navigator.serviceWorker.addEventListener('message', (event) => {

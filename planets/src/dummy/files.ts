@@ -81,7 +81,7 @@ const numbers = [
             type: 'onnx',
             urls: {
               wasmPath: 'https://moons.brantem.com/ganymede/',
-              modelUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
+              modelUrl: 'https://moons.brantem.com/ganymede/mnist/mnist-12.onnx',
             },
             input: {
               width: 28,
@@ -166,7 +166,7 @@ const shapes = [
           model: {
             type: 'teachable_machine',
             urls: {
-              baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+              baseUrl: 'https://moons.brantem.com/ganymede/shapes',
             },
             input: {
               width: 96,
@@ -215,7 +215,7 @@ const match = [
       {
         text: 'Match all pairs',
         data: {
-          value: 5,
+          value: 4,
         },
       },
     ]),
@@ -405,8 +405,8 @@ const media = [
         id: generateId(),
         url: 'https://moons.brantem.com/media/bundle.js',
         data: {
-          type: 'video',
-          url: 'https://moons.brantem.com/media/flower.webm',
+          type: 'image',
+          url: 'https://moons.brantem.com/phobos/numbers.webp',
         },
       },
       large: {
@@ -477,7 +477,7 @@ const ioCallistoGanymede = [
           model: {
             type: 'teachable_machine',
             urls: {
-              baseUrl: 'https://raw.githubusercontent.com/brantem/adudu/master/shapes',
+              baseUrl: 'https://moons.brantem.com/ganymede/shapes',
             },
             input: {
               width: 96,
@@ -770,11 +770,13 @@ const verticalAll = [
         {
           id: generateId(),
           url: 'https://moons.brantem.com/confetti/bundle.js',
+          height: 512,
           data: {},
         },
         {
           id: generateId(),
           url: 'https://moons.brantem.com/media/bundle.js',
+          height: 512,
           data: {
             type: 'image',
             url: 'https://moons.brantem.com/media/image-2.webp',
@@ -863,20 +865,22 @@ export default [
       'https://moons.brantem.com/deimos/bundle.js',
       'https://moons.brantem.com/europa/bundle.js',
       'https://moons.brantem.com/ganymede/bundle.js',
+      'https://moons.brantem.com/ganymede/mnist/mnist-12.onnx',
       'https://moons.brantem.com/ganymede/ort-wasm-simd-threaded.wasm',
       'https://moons.brantem.com/ganymede/ort-wasm-simd.wasm',
       'https://moons.brantem.com/ganymede/ort-wasm-threaded.wasm',
       'https://moons.brantem.com/ganymede/ort-wasm.wasm',
+      'https://moons.brantem.com/ganymede/shapes/metadata.json',
+      'https://moons.brantem.com/ganymede/shapes/model.json',
+      'https://moons.brantem.com/ganymede/shapes/weights.bin',
       'https://moons.brantem.com/io/bundle.js',
       'https://moons.brantem.com/media/bundle.js',
-      'https://moons.brantem.com/media/flower.webm',
       'https://moons.brantem.com/media/image-1.webp',
       'https://moons.brantem.com/media/image-2.webp',
       'https://moons.brantem.com/phobos/bundle.js',
       'https://moons.brantem.com/phobos/numbers.webp',
       'https://moons.brantem.com/phobos/square.webp',
       'https://moons.brantem.com/phobos/triangle.webp',
-      'https://raw.githubusercontent.com/brantem/adudu/master/mnist/mnist-12.onnx',
     ]),
   },
 ] as File[];
