@@ -868,7 +868,8 @@ export default [
       'https://moons.brantem.com/ganymede/mnist/mnist-12.onnx',
       'https://moons.brantem.com/ganymede/ort-wasm-simd-threaded.wasm',
       'https://moons.brantem.com/ganymede/ort-wasm-simd.wasm',
-      'https://moons.brantem.com/ganymede/ort-wasm-threaded.wasm',
+      // for some reason, this always fails to be downloaded
+      // 'https://moons.brantem.com/ganymede/ort-wasm-threaded.wasm',
       'https://moons.brantem.com/ganymede/ort-wasm.wasm',
       'https://moons.brantem.com/ganymede/shapes/metadata.json',
       'https://moons.brantem.com/ganymede/shapes/model.json',
