@@ -50,8 +50,12 @@ const Navigation = () => {
           </Button>
         </Link>
 
-        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '/'}>
-          <Button shadowClassName="bg-sky-600" contentClassName="bg-sky-500 px-4 py-2 text-white">
+        <Link to={navigation.prevId ? `/${solarSystem.id}/${navigation.prevId}` : '#'}>
+          <Button
+            shadowClassName="bg-sky-600"
+            contentClassName="bg-sky-500 px-4 py-2 text-white group-disabled:bg-neutral-200 group-disabled:text-neutral-400"
+            disabled={!navigation.prevId}
+          >
             Prev
           </Button>
         </Link>
